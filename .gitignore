@@ -1,0 +1,26 @@
+# Dependencies
+/backend/vendor/
+/frontend/node_modules/
+
+# Environment files (jangan commit nilai rahasia)
+.env
+.env.*
+!.env.example
+
+# Build output
+/frontend/dist/
+/backend/public/build/
+/backend/public/hot
+
+# Database lokal
+/backend/database/*.sqlite
+/backend/database/*.sqlite-journal
+
+# Cache & log
+*.log
+/backend/storage/*.key
+/backend/.phpunit.result.cache
+
+# Editor / OS
+.DS_Store
+Thumbs.db
