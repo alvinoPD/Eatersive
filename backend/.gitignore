@@ -5,6 +5,8 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+AGENTS.md
+CLAUDE.md
 /.codex
 /.cursor/
 /.idea
