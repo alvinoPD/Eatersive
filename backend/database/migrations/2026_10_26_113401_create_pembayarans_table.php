@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('pesanan_id')->constrained('pesanan')->onDelete('cascade');
+            $table->string('metode_pembayaran')->nullable();
+            $table->string('status_pembayaran')->default('pending');
+            $table->float('jumlah');
+            $table->string('transaction_id')->nullable();
+            $table->timestamp('tanggal_bayar')->nullable();
             $table->timestamps();
         });
     }

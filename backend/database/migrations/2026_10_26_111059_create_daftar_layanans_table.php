@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('daftar_layanans', function (Blueprint $table) {
             $table->id();
-            
+            $table->string('foto')->nullable();
+            $table->string('nama');
+            $table->text('deskripsi')->nullable();
+            $table->float('harga');
             $table->timestamps();
         });
     }

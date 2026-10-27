@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('riviews', function (Blueprint $table) {
             $table->id();
-            $table->string('Isi_riview');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('layanan_id')->constrained()->onDelete('cascade');
+            $table->string('isi_review');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('layanan_id')->constrained('daftar_layanans')->onDelete('cascade');
             $table->timestamps();
         });
     }
