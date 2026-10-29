@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f8fa" />
+    <meta
+      name="description"
+      content="Dashboard pemilik EaterSive untuk memantau pendapatan, pesanan, dan operasional."
+    />
+    <title>Dashboard Pemilik — EaterSive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar" id="sidebar">
+        <p class="sidebar-label">Manajemen</p>
+        <nav class="sidebar-nav" aria-label="Navigasi manajemen">
+          <a class="nav-link is-active" href="#dashboard" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+            <span>Dashboard</span><span class="nav-chevron" aria-hidden="true">›</span>
+          </a>
+          <a class="nav-link" href="../eatersive-orders/index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4.5h6M9 9h6M9 13h6m-6 3h4"/></svg>
+            <span>Pesanan</span>
+          </a>
+          <a class="nav-link" href="../eatersive-catalog/index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 13-7 7-10-10V4h6l11 9Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>
+            <span>Kelola Katalog</span>
+          </a>
+          <a class="nav-link" href="../eatersive-reviews/index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-6 3V7a2 2 0 0 1 2-2Z"/></svg>
+            <span>Review Pelanggan</span>
+          </a>
+        </nav>
+        <div class="sidebar-bottom">
+          <a class="nav-link" href="#pengaturan">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>
+            <span>Pengaturan</span>
+          </a>
+          <a class="nav-link nav-link--logout" href="#keluar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5m5-4 4-4-4-4m4 4H9"/></svg>
+            <span>Keluar</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Buka navigasi">
+            <span></span><span></span><span></span>
+          </button>
+          <a class="brand" href="#dashboard" aria-label="EaterSive, ke dashboard">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 14.2c2.1-.2 3.6-1.5 4.5-4.1l1.3.5c1.5 2.2 3.2 3.6 6.1 4l3.3.5c1.2.2 1.9 1 1.9 2.1 0 1.2-.9 2-2.1 2H6.2C4.4 19.2 3 18 3 16.4c0-.9.4-1.6 1-2.2Z" fill="currentColor"/><path d="m9.7 11.2 1.2.8m1.1.1 1.2.7m1.2.1 1.2.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg>
+            </span>
+            <span>Eater<span class="brand-accent">Sive</span></span>
+          </a>
+          <button class="profile-button" type="button" aria-label="Profil pemilik">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>
+          </button>
+        </header>
+
+        <main class="dashboard-content" id="dashboard">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">Ringkasan bisnis</p>
+              <h1 id="page-title">Halo, Admin EaterSive</h1>
+              <p>Berikut adalah ringkasan performa toko Anda hari ini.</p>
+            </div>
+            <label class="period-select">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="15" rx="2"/><path d="M8 3v6m8-6v6M4 11h16"/></svg>
+              <span class="visually-hidden">Pilih periode</span>
+              <select id="period-select" aria-label="Pilih periode">
+                <option value="sep-2026" selected>Sep 2026</option>
+                <option value="agu-2026">Agu 2026</option>
+                <option value="jul-2026">Jul 2026</option>
+              </select>
+              <span class="select-chevron" aria-hidden="true">⌄</span>
+            </label>
+          </section>
+
+          <section class="metrics-grid" aria-label="Ringkasan metrik">
+            <article class="metric-card metric-card--revenue">
+              <div class="metric-icon metric-icon--blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M8 15h2l2-4 2 3 2-2"/></svg>
+              </div>
+              <div class="metric-copy">
+                <p>Total Pendapatan</p>
+                <strong>Rp 12.450.000</strong>
+                <span>vs. bulan lalu</span>
+              </div>
+              <span class="trend trend--up">↗ +12,5%</span>
+              <svg class="sparkline" viewBox="0 0 240 78" preserveAspectRatio="none" aria-label="Grafik pendapatan meningkat">
+                <defs><linearGradient id="spark-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2862ed" stop-opacity=".3"/><stop offset="1" stop-color="#2862ed" stop-opacity=".03"/></linearGradient></defs>
+                <path d="M0 49 C30 50 42 57 66 49 S112 37 135 30 S178 14 195 17 S222 25 240 21 V78 H0Z" fill="url(#spark-fill)"/>
+                <path d="M0 49 C30 50 42 57 66 49 S112 37 135 30 S178 14 195 17 S222 25 240 21" fill="none" stroke="#2862ed" stroke-width="2"/>
+              </svg>
+            </article>
+            <article class="metric-card">
+              <div class="metric-icon metric-icon--blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9h16m-11 4 3 3 3-3"/></svg>
+              </div>
+              <span class="trend trend--up">↗ +8,2%</span>
+              <div class="metric-copy">
+                <p>Pesanan Baru</p>
+                <strong>142</strong>
+                <span>vs. minggu lalu</span>
+              </div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-icon metric-icon--blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M16 20v-1.7a3.3 3.3 0 0 0-3.3-3.3H6.3A3.3 3.3 0 0 0 3 18.3V20m6.5-9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm6-6.7a3.5 3.5 0 0 1 0 6.8m2 3.6a3.3 3.3 0 0 1 3.5 3.3V20"/></svg>
+              </div>
+              <span class="trend trend--up">↗ +5,1%</span>
+              <div class="metric-copy">
+                <p>Pelanggan Aktif</p>
+                <strong>856</strong>
+                <span>total pelanggan</span>
+              </div>
+            </article>
+          </section>
+
+          <div class="dashboard-grid">
+            <div class="main-column">
+              <section class="panel analytics-panel" aria-labelledby="analytics-title">
+                <div class="panel-heading">
+                  <div>
+                    <h2 id="analytics-title">Analistik</h2>
+                    <p id="chart-description">Visualisasi pertumbuhan bisnis 6 bulan terakhir.</p>
+                  </div>
+                  <div class="chart-tabs" role="group" aria-label="Data grafik">
+                    <button class="chart-tab is-active" type="button" data-chart="revenue" aria-pressed="true">Pendapatan</button>
+                    <button class="chart-tab" type="button" data-chart="orders" aria-pressed="false">Pesanan</button>
+                  </div>
+                </div>
+                <div class="chart-wrap">
+                  <div class="chart-y-labels" id="chart-y-labels" aria-hidden="true">
+                    <span>Rp14.0jt</span><span>Rp10.5jt</span><span>Rp7.0jt</span><span>Rp3.5jt</span><span>Rp0.0jt</span>
+                  </div>
+                  <svg class="analytics-chart" viewBox="0 0 600 250" preserveAspectRatio="none" role="img" aria-labelledby="chart-title chart-description">
+                    <title id="chart-title">Grafik pendapatan per bulan</title>
+                    <defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2862ed" stop-opacity=".32"/><stop offset="1" stop-color="#2862ed" stop-opacity=".06"/></linearGradient></defs>
+                    <path class="chart-area" d="M0 162 C42 166 75 172 112 168 S198 138 250 128 S337 106 388 93 S475 77 512 88 S567 104 600 117 V250 H0Z"/>
+                    <path class="chart-line" d="M0 162 C42 166 75 172 112 168 S198 138 250 128 S337 106 388 93 S475 77 512 88 S567 104 600 117"/>
+                  </svg>
+                </div>
+                <div class="chart-x-labels" aria-hidden="true"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>Mei</span><span>Jun</span></div>
+                <p class="chart-legend"><span></span><span id="chart-legend-label">Pendapatan (Rp)</span></p>
+              </section>
+
+              <section class="panel orders-panel" id="pesanan" aria-labelledby="orders-title">
+                <div class="panel-heading orders-heading">
+                  <div>
+                    <h2 id="orders-title">Pesanan Terbaru</h2>
+                    <p>Daftar 5 aktivitas pesanan terakhir yang masuk ke sistem.</p>
+                  </div>
+                  <a class="text-link" href="#pesanan" id="see-all-orders">Lihat Semua <span aria-hidden="true">→</span></a>
+                </div>
+                <div class="table-tools">
+                  <label class="search-field">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4 4"/></svg>
+                    <span class="visually-hidden">Cari pesanan atau pelanggan</span>
+                    <input id="order-search" type="search" placeholder="Cari pesanan atau pelanggan..." autocomplete="off" />
+                  </label>
+                  <label class="filter-field">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.2 7.2V19l-3.6-1.8v-5L4 5Z"/></svg>
+                    <span class="visually-hidden">Filter status</span>
+                    <select id="status-filter">
+                      <option value="all">Filter Status</option>
+                      <option value="proses">Diproses</option>
+                      <option value="selesai">Selesai</option>
+                      <option value="menunggu">Menunggu</option>
+                      <option value="dibatalkan">Dibatalkan</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">ID Pesanan</th><th scope="col">Pelanggan</th><th scope="col">Layanan</th><th scope="col">Status</th><th scope="col" class="amount-cell">Total</th></tr>
+                    </thead>
+                    <tbody id="orders-body">
+                      <tr data-status="proses"><td class="order-id">ORD-7214</td><td>Budi Santoso</td><td>Deep Cleaning</td><td><span class="status status--process">Diproses</span></td><td class="amount-cell">Rp 85.000</td></tr>
+                      <tr data-status="selesai"><td class="order-id">ORD-7213</td><td>Siti Aminah</td><td>Unyellowing</td><td><span class="status status--done">Selesai</span></td><td class="amount-cell">Rp 120.000</td></tr>
+                      <tr data-status="menunggu"><td class="order-id">ORD-7212</td><td>Andi Wijaya</td><td>Repair &amp; Glue</td><td><span class="status status--waiting">Menunggu</span></td><td class="amount-cell">Rp 150.000</td></tr>
+                      <tr data-status="selesai"><td class="order-id">ORD-7211</td><td>Rina Kartika</td><td>Deep Cleaning</td><td><span class="status status--done">Selesai</span></td><td class="amount-cell">Rp 85.000</td></tr>
+                      <tr data-status="dibatalkan"><td class="order-id">ORD-7210</td><td>Doni Setiawan</td><td>Reglue</td><td><span class="status status--cancelled">Dibatalkan</span></td><td class="amount-cell">Rp 65.000</td></tr>
+                    </tbody>
+                  </table>
+                  <p class="empty-state" id="empty-state" hidden>Tidak ada pesanan yang cocok.</p>
+                </div>
+              </section>
+            </div>
+
+            <aside class="side-column" aria-label="Ringkasan operasional">
+              <section class="panel services-panel" id="layanan" aria-labelledby="services-title">
+                <div class="panel-heading panel-heading--compact">
+                  <div><h2 id="services-title">Ringkasan Layanan</h2><p>Layanan paling banyak dipesan bulan ini.</p></div>
+                </div>
+                <ul class="service-list">
+                  <li><div class="service-meta"><span>Deep Cleaning</span><span>84 unit</span></div><div class="progress-track"><span style="width: 64%"></span></div></li>
+                  <li><div class="service-meta"><span>Unyellowing</span><span>48 unit</span></div><div class="progress-track"><span style="width: 42%"></span></div></li>
+                  <li><div class="service-meta"><span>Repair &amp; Reglue</span><span>32 unit</span></div><div class="progress-track"><span style="width: 29%"></span></div></li>
+                  <li><div class="service-meta"><span>Other Services</span><span>12 unit</span></div><div class="progress-track"><span style="width: 15%"></span></div></li>
+                </ul>
+                <a class="outline-button" href="#layanan">Analitik Detail Layanan</a>
+              </section>
+
+              <section class="operations" aria-labelledby="operations-title">
+                <h2 id="operations-title">Status Operasional</h2>
+                <div class="operation-card">
+                  <span class="operation-dot operation-dot--green" aria-hidden="true"></span>
+                  <div><strong>Penerimaan Pesanan</strong><small>Aktif • Toko buka</small></div>
+                  <span class="operation-badge operation-badge--green">Online</span>
+                </div>
+                <div class="operation-card">
+                  <span class="operation-dot operation-dot--orange" aria-hidden="true"></span>
+                  <div><strong>Antrean Pengerjaan</strong><small>Sedang padat • 12 antrean</small></div>
+                  <span class="operation-badge operation-badge--orange">Sibuk</span>
+                </div>
+              </section>
+
+              <section class="help-card" id="ulasan">
+                <span class="help-spark" aria-hidden="true">✦</span>
+                <h2>Butuh Bantuan?</h2>
+                <p>Hubungi tim support SoleCare jika Anda mengalami kendala pada sistem dashboard.</p>
+                <a href="mailto:halo@eatersive.id">Pusat Bantuan <span aria-hidden="true">↗</span></a>
+              </section>
+            </aside>
+          </div>
+        </main>
+
+        <footer class="footer">
+          <p>© 2024 SoleCare Admin v2.1.0 • Sistem Terpantau Real-time</p>
+          <div><span class="connection"><i></i> Database Connected</span><span class="health"><i></i> System Healthy</span></div>
+        </footer>
+      </div>
+    </div>
+    <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+  </body>
+</html>

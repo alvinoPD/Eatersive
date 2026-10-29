@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f9fc" />
+    <meta name="description" content="Konfirmasi pesanan perawatan sepatu EaterSive." />
+    <title>Konfirmasi Pesanan — EaterSive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../eatersive-landing-page/index.html" aria-label="EaterSive, beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 14.2c2.1-.2 3.6-1.5 4.5-4.1l1.3.5c1.5 2.2 3.2 3.6 6.1 4l3.3.5c1.2.2 1.9 1 1.9 2.1 0 1.2-.9 2-2.1 2H6.2C4.4 19.2 3 18 3 16.4c0-.9.4-1.6 1-2.2Z" fill="currentColor"/>
+            <path d="m9.7 11.2 1.2.8m1.1.1 1.2.7m1.2.1 1.2.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>Eater<span class="brand-accent">Sive</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="../eatersive-landing-page/index.html#layanan">Layanan</a>
+        <a href="../eatersive-landing-page/index.html#cara-kerja">Cara Kerja</a>
+        <a href="../eatersive-landing-page/index.html#ulasan">Ulasan</a>
+        <a href="../eatersive-landing-page/index.html#faq">Pertanyaan</a>
+      </nav>
+      <div class="header-actions">
+        <a class="login-link" href="../login/index.html">Masuk</a>
+        <a class="button button--small" href="../login/index.html">Daftar</a>
+      </div>
+    </header>
+
+    <main class="confirmation-layout">
+      <section class="confirmation-main">
+        <div class="success-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="2.3"/>
+            <path d="m10 16.2 4 4 8-8.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 id="confirmation-title">Pesanan Berhasil Dibuat!</h1>
+        <p class="intro" id="confirmation-intro">Terima kasih. Pesanan Anda sedang diproses. Kurir kami akan segera menuju lokasi Anda untuk penjemputan sepatu.</p>
+
+        <section class="next-steps" aria-labelledby="steps-title">
+          <div class="steps-copy">
+            <span class="estimate">Estimasi Selesai: <strong id="estimated-date">—</strong></span>
+            <h2 id="steps-title">Langkah Selanjutnya:</h2>
+            <ol>
+              <li><span>1</span><p>Siapkan sepatu Anda dalam wadah/kantong yang rapi.</p></li>
+              <li><span>2</span><p>Tunggu kurir SoleCare menghubungi Anda di nomor terdaftar.</p></li>
+            </ol>
+          </div>
+          <div class="abstract-art" role="img" aria-label="Ilustrasi abstrak berwarna pastel">
+            <span class="art-ring"></span><span class="art-orb art-orb--blue"></span>
+            <span class="art-orb art-orb--peach"></span><span class="art-orb art-orb--pink"></span>
+            <span class="art-orb art-orb--violet"></span>
+          </div>
+        </section>
+
+        <div class="primary-actions">
+          <button class="button track-button" id="track-button" type="button">
+            Lacak Status Pesanan <span aria-hidden="true">→</span>
+          </button>
+          <a class="button button--outline" href="../pilih-layanan/index.html">Pesan Layanan Lagi</a>
+        </div>
+        <p class="tracking-message" id="tracking-message" role="status" aria-live="polite"></p>
+
+        <section class="support-card">
+          <span class="support-icon" aria-hidden="true">◷</span>
+          <div><h2>Butuh Bantuan Mendadak?</h2><p>Hubungi CS kami via WhatsApp (08:00 - 20:00 WIB)</p></div>
+          <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer">Chat Sekarang</a>
+        </section>
+        <p class="demo-note" id="demo-note" hidden>Konfirmasi ini hanya demo. Booking belum dikirim atau disimpan di server.</p>
+      </section>
+
+      <aside class="order-card" aria-labelledby="order-title">
+        <div class="order-card-heading">
+          <h2 id="order-title"><span aria-hidden="true">▣</span> Rincian Pesanan</h2>
+          <span class="status-pill" id="order-status">Menunggu Penjemputan</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-meta">
+            <div><span>ID Pesanan</span><strong id="order-id">—</strong></div>
+            <div class="order-date"><span>Tanggal</span><strong id="order-date">—</strong></div>
+          </div>
+          <div class="order-details">
+            <div class="detail-row">
+              <span class="detail-icon" aria-hidden="true">⌖</span>
+              <div><span>Alamat Penjemputan</span><strong id="pickup-address">—</strong></div>
+            </div>
+            <div class="detail-row">
+              <span class="detail-icon" aria-hidden="true">▱</span>
+              <div><span>Metode Pembayaran</span><strong id="payment-method">QRIS / E-Wallet</strong></div>
+            </div>
+          </div>
+          <div class="items-section">
+            <h3>Item &amp; Layanan</h3>
+            <ul id="confirmed-items" class="confirmed-items"></ul>
+            <p id="no-items-message" class="no-items-message" hidden>Belum ada rincian pesanan. <a href="../pilih-layanan/index.html">Pilih layanan</a>.</p>
+          </div>
+          <div class="confirmed-total"><strong>Total Bayar</strong><strong id="confirmed-total">Rp 0</strong></div>
+        </div>
+        <div class="order-card-actions">
+          <button id="receipt-button" type="button"><span aria-hidden="true">♧</span> Simpan Struk</button>
+          <span class="action-divider"></span>
+          <button id="share-button" type="button"><span aria-hidden="true">⌯</span> Bagikan</button>
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>
