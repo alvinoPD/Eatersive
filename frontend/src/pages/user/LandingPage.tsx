@@ -99,34 +99,12 @@ export default function LandingPage() {
               Kembalikan Kilau <span>Sepatu Favorit</span> Anda Sekarang.
             </h1>
             <p className="hero-description">
-              Layanan cuci, perbaikan, dan restorasi sepatu profesional di Surabaya. Dipercaya
-              1.000+ pelanggan.
+              Layanan cuci, perbaikan, dan restorasi sepatu profesional di Surabaya.
             </p>
             <Link className="button hero-button" to="/layanan">
               Mulai Cuci Sepatu Sekarang
               <span aria-hidden="true">→</span>
             </Link>
-            <div className="hero-proof">
-              <div className="avatar-stack" aria-hidden="true">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
-                  alt=""
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80"
-                  alt=""
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=80&q=80"
-                  alt=""
-                />
-              </div>
-              <p>
-                <strong>1.000+</strong>
-                <br />
-                sepatu kembali bersih
-              </p>
-            </div>
           </div>
 
           <div className="hero-visual">
@@ -141,8 +119,8 @@ export default function LandingPage() {
                 ✓
               </span>
               <span>
-                <strong>1000+ Pelanggan</strong>
-                <small>Puas dengan hasil kami</small>
+                <strong>Antar-Jemput</strong>
+                <small>Sepatu dijemput dan diantar kembali</small>
               </span>
             </div>
             <span className="hero-note">
@@ -298,23 +276,30 @@ export default function LandingPage() {
             <p className="eyebrow">Apa kata mereka?</p>
             <h2>Testimoni Pelanggan</h2>
           </div>
-          <div className="testimonial-grid">
-            {LANDING_TESTIMONIALS.map((testimonial) => (
-              <article className="testimonial" key={testimonial.name}>
-                <div className="stars" aria-label="5 dari 5 bintang">
-                  ★★★★★
-                </div>
-                <blockquote>{testimonial.quote}</blockquote>
-                <div className="customer">
-                  <img src={testimonial.avatar} alt="" />
-                  <span>
-                    <strong>{testimonial.name}</strong>
-                    <small>{testimonial.role}</small>
-                  </span>
-                </div>
-              </article>
-            ))}
-          </div>
+          {LANDING_TESTIMONIALS.length > 0 ? (
+            <div className="testimonial-grid">
+              {LANDING_TESTIMONIALS.map((testimonial) => (
+                <article className="testimonial" key={testimonial.name}>
+                  <div className="stars" aria-label="5 dari 5 bintang">
+                    ★★★★★
+                  </div>
+                  <blockquote>{testimonial.quote}</blockquote>
+                  <div className="customer">
+                    <img src={testimonial.avatar} alt="" />
+                    <span>
+                      <strong>{testimonial.name}</strong>
+                      <small>{testimonial.role}</small>
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="testimonial-empty">
+              Belum ada testimoni yang ditampilkan. Ulasan pelanggan akan muncul di sini setelah
+              pesanan pertama selesai.
+            </p>
+          )}
 
           <div className="cta-banner" id="kontak">
             <h2>Sudah siap belum?</h2>

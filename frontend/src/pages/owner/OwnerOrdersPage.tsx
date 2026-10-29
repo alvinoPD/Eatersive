@@ -39,6 +39,10 @@ export default function OwnerOrdersPage() {
     });
   }, [category, search, sort]);
 
+  const totalOrders = OWNER_ORDERS.length;
+  const processOrders = OWNER_ORDERS.filter((order) => order.status === 'Proses').length;
+  const doneOrders = OWNER_ORDERS.filter((order) => order.status === 'Selesai').length;
+
   function openOrder(orderId: string) {
     navigate(`/owner/orders/${orderId}`);
   }
@@ -65,7 +69,7 @@ export default function OwnerOrdersPage() {
             </span>
             <div>
               <p>Total Pesanan</p>
-              <strong>24</strong>
+              <strong>{totalOrders}</strong>
             </div>
           </article>
           <article className="summary-card">
@@ -77,7 +81,7 @@ export default function OwnerOrdersPage() {
             </span>
             <div>
               <p>Proses</p>
-              <strong>18</strong>
+              <strong>{processOrders}</strong>
             </div>
           </article>
           <article className="summary-card">
@@ -89,7 +93,7 @@ export default function OwnerOrdersPage() {
             </span>
             <div>
               <p>Selesai</p>
-              <strong>4</strong>
+              <strong>{doneOrders}</strong>
             </div>
           </article>
         </section>
@@ -219,7 +223,11 @@ export default function OwnerOrdersPage() {
               </tbody>
             </table>
             {visibleOrders.length === 0 && (
-              <p className="empty-state">Tidak ada pesanan yang cocok.</p>
+              <p className="empty-state">
+                {OWNER_ORDERS.length === 0
+                  ? 'Belum ada pesanan. Pesanan pelanggan akan muncul di sini.'
+                  : 'Tidak ada pesanan yang cocok.'}
+              </p>
             )}
           </div>
           <div className="table-footer">

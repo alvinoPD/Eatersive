@@ -144,7 +144,11 @@ export default function PilihLayananPage() {
                 {activeFilter} ({visibleServices.length})
               </h2>
               {visibleServices.length === 0 && (
-                <p>Tidak ada layanan yang cocok. Coba kata kunci atau kategori lain.</p>
+                <p>
+                  {SERVICES.length === 0
+                    ? 'Belum ada layanan pada katalog. Layanan akan tampil di sini setelah tersedia.'
+                    : 'Tidak ada layanan yang cocok. Coba kata kunci atau kategori lain.'}
+                </p>
               )}
             </div>
 
