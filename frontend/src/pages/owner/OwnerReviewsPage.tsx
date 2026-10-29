@@ -73,6 +73,18 @@ export default function OwnerReviewsPage() {
     });
   }, [activeStatus, reviews, search, serviceFilter]);
 
+  const totalReviews = reviews.length;
+  const averageRating =
+    totalReviews > 0
+      ? (reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1)
+      : '—';
+  const positiveRate =
+    totalReviews > 0
+      ? `${Math.round(
+          (reviews.filter((review) => review.rating >= 4).length / totalReviews) * 100,
+        )}%`
+      : '—';
+
   const totalPages = Math.max(1, Math.ceil(filteredReviews.length / REVIEW_PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
   const startIndex = (safePage - 1) * REVIEW_PAGE_SIZE;
@@ -237,7 +249,7 @@ export default function OwnerReviewsPage() {
               </span>
               <div>
                 <p>Total Review</p>
-                <strong>1,248</strong>
+                <strong>{totalReviews.toLocaleString('id-ID')}</strong>
               </div>
             </article>
             <article className="stat-card">
@@ -248,7 +260,7 @@ export default function OwnerReviewsPage() {
               </span>
               <div>
                 <p>Rating Rata-rata</p>
-                <strong>4.8/5</strong>
+                <strong>{averageRating === '—' ? '—' : `${averageRating}/5`}</strong>
               </div>
             </article>
             <article className="stat-card">
@@ -259,7 +271,7 @@ export default function OwnerReviewsPage() {
               </span>
               <div>
                 <p>Review Positif</p>
-                <strong>92%</strong>
+                <strong>{positiveRate}</strong>
               </div>
             </article>
           </section>
@@ -487,7 +499,11 @@ export default function OwnerReviewsPage() {
                 </tbody>
               </table>
               {filteredReviews.length === 0 && (
-                <p className="empty-state">Tidak ada ulasan yang cocok dengan filter.</p>
+                <p className="empty-state">
+                  {totalReviews === 0
+                    ? 'Belum ada ulasan. Ulasan pelanggan akan muncul di sini setelah pesanan selesai.'
+                    : 'Tidak ada ulasan yang cocok dengan filter.'}
+                </p>
               )}
             </div>
 
@@ -495,7 +511,7 @@ export default function OwnerReviewsPage() {
               <p>
                 Menampilkan {filteredReviews.length === 0 ? 0 : startIndex + 1}–
                 {Math.min(startIndex + REVIEW_PAGE_SIZE, filteredReviews.length)} dari{' '}
-                {filteredReviews.length.toLocaleString('id-ID')} ulasan demo
+                {filteredReviews.length.toLocaleString('id-ID')} ulasan
               </p>
               <nav className="pagination" aria-label="Navigasi halaman ulasan">
                 <button
@@ -548,35 +564,11 @@ export default function OwnerReviewsPage() {
                 <p>Ringkasan otomatis feedback pelanggan bulan ini.</p>
               </div>
             </div>
-            <div className="sentiment-list">
-              <div className="sentiment-item">
-                <div className="sentiment-meta">
-                  <strong>Kualitas Pembersihan</strong>
-                  <span>95% Positif</span>
-                </div>
-                <div className="sentiment-track">
-                  <span style={{ width: '95%' }} />
-                </div>
-              </div>
-              <div className="sentiment-item">
-                <div className="sentiment-meta">
-                  <strong>Waktu Pengerjaan</strong>
-                  <span>78% Positif</span>
-                </div>
-                <div className="sentiment-track">
-                  <span style={{ width: '78%' }} />
-                </div>
-              </div>
-              <div className="sentiment-item">
-                <div className="sentiment-meta">
-                  <strong>Keramahan Kurir/CS</strong>
-                  <span>88% Positif</span>
-                </div>
-                <div className="sentiment-track">
-                  <span style={{ width: '88%' }} />
-                </div>
-              </div>
-            </div>
+            <p className="empty-state">
+              {totalReviews === 0
+                ? 'Analisis sentimen belum tersedia karena belum ada ulasan yang masuk.'
+                : 'Analisis sentimen belum tersedia. Ringkasan akan dihitung otomatis setelah data ulasan terhubung ke backend.'}
+            </p>
           </section>
         </main>
       </OwnerShell>

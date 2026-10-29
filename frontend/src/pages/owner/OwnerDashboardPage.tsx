@@ -14,22 +14,22 @@ const PERIODS = [
   { value: 'jul-2026', label: 'Jul 2026' },
 ];
 
+/**
+ * Metadata grafik. Data contoh (deret angka dan kurva) sudah dihapus, jadi
+ * grafik hanya menampilkan keadaan kosong sampai angka asli tersedia.
+ */
 const CHART_DATA = {
   revenue: {
     title: 'Grafik pendapatan per bulan',
     description: 'Visualisasi pertumbuhan bisnis 6 bulan terakhir.',
     legend: 'Pendapatan (Rp)',
-    path: 'M0 162 C42 166 75 172 112 168 S198 138 250 128 S337 106 388 93 S475 77 512 88 S567 104 600 117',
-    labels: ['Rp14.0jt', 'Rp10.5jt', 'Rp7.0jt', 'Rp3.5jt', 'Rp0.0jt'],
   },
   orders: {
     title: 'Grafik jumlah pesanan per bulan',
     description: 'Perbandingan jumlah pesanan dalam 6 bulan terakhir.',
     legend: 'Jumlah pesanan',
-    path: 'M0 175 C42 158 77 170 112 145 S195 150 250 116 S335 136 388 92 S474 105 512 74 S569 87 600 55',
-    labels: ['180 pesanan', '135 pesanan', '90 pesanan', '45 pesanan', '0 pesanan'],
   },
-} satisfies Record<ChartType, { title: string; description: string; legend: string; path: string; labels: string[] }>;
+} satisfies Record<ChartType, { title: string; description: string; legend: string }>;
 
 const STATUS_CLASS: Record<(typeof DASHBOARD_RECENT_ORDERS)[number]['status'], string> = {
   proses: 'status--process',
@@ -38,12 +38,6 @@ const STATUS_CLASS: Record<(typeof DASHBOARD_RECENT_ORDERS)[number]['status'], s
   dibatalkan: 'status--cancelled',
 };
 
-const SERVICE_SUMMARY = [
-  { name: 'Deep Cleaning', units: '84 unit', width: '64%' },
-  { name: 'Unyellowing', units: '48 unit', width: '42%' },
-  { name: 'Repair & Reglue', units: '32 unit', width: '29%' },
-  { name: 'Other Services', units: '12 unit', width: '15%' },
-];
 
 export default function OwnerDashboardPage() {
   const [chartType, setChartType] = useState<ChartType>('revenue');
@@ -57,6 +51,28 @@ export default function OwnerDashboardPage() {
   }, []);
 
   const chart = CHART_DATA[chartType];
+
+  const totalRevenue = DASHBOARD_RECENT_ORDERS.reduce((sum, order) => sum + order.total, 0);
+  const newOrders = DASHBOARD_RECENT_ORDERS.length;
+  const activeCustomers = new Set(DASHBOARD_RECENT_ORDERS.map((order) => order.customer)).size;
+  const queueCount = DASHBOARD_RECENT_ORDERS.filter((order) => order.status === 'proses').length;
+
+  const serviceSummary = useMemo(() => {
+    const counts = new Map<string, number>();
+    DASHBOARD_RECENT_ORDERS.forEach((order) => {
+      counts.set(order.service, (counts.get(order.service) ?? 0) + 1);
+    });
+    const rows = [...counts.entries()]
+      .map(([name, units]) => ({ name, units }))
+      .sort((first, second) => second.units - first.units);
+    const maxUnits = rows[0]?.units ?? 0;
+
+    return rows.map((row) => ({
+      ...row,
+      unitsLabel: `${row.units} unit`,
+      width: maxUnits > 0 ? `${Math.round((row.units / maxUnits) * 100)}%` : '0%',
+    }));
+  }, []);
 
   const visibleOrders = useMemo(() => {
     const query = search.trim().toLocaleLowerCase('id');
@@ -129,33 +145,9 @@ export default function OwnerDashboardPage() {
             </div>
             <div className="metric-copy">
               <p>Total Pendapatan</p>
-              <strong>Rp 12.450.000</strong>
-              <span>vs. bulan lalu</span>
+              <strong>{formatCurrency(totalRevenue)}</strong>
+              <span>dari pesanan terbaru</span>
             </div>
-            <span className="trend trend--up">↗ +12,5%</span>
-            <svg
-              className="sparkline"
-              viewBox="0 0 240 78"
-              preserveAspectRatio="none"
-              aria-label="Grafik pendapatan meningkat"
-            >
-              <defs>
-                <linearGradient id="spark-fill" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0" stopColor="#2862ed" stopOpacity=".3" />
-                  <stop offset="1" stopColor="#2862ed" stopOpacity=".03" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0 49 C30 50 42 57 66 49 S112 37 135 30 S178 14 195 17 S222 25 240 21 V78 H0Z"
-                fill="url(#spark-fill)"
-              />
-              <path
-                d="M0 49 C30 50 42 57 66 49 S112 37 135 30 S178 14 195 17 S222 25 240 21"
-                fill="none"
-                stroke="#2862ed"
-                strokeWidth="2"
-              />
-            </svg>
           </article>
           <article className="metric-card">
             <div className="metric-icon metric-icon--blue" aria-hidden="true">
@@ -164,11 +156,10 @@ export default function OwnerDashboardPage() {
                 <path d="M4 9h16m-11 4 3 3 3-3" />
               </svg>
             </div>
-            <span className="trend trend--up">↗ +8,2%</span>
             <div className="metric-copy">
               <p>Pesanan Baru</p>
-              <strong>142</strong>
-              <span>vs. minggu lalu</span>
+              <strong>{newOrders}</strong>
+              <span>pesanan terbaru</span>
             </div>
           </article>
           <article className="metric-card">
@@ -177,11 +168,10 @@ export default function OwnerDashboardPage() {
                 <path d="M16 20v-1.7a3.3 3.3 0 0 0-3.3-3.3H6.3A3.3 3.3 0 0 0 3 18.3V20m6.5-9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm6-6.7a3.5 3.5 0 0 1 0 6.8m2 3.6a3.3 3.3 0 0 1 3.5 3.3V20" />
               </svg>
             </div>
-            <span className="trend trend--up">↗ +5,1%</span>
             <div className="metric-copy">
               <p>Pelanggan Aktif</p>
-              <strong>856</strong>
-              <span>total pelanggan</span>
+              <strong>{activeCustomers}</strong>
+              <span>dari pesanan terbaru</span>
             </div>
           </article>
         </section>
@@ -214,36 +204,10 @@ export default function OwnerDashboardPage() {
                 </div>
               </div>
               <div className="chart-wrap">
-                <div className="chart-y-labels" aria-hidden="true">
-                  {chart.labels.map((label) => (
-                    <span key={label}>{label}</span>
-                  ))}
-                </div>
-                <svg
-                  className="analytics-chart"
-                  viewBox="0 0 600 250"
-                  preserveAspectRatio="none"
-                  role="img"
-                  aria-labelledby="chart-title chart-description"
-                >
-                  <title id="chart-title">{chart.title}</title>
-                  <defs>
-                    <linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0" stopColor="#2862ed" stopOpacity=".32" />
-                      <stop offset="1" stopColor="#2862ed" stopOpacity=".06" />
-                    </linearGradient>
-                  </defs>
-                  <path className="chart-area" d={`${chart.path} V250 H0Z`} />
-                  <path className="chart-line" d={chart.path} />
-                </svg>
-              </div>
-              <div className="chart-x-labels" aria-hidden="true">
-                <span>Jan</span>
-                <span>Feb</span>
-                <span>Mar</span>
-                <span>Apr</span>
-                <span>Mei</span>
-                <span>Jun</span>
+                <p className="empty-state">
+                  {chart.title} belum dapat ditampilkan karena belum ada data{' '}
+                  {chartType === 'revenue' ? 'pendapatan' : 'pesanan'}.
+                </p>
               </div>
               <p className="chart-legend">
                 <span />
@@ -325,7 +289,11 @@ export default function OwnerDashboardPage() {
                   </tbody>
                 </table>
                 {visibleOrders.length === 0 && (
-                  <p className="empty-state">Tidak ada pesanan yang cocok.</p>
+                  <p className="empty-state">
+                    {DASHBOARD_RECENT_ORDERS.length === 0
+                      ? 'Belum ada pesanan. Ringkasan akan muncul setelah pesanan masuk.'
+                      : 'Tidak ada pesanan yang cocok.'}
+                  </p>
                 )}
               </div>
             </section>
@@ -340,11 +308,11 @@ export default function OwnerDashboardPage() {
                 </div>
               </div>
               <ul className="service-list">
-                {SERVICE_SUMMARY.map((service) => (
+                {serviceSummary.map((service) => (
                   <li key={service.name}>
                     <div className="service-meta">
                       <span>{service.name}</span>
-                      <span>{service.units}</span>
+                      <span>{service.unitsLabel}</span>
                     </div>
                     <div className="progress-track">
                       <span style={{ width: service.width }} />
@@ -352,6 +320,9 @@ export default function OwnerDashboardPage() {
                   </li>
                 ))}
               </ul>
+              {serviceSummary.length === 0 && (
+                <p className="empty-state">Belum ada layanan yang dipesan bulan ini.</p>
+              )}
               <Link className="outline-button" to="/owner/catalog">
                 Analitik Detail Layanan
               </Link>
@@ -371,9 +342,13 @@ export default function OwnerDashboardPage() {
                 <span className="operation-dot operation-dot--orange" aria-hidden="true" />
                 <div>
                   <strong>Antrean Pengerjaan</strong>
-                  <small>Sedang padat • 12 antrean</small>
+                  <small>
+                    {queueCount > 0 ? `${queueCount} antrean` : 'Belum ada antrean'}
+                  </small>
                 </div>
-                <span className="operation-badge operation-badge--orange">Sibuk</span>
+                <span className="operation-badge operation-badge--orange">
+                  {queueCount > 0 ? 'Sibuk' : 'Kosong'}
+                </span>
               </div>
             </section>
 

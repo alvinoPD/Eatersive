@@ -55,7 +55,7 @@ function loadCatalog(): { services: OwnerCatalogService[]; error: string } {
     console.error('Tidak dapat membaca data katalog:', error);
     return {
       services: fallback,
-      error: 'Data katalog tersimpan tidak dapat dibaca. Menampilkan katalog demo.',
+      error: 'Data katalog tersimpan tidak dapat dibaca. Katalog ditampilkan kosong.',
     };
   }
 }
@@ -516,7 +516,11 @@ export default function OwnerCatalogPage() {
                 </tbody>
               </table>
               {visibleServices.length === 0 && (
-                <p className="empty-state">Tidak ada layanan yang cocok.</p>
+                <p className="empty-state">
+                  {services.length === 0
+                    ? 'Belum ada layanan pada katalog. Tambahkan layanan pertama Anda dengan tombol “Tambah Layanan”.'
+                    : 'Tidak ada layanan yang cocok.'}
+                </p>
               )}
             </div>
             <div className="table-footer">

@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import OwnerShell from '../../components/owner/OwnerShell';
-import {
-  DEFAULT_OWNER_ORDER_ID,
-  OWNER_ORDER_BY_ID,
-} from '../../data/ownerOrders';
+import { OWNER_ORDER_BY_ID } from '../../data/ownerOrders';
 import { formatCurrency } from '../../lib/checkout';
-import type { OrderProgress } from '../../types/eatersive';
+import type { OrderProgress, OwnerOrderDetail } from '../../types/eatersive';
 import '../../styles/owner-order-detail.css';
 
 const STATUS_OPTIONS = [
@@ -72,11 +69,51 @@ function readProgress(storageKey: string): OrderProgress | null {
 
 export default function OwnerOrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
-  const order = useMemo(
-    () => (orderId ? OWNER_ORDER_BY_ID[orderId] : undefined) ?? OWNER_ORDER_BY_ID[DEFAULT_OWNER_ORDER_ID],
-    [orderId],
-  );
-  const orderNumber = orderId && OWNER_ORDER_BY_ID[orderId] ? orderId : DEFAULT_OWNER_ORDER_ID;
+  const order = orderId ? OWNER_ORDER_BY_ID[orderId] : undefined;
+
+  useEffect(() => {
+    document.title = 'Detail Pesanan — EaterSive';
+  }, []);
+
+  if (!order) {
+    return (
+      <OwnerShell
+        pageId="page-owner-order-detail"
+        shellClassName="detail-shell"
+        activeNav="orders"
+      >
+        <main className="detail-content">
+          <Link className="back-link" to="/owner/orders">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m14 5-7 7 7 7M7 12h14" />
+            </svg>
+            Kembali
+          </Link>
+          <section className="page-heading" aria-labelledby="page-title">
+            <h1 id="page-title">Detail Pesanan</h1>
+            <p>
+              ID Pesanan: <strong>{orderId || '—'}</strong>
+            </p>
+          </section>
+          <p className="empty-state">
+            Pesanan ini belum tersedia. Daftar pesanan masih kosong sampai data pesanan masuk ke
+            sistem. <Link to="/owner/orders">Lihat daftar pesanan</Link>.
+          </p>
+        </main>
+      </OwnerShell>
+    );
+  }
+
+  return <OwnerOrderDetailView order={order} orderNumber={orderId ?? order.id} />;
+}
+
+function OwnerOrderDetailView({
+  order,
+  orderNumber,
+}: {
+  order: OwnerOrderDetail;
+  orderNumber: string;
+}) {
   const storageKey = `eatersive-order-progress-${orderNumber}`;
   const createdAt = new Date(order.createdAt);
 
@@ -101,10 +138,6 @@ export default function OwnerOrderDetailPage() {
   const [messageIsError, setMessageIsError] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const photoTargetRef = useRef<'before' | 'after'>('before');
-
-  useEffect(() => {
-    document.title = 'Detail Pesanan — EaterSive';
-  }, []);
 
   const phoneDigits = order.customerPhone.replace(/\D/g, '');
 

@@ -43,24 +43,14 @@ export interface LandingTestimonial {
   avatar: string;
 }
 
-export const LANDING_TESTIMONIALS: LandingTestimonial[] = [
-  {
-    quote:
-      '“Layanan terbaik! Sepatu Jordan saya yang tadinya kotor sekarang kembali seperti baru. Proses penjemputannya juga sangat on-time. Sangat direkomendasikan untuk kolektor sepatu.”',
-    name: 'Andi Wijaya',
-    role: 'Single dad Jakarta',
-    avatar:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
-  },
-  {
-    quote:
-      '“Sangat membantu untuk saya yang sibuk. Cukup pesan lewat HP, sepatu diambil dan diantar dalam kondisi wangi dan bersih. Harganya juga sangat terjangkau untuk kualitas sekelas ini.”',
-    name: 'Siti Rahma',
-    role: 'Wirausaha',
-    avatar:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
-  },
-];
+/**
+ * Testimoni pelanggan.
+ *
+ * Testimoni contoh (nama dan kutipan fiktif) sudah dihapus. Bagian testimoni di
+ * landing page menampilkan keadaan kosong sampai ulasan asli tersedia dari
+ * backend. Tambahkan entri di sini hanya untuk ulasan yang benar-benar nyata.
+ */
+export const LANDING_TESTIMONIALS: LandingTestimonial[] = [];
 
 export interface LandingFaq {
   question: string;

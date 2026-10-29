@@ -693,6 +693,18 @@
   margin-inline: auto;
 }
 
+#page-landing .testimonial-empty{
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  border: 1px dashed #d6d9e0;
+  border-radius: 14px;
+  color: #687080;
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}
+
 #page-landing .testimonial{
   min-height: 225px;
   padding: 25px 27px;

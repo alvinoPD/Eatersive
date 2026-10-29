@@ -206,6 +206,8 @@ Catatan:
 
 ## 10. Mock Data dan Keterbatasan
 
+> Data contoh sudah dihapus; lihat `DATA_CLEANUP.md` untuk daftar data yang dihapus dan keadaan kosong yang menggantikannya. Poin-poin di bawah menjelaskan kondisi sebelum pembersihan.
+
 - Belum ada endpoint backend untuk order, katalog, review, atau auth. Semua data tersebut adalah mock/localStorage.
 - Login demo tidak aman untuk produksi dan tidak terhubung ke Laravel.
 - Owner route dilindungi di sisi client saja; guard server belum ada.

@@ -271,6 +271,23 @@
   margin: 0 5px;
 }
 
+#page-owner-order-detail .empty-state{
+  margin: 0;
+  padding: 42px 16px;
+  border: 1px dashed #d6d9e0;
+  border-radius: 12px;
+  color: #7d8490;
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+#page-owner-order-detail .empty-state a{
+  color: #2862ed;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 #page-owner-order-detail .detail-layout{
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, 0.43fr);
