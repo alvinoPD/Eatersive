@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
-import { ROLE_HOME } from '../../data/demoAccounts';
+import { ROLE_HOME } from '../../auth/roles';
 import Brand from '../shared/Brand';
 
 /**

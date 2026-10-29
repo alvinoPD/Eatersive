@@ -9,7 +9,12 @@ class daftar_layanan extends Model
 {
     protected $table = 'daftar_layanans';
 
-    protected $fillable = ['foto', 'nama', 'deskripsi', 'harga'];
+    protected $fillable = ['foto', 'nama', 'deskripsi', 'harga', 'kategori', 'estimasi', 'aktif'];
+
+    protected $casts = [
+        'harga' => 'decimal:2',
+        'aktif' => 'boolean',
+    ];
 
     public function pesanan(): HasMany
     {

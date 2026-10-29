@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import Brand from '../../components/shared/Brand';
-import { ROLE_HOME } from '../../data/demoAccounts';
+import { ROLE_HOME } from '../../auth/roles';
 import {
   LANDING_FAQS,
   LANDING_STEPS,

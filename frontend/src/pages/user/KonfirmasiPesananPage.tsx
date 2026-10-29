@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
-import { SERVICE_BY_ID } from '../../data/services';
+import { useCatalog } from '../../lib/catalog-store';
 import { formatCurrency, readConfirmationOrder } from '../../lib/checkout';
 import '../../styles/konfirmasi-pesanan.css';
 
@@ -11,6 +11,7 @@ function formatUpperDate(date: Date, options: Intl.DateTimeFormatOptions) {
 
 export default function KonfirmasiPesananPage() {
   const navigate = useNavigate();
+  const { services } = useCatalog();
   const [order] = useState(() => readConfirmationOrder());
   const [message, setMessage] = useState('');
 
@@ -18,11 +19,13 @@ export default function KonfirmasiPesananPage() {
     document.title = 'Konfirmasi Pesanan — EaterSive';
   }, []);
 
+  const serviceById = Object.fromEntries(services.map((service) => [service.id, service]));
+
   const orderItems = order
-    ? Object.entries(order.items).map(([id, quantity]) => ({
-        service: SERVICE_BY_ID[id],
-        quantity,
-      }))
+    ? Object.entries(order.items).flatMap(([id, quantity]) => {
+        const service = serviceById[id];
+        return service ? [{ service, quantity }] : [];
+      })
     : [];
   const total = orderItems.reduce(
     (sum, item) => sum + item.service.price * item.quantity,

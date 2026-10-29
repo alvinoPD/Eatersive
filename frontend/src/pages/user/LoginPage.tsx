@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Brand from '../../components/shared/Brand';
 import useAuth from '../../auth/useAuth';
-import { DEMO_ACCOUNTS, ROLE_HOME, ROLE_LABEL } from '../../data/demoAccounts';
+import { ROLE_HOME } from '../../auth/roles';
 import type { AuthRole } from '../../types/auth';
 import '../../styles/login.css';
 
@@ -31,15 +31,21 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [messageIsError, setMessageIsError] = useState(false);
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     document.title = 'Masuk ke Akun — EaterSive';
   }, []);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const result = login(email, password, remember);
+    setPending(true);
+    setMessage('');
+
+    const result = await login(email, password, remember);
+
+    setPending(false);
 
     if (!result.ok) {
       setMessageIsError(true);
@@ -48,7 +54,6 @@ export default function LoginPage() {
     }
 
     setMessageIsError(false);
-    setMessage('');
     navigate(resolveRedirect(result.session.role, from), { replace: true });
   }
 
@@ -64,35 +69,6 @@ export default function LoginPage() {
               Gunakan akun owner atau pelanggan
               <br className="desktop-break" /> untuk melanjutkan ke EaterSive.
             </p>
-          </div>
-
-          <div className="demo-accounts" aria-label="Akun demo">
-            <p className="demo-title">Akun demo — pilih untuk mengisi form</p>
-            {DEMO_ACCOUNTS.map((account) => (
-              <div className="demo-account" key={account.id}>
-                <div>
-                  <strong>
-                    {ROLE_LABEL[account.role]} · {account.name}
-                  </strong>
-                  <span>
-                    {account.email} / {account.password}
-                  </span>
-                </div>
-                <button
-                  className="text-button"
-                  type="button"
-                  aria-label={`Isi kredensial ${ROLE_LABEL[account.role]}`}
-                  onClick={() => {
-                    setEmail(account.email);
-                    setPassword(account.password);
-                    setMessage('');
-                    setMessageIsError(false);
-                  }}
-                >
-                  Isi
-                </button>
-              </div>
-            ))}
           </div>
 
           {from && (
@@ -144,9 +120,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => {
                     setMessageIsError(false);
-                    setMessage(
-                      'Fitur reset kata sandi belum terhubung. Gunakan akun demo di atas.',
-                    );
+                    setMessage('Fitur reset kata sandi belum tersedia. Hubungi admin EaterSive.');
                   }}
                 >
                   Lupa kata sandi?
@@ -211,8 +185,8 @@ export default function LoginPage() {
               <span>Ingat saya di perangkat ini</span>
             </label>
 
-            <button className="submit-button" type="submit">
-              Masuk ke Akun
+            <button className="submit-button" type="submit" disabled={pending}>
+              {pending ? 'Memproses…' : 'Masuk ke Akun'}
             </button>
             <p
               className={`form-message${messageIsError ? ' is-error' : ''}`}

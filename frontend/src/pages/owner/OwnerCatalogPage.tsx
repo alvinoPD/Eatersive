@@ -7,10 +7,14 @@ import {
   type FormEvent,
 } from 'react';
 import OwnerShell from '../../components/owner/OwnerShell';
+import { getApiErrorMessage } from '../../api/client';
 import {
-  DEFAULT_OWNER_SERVICES,
-  OWNER_CATALOG_STORAGE_KEY,
-} from '../../data/ownerCatalog';
+  createLayanan,
+  deleteLayanan,
+  fetchLayanan,
+  updateLayanan,
+  type Layanan,
+} from '../../api/layanan';
 import { formatCurrency } from '../../lib/checkout';
 import type { OwnerCatalogService, ServiceCategory } from '../../types/eatersive';
 import '../../styles/owner-catalog.css';
@@ -20,44 +24,19 @@ type SortOption = 'newest' | 'oldest' | 'name' | 'price-low' | 'price-high';
 
 const CATEGORIES: ServiceCategory[] = ['Cleaning', 'Unyellowing', 'Repair', 'Treatment'];
 
-function isOwnerCatalogService(value: unknown): value is OwnerCatalogService {
-  if (!value || typeof value !== 'object') return false;
-  const service = value as Partial<OwnerCatalogService>;
-
-  return (
-    typeof service.id === 'string' &&
-    typeof service.name === 'string' &&
-    typeof service.description === 'string' &&
-    typeof service.category === 'string' &&
-    CATEGORIES.includes(service.category as ServiceCategory) &&
-    typeof service.estimate === 'string' &&
-    typeof service.active === 'boolean' &&
-    typeof service.image === 'string' &&
-    Number.isFinite(service.price) &&
-    Number.isFinite(service.sequence)
-  );
-}
-
-function loadCatalog(): { services: OwnerCatalogService[]; error: string } {
-  const fallback = DEFAULT_OWNER_SERVICES.map((service) => ({ ...service }));
-
-  try {
-    const rawServices = window.localStorage.getItem(OWNER_CATALOG_STORAGE_KEY);
-    if (!rawServices) return { services: fallback, error: '' };
-
-    const parsed: unknown = JSON.parse(rawServices);
-    if (!Array.isArray(parsed) || !parsed.every(isOwnerCatalogService)) {
-      throw new TypeError('Format katalog tersimpan tidak valid.');
-    }
-
-    return { services: parsed, error: '' };
-  } catch (error) {
-    console.error('Tidak dapat membaca data katalog:', error);
-    return {
-      services: fallback,
-      error: 'Data katalog tersimpan tidak dapat dibaca. Katalog ditampilkan kosong.',
-    };
-  }
+/** Mengubah data backend (`nama`, `harga`) menjadi tipe UI owner. */
+function toOwnerService(item: Layanan): OwnerCatalogService {
+  return {
+    id: String(item.id),
+    name: item.nama,
+    description: item.deskripsi ?? '',
+    category: (item.kategori ?? 'Cleaning') as ServiceCategory,
+    price: Number(item.harga),
+    estimate: item.estimasi ?? '2–3 Hari',
+    active: item.aktif === true,
+    image: item.foto ?? '',
+    sequence: item.id,
+  };
 }
 
 async function compressPhoto(file: File): Promise<string> {
@@ -91,11 +70,9 @@ async function compressPhoto(file: File): Promise<string> {
 }
 
 export default function OwnerCatalogPage() {
-  const [initialCatalog] = useState(loadCatalog);
-  const [services, setServices] = useState<OwnerCatalogService[]>(
-    initialCatalog.services,
-  );
-  const [pageMessage, setPageMessage] = useState(initialCatalog.error);
+  const [services, setServices] = useState<OwnerCatalogService[]>([]);
+  const [pageMessage, setPageMessage] = useState('');
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [sort, setSort] = useState<SortOption>('newest');
@@ -118,6 +95,40 @@ export default function OwnerCatalogPage() {
 
   useEffect(() => {
     document.title = 'Kelola Katalog — EaterSive';
+  }, []);
+
+  async function reload() {
+    try {
+      setLoading(true);
+      const list = await fetchLayanan();
+      setServices(list.map(toOwnerService));
+      setPageMessage('');
+    } catch (error) {
+      setPageMessage(getApiErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    let alive = true;
+
+    fetchLayanan()
+      .then((list) => {
+        if (!alive) return;
+        setServices(list.map(toOwnerService));
+        setPageMessage('');
+      })
+      .catch((error) => {
+        if (alive) setPageMessage(getApiErrorMessage(error));
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -154,22 +165,6 @@ export default function OwnerCatalogPage() {
   }, [category, search, services, sort]);
 
   const activeCount = services.filter((service) => service.active).length;
-
-  function persist(nextServices: OwnerCatalogService[]): boolean {
-    try {
-      window.localStorage.setItem(
-        OWNER_CATALOG_STORAGE_KEY,
-        JSON.stringify(nextServices),
-      );
-      return true;
-    } catch (error) {
-      console.error('Tidak dapat menyimpan data katalog:', error);
-      setPageMessage(
-        'Perubahan tidak dapat disimpan di browser ini. Periksa ruang penyimpanan.',
-      );
-      return false;
-    }
-  }
 
   function openServiceDialog(service: OwnerCatalogService | null) {
     setEditingId(service?.id ?? null);
@@ -214,70 +209,61 @@ export default function OwnerCatalogPage() {
     if (file) void readPhoto(file);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!formRef.current?.reportValidity()) return;
 
-    const existingService = services.find((service) => service.id === editingId);
-    const nextSequence = Math.max(...services.map((service) => service.sequence), 0) + 1;
-    const service: OwnerCatalogService = {
-      id:
-        existingService?.id ??
-        `srv-${
-          typeof crypto !== 'undefined' && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-        }`,
-      name: formName.trim(),
-      description: formDescription.trim(),
-      category: formCategory,
-      price: Number(formPrice),
-      estimate: formEstimate.trim(),
-      active: formActive === 'true',
-      image: selectedPhoto,
-      sequence: existingService?.sequence ?? nextSequence,
+    const payload = {
+      nama: formName.trim(),
+      deskripsi: formDescription.trim(),
+      harga: Number(formPrice),
+      kategori: formCategory,
+      estimasi: formEstimate.trim(),
+      aktif: formActive === 'true',
+      foto: selectedPhoto || null,
     };
 
-    const nextServices = existingService
-      ? services.map((item) => (item.id === existingService.id ? service : item))
-      : [...services, service];
+    try {
+      if (editingId) {
+        await updateLayanan(editingId, payload);
+      } else {
+        await createLayanan(payload);
+      }
 
-    if (!persist(nextServices)) {
-      setDialogMessage(
-        'Layanan gagal disimpan. Kurangi ukuran foto atau periksa ruang penyimpanan.',
+      closeServiceDialog();
+      await reload();
+      setPageMessage(
+        editingId ? 'Layanan berhasil diperbarui.' : 'Layanan berhasil ditambahkan.',
       );
-      return;
+    } catch (error) {
+      setDialogMessage(getApiErrorMessage(error));
     }
-
-    setServices(nextServices);
-    closeServiceDialog();
-    setPageMessage(
-      existingService
-        ? 'Layanan berhasil diperbarui di perangkat ini.'
-        : 'Layanan berhasil ditambahkan di perangkat ini.',
-    );
   }
 
-  function toggleActive(service: OwnerCatalogService) {
-    const nextServices = services.map((item) =>
-      item.id === service.id ? { ...item, active: !item.active } : item,
-    );
-    if (!persist(nextServices)) return;
-    setServices(nextServices);
-    setPageMessage(
-      `Layanan ${service.name} berhasil ${
-        service.active ? 'dinonaktifkan' : 'diaktifkan'
-      } di perangkat ini.`,
-    );
+  async function toggleActive(service: OwnerCatalogService) {
+    try {
+      await updateLayanan(service.id, { aktif: !service.active });
+      await reload();
+      setPageMessage(
+        `Layanan ${service.name} berhasil ${
+          service.active ? 'dinonaktifkan' : 'diaktifkan'
+        }.`,
+      );
+    } catch (error) {
+      setPageMessage(getApiErrorMessage(error));
+    }
   }
 
-  function deleteService(service: OwnerCatalogService) {
+  async function deleteService(service: OwnerCatalogService) {
     if (!window.confirm(`Hapus layanan "${service.name}" dari katalog?`)) return;
 
-    const nextServices = services.filter((item) => item.id !== service.id);
-    if (!persist(nextServices)) return;
-    setServices(nextServices);
-    setPageMessage(`Layanan ${service.name} berhasil dihapus dari perangkat ini.`);
+    try {
+      await deleteLayanan(service.id);
+      await reload();
+      setPageMessage(`Layanan ${service.name} berhasil dihapus.`);
+    } catch (error) {
+      setPageMessage(getApiErrorMessage(error));
+    }
   }
 
   return (
@@ -517,9 +503,11 @@ export default function OwnerCatalogPage() {
               </table>
               {visibleServices.length === 0 && (
                 <p className="empty-state">
-                  {services.length === 0
-                    ? 'Belum ada layanan pada katalog. Tambahkan layanan pertama Anda dengan tombol “Tambah Layanan”.'
-                    : 'Tidak ada layanan yang cocok.'}
+                  {loading
+                    ? 'Memuat katalog…'
+                    : services.length === 0
+                      ? 'Belum ada layanan pada katalog. Tambahkan layanan pertama Anda dengan tombol “Tambah Layanan”.'
+                      : 'Tidak ada layanan yang cocok.'}
                 </p>
               )}
             </div>

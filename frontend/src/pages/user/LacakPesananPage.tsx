@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
-import { SERVICE_BY_ID } from '../../data/services';
+import { useCatalog } from '../../lib/catalog-store';
 import { formatCurrency, readConfirmationOrder } from '../../lib/checkout';
 import '../../styles/lacak-pesanan.css';
 
@@ -48,6 +48,7 @@ function formatDate(date: Date, options: Intl.DateTimeFormatOptions) {
 }
 
 export default function LacakPesananPage() {
+  const { services } = useCatalog();
   const [order] = useState(() => readConfirmationOrder());
   const [now] = useState(() => new Date());
   const [rating, setRating] = useState(0);
@@ -73,7 +74,9 @@ export default function LacakPesananPage() {
 
   const itemEntries = order ? Object.entries(order.items) : [];
   const firstItem = itemEntries[0];
-  const service = firstItem ? SERVICE_BY_ID[firstItem[0]] : null;
+  const service = firstItem
+    ? services.find((item) => item.id === firstItem[0]) ?? null
+    : null;
   const firstQuantity = firstItem ? firstItem[1] : 0;
 
   const elapsedMinutes = order
