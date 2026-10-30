@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { ROLE_HOME } from '../data/demoAccounts';
+import { ROLE_HOME } from './roles';
 import useAuth from './useAuth';
 import type { AuthRole } from '../types/auth';
 

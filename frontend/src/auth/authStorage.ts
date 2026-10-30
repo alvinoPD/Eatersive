@@ -1,70 +1,35 @@
-import { DEMO_ACCOUNTS } from '../data/demoAccounts';
+import { clearStoredSession, readStoredSession, writeStoredSession } from './session-store';
 import type { AuthRole, AuthSession } from '../types/auth';
-
-const SESSION_KEY = 'eatersive-auth-session';
 
 function isValidRole(value: unknown): value is AuthRole {
   return value === 'owner' || value === 'user';
 }
 
-function parseSession(rawSession: string | null): AuthSession | null {
-  if (!rawSession) return null;
+function isValidSession(value: unknown): value is AuthSession {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
 
-  try {
-    const parsed: unknown = JSON.parse(rawSession);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+  const candidate = value as Partial<AuthSession>;
 
-    const candidate = parsed as Partial<AuthSession>;
-    if (
-      typeof candidate.userId !== 'string' ||
-      typeof candidate.name !== 'string' ||
-      typeof candidate.email !== 'string' ||
-      !isValidRole(candidate.role)
-    ) {
-      return null;
-    }
-
-    const account = DEMO_ACCOUNTS.find(
-      (item) => item.id === candidate.userId && item.role === candidate.role,
-    );
-    if (!account) return null;
-
-    return {
-      userId: account.id,
-      name: account.name,
-      email: account.email,
-      role: account.role,
-    };
-  } catch {
-    return null;
-  }
+  return (
+    typeof candidate.userId === 'string' &&
+    typeof candidate.name === 'string' &&
+    typeof candidate.email === 'string' &&
+    typeof candidate.token === 'string' &&
+    candidate.token.length > 0 &&
+    isValidRole(candidate.role)
+  );
 }
 
-/** Membaca sesi dari localStorage (ingat saya) atau sessionStorage (satu tab). */
+/** Membaca sesi login dari localStorage (ingat saya) atau sessionStorage (satu tab). */
 export function readAuthSession(): AuthSession | null {
-  try {
-    return (
-      parseSession(window.localStorage.getItem(SESSION_KEY)) ??
-      parseSession(window.sessionStorage.getItem(SESSION_KEY))
-    );
-  } catch {
-    return null;
-  }
+  const session = readStoredSession<unknown>();
+  return isValidSession(session) ? session : null;
 }
 
 export function writeAuthSession(session: AuthSession, remember: boolean): void {
-  window.localStorage.removeItem(SESSION_KEY);
-  window.sessionStorage.removeItem(SESSION_KEY);
-
-  const storage = remember ? window.localStorage : window.sessionStorage;
-  storage.setItem(SESSION_KEY, JSON.stringify(session));
+  writeStoredSession(session, remember);
 }
 
 export function clearAuthSession(): void {
-  try {
-    window.localStorage.removeItem(SESSION_KEY);
-    window.sessionStorage.removeItem(SESSION_KEY);
-  } catch {
-    // Storage bisa diblokir; state di React tetap dihapus oleh provider.
-  }
+  clearStoredSession();
 }

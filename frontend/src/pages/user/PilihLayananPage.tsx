@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
-import { SERVICES, SERVICE_BY_ID, SERVICE_CATEGORIES } from '../../data/services';
+import { SERVICE_CATEGORIES, type FilterCategory } from '../../lib/catalog';
+import { useCatalog } from '../../lib/catalog-store';
 import { formatCurrency } from '../../lib/checkout';
 import type { CartItems } from '../../types/eatersive';
 import '../../styles/pilih-layanan.css';
 
-type FilterCategory = (typeof SERVICE_CATEGORIES)[number];
-
 export default function PilihLayananPage() {
   const navigate = useNavigate();
+  const { services, loading, error } = useCatalog();
   const [query, setQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('Semua');
   const [selected, setSelected] = useState<CartItems>({});
@@ -19,22 +19,27 @@ export default function PilihLayananPage() {
     document.title = 'Pilih Layanan — EaterSive';
   }, []);
 
+  const serviceById = useMemo(
+    () => Object.fromEntries(services.map((service) => [service.id, service])),
+    [services],
+  );
+
   const visibleServices = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('id');
-    return SERVICES.filter((service) => {
+    return services.filter((service) => {
       const matchesCategory =
         activeFilter === 'Semua' || service.category === activeFilter;
       return matchesCategory && service.search.includes(normalizedQuery);
     });
-  }, [activeFilter, query]);
+  }, [activeFilter, query, services]);
 
   const orderItems = useMemo(
     () =>
-      Object.entries(selected).map(([id, quantity]) => ({
-        service: SERVICE_BY_ID[id],
-        quantity,
-      })),
-    [selected],
+      Object.entries(selected).flatMap(([id, quantity]) => {
+        const service = serviceById[id];
+        return service ? [{ service, quantity }] : [];
+      }),
+    [selected, serviceById],
   );
 
   const itemCount = orderItems.reduce((total, item) => total + item.quantity, 0);
@@ -145,9 +150,13 @@ export default function PilihLayananPage() {
               </h2>
               {visibleServices.length === 0 && (
                 <p>
-                  {SERVICES.length === 0
-                    ? 'Belum ada layanan pada katalog. Layanan akan tampil di sini setelah tersedia.'
-                    : 'Tidak ada layanan yang cocok. Coba kata kunci atau kategori lain.'}
+                  {loading
+                    ? 'Memuat katalog layanan…'
+                    : error
+                      ? error
+                      : services.length === 0
+                        ? 'Belum ada layanan pada katalog. Layanan akan tampil di sini setelah tersedia.'
+                        : 'Tidak ada layanan yang cocok. Coba kata kunci atau kategori lain.'}
                 </p>
               )}
             </div>
@@ -169,7 +178,7 @@ export default function PilihLayananPage() {
                     <div className="service-info">
                       <div className="service-title">
                         <h3>{service.name}</h3>
-                        <span className="rating">★ {service.rating}</span>
+                        {service.rating > 0 && <span className="rating">★ {service.rating}</span>}
                       </div>
                       <p>{service.description}</p>
                       <div className="service-meta">

@@ -1,4 +1,3 @@
-import { SERVICE_BY_ID } from '../data/services';
 import type { CartItems, CheckoutAddress, CheckoutOrder } from '../types/eatersive';
 
 export const ADDRESS_STORAGE_KEY = 'eatersive-checkout-address';
@@ -26,7 +25,7 @@ export function parseCartItems(rawItems: string | null): CartItems {
       Object.entries(parsed as Record<string, unknown>).filter(
         (entry): entry is [string, number] =>
           typeof entry[0] === 'string' &&
-          Object.hasOwn(SERVICE_BY_ID, entry[0]) &&
+          entry[0].length > 0 &&
           typeof entry[1] === 'number' &&
           Number.isInteger(entry[1]) &&
           entry[1] > 0 &&
@@ -79,7 +78,7 @@ export function readConfirmationOrder(): CheckoutOrder | null {
       Object.entries(candidate.items ?? {}).filter(
         (entry): entry is [string, number] =>
           typeof entry[0] === 'string' &&
-          Object.hasOwn(SERVICE_BY_ID, entry[0]) &&
+          entry[0].length > 0 &&
           typeof entry[1] === 'number' &&
           Number.isInteger(entry[1]) &&
           entry[1] > 0 &&

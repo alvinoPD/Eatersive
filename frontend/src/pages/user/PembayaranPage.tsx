@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
-import { SERVICE_BY_ID } from '../../data/services';
+import { useCatalog } from '../../lib/catalog-store';
 import {
   formatCurrency,
   parseCartItems,
@@ -22,6 +22,7 @@ const EMPTY_ADDRESS: CheckoutAddress = {
 export default function PembayaranPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { services } = useCatalog();
   const formRef = useRef<HTMLFormElement>(null);
   const [savedAddressState] = useState(() => {
     const saved = readCheckoutAddress();
@@ -40,13 +41,18 @@ export default function PembayaranPage() {
     [location.search],
   );
 
+  const serviceById = useMemo(
+    () => Object.fromEntries(services.map((service) => [service.id, service])),
+    [services],
+  );
+
   const orderItems = useMemo(
     () =>
-      Object.entries(items).map(([id, quantity]) => ({
-        service: SERVICE_BY_ID[id],
-        quantity,
-      })),
-    [items],
+      Object.entries(items).flatMap(([id, quantity]) => {
+        const service = serviceById[id];
+        return service ? [{ service, quantity }] : [];
+      }),
+    [items, serviceById],
   );
 
   const total = orderItems.reduce(
@@ -93,7 +99,10 @@ export default function PembayaranPage() {
       return;
     }
 
-    if (orderItems.length === 0) return;
+    if (orderItems.length === 0) {
+      setBookingMessage('Layanan belum termuat. Muat ulang halaman lalu coba lagi.');
+      return;
+    }
 
     try {
       saveConfirmationOrder({

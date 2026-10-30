@@ -1,5 +1,6 @@
-import { useState, type ReactNode } from 'react';
-import { findDemoAccount } from '../data/demoAccounts';
+import { useEffect, useState, type ReactNode } from 'react';
+import { apiLogin, apiLogout } from '../api/auth';
+import { getApiErrorMessage } from '../api/client';
 import { clearAuthSession, readAuthSession, writeAuthSession } from './authStorage';
 import { AuthContext } from './auth-context';
 import type { AuthSession, LoginResult } from '../types/auth';
@@ -9,45 +10,59 @@ interface AuthProviderProps {
 }
 
 /**
- * Autentikasi demo berbasis browser.
+ * Autentikasi berbasis Sanctum.
  *
- * Akun dan password berasal dari `data/demoAccounts.ts`, lalu sesi disimpan di
- * localStorage/sessionStorage. Tidak ada request ke backend dan ini bukan
- * mekanisme autentikasi produksi.
+ * Login mengirim kredensial ke backend, lalu token disimpan bersama sesi di
+ * localStorage/sessionStorage. Semua request berikutnya otomatis membawa
+ * header `Authorization: Bearer <token>` lewat `apiClient`.
  */
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<AuthSession | null>(() => readAuthSession());
 
-  function login(email: string, password: string, remember: boolean): LoginResult {
-    const account = findDemoAccount(email, password);
-
-    if (!account) {
-      return {
-        ok: false,
-        message:
-          'Email atau kata sandi demo tidak cocok. Gunakan akun owner atau pelanggan di atas.',
-      };
+  /* Token dicabut/kedaluwarsa (401) → paksa logout. */
+  useEffect(() => {
+    function handleUnauthorized() {
+      clearAuthSession();
+      setSession(null);
     }
 
-    const nextSession: AuthSession = {
-      userId: account.id,
-      name: account.name,
-      email: account.email,
-      role: account.role,
-    };
+    window.addEventListener('eatersive:unauthorized', handleUnauthorized);
 
+    return () => window.removeEventListener('eatersive:unauthorized', handleUnauthorized);
+  }, []);
+
+  async function login(
+    email: string,
+    password: string,
+    remember: boolean,
+  ): Promise<LoginResult> {
     try {
-      writeAuthSession(nextSession, remember);
-    } catch (error) {
-      // Storage bisa diblokir; sesi tetap aktif di memori untuk demo ini.
-      console.error('Tidak dapat menyimpan sesi demo:', error);
-    }
+      const payload = await apiLogin(email, password);
 
-    setSession(nextSession);
-    return { ok: true, session: nextSession };
+      const nextSession: AuthSession = {
+        userId: String(payload.user.id),
+        name: payload.user.name,
+        email: payload.user.email,
+        role: payload.user.role === 'admin' ? 'owner' : 'user',
+        token: payload.token,
+      };
+
+      writeAuthSession(nextSession, remember);
+      setSession(nextSession);
+
+      return { ok: true, session: nextSession };
+    } catch (error) {
+      return { ok: false, message: getApiErrorMessage(error) };
+    }
   }
 
-  function logout(): void {
+  async function logout(): Promise<void> {
+    try {
+      await apiLogout();
+    } catch {
+      /* Token mungkin sudah dicabut — sesi lokal tetap dibersihkan. */
+    }
+
     clearAuthSession();
     setSession(null);
   }
