@@ -28,10 +28,13 @@ class LayananController extends Controller
     public function store(Request $request): JsonResponse
     {
         $attributes = $request->validate([
-            'foto' => ['nullable', 'string', 'max:255'],
+            'foto' => ['nullable', 'string'],
             'nama' => ['required', 'string', 'max:255'],
             'deskripsi' => ['nullable', 'string', 'max:65535'],
             'harga' => ['required', 'numeric', 'min:0'],
+            'kategori' => ['sometimes', 'string', 'max:50'],
+            'estimasi' => ['sometimes', 'string', 'max:50'],
+            'aktif' => ['sometimes', 'boolean'],
         ]);
 
         $layanan = daftar_layanan::create($attributes);
@@ -81,10 +84,13 @@ class LayananController extends Controller
         }
 
         $layanan->update($request->validate([
-            'foto' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'foto' => ['sometimes', 'nullable', 'string'],
             'nama' => ['sometimes', 'required', 'string', 'max:255'],
             'deskripsi' => ['sometimes', 'nullable', 'string', 'max:65535'],
             'harga' => ['sometimes', 'required', 'numeric', 'min:0'],
+            'kategori' => ['sometimes', 'string', 'max:50'],
+            'estimasi' => ['sometimes', 'string', 'max:50'],
+            'aktif' => ['sometimes', 'boolean'],
         ]));
 
         return response()->json([

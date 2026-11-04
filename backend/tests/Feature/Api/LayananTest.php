@@ -61,6 +61,9 @@ class LayananTest extends TestCase
                 'nama' => 'Cuci Sepatu',
                 'deskripsi' => 'Cuci sepatu kering',
                 'harga' => 25000,
+                'kategori' => 'Cleaning',
+                'estimasi' => '2–3 Hari',
+                'aktif' => true,
             ]);
 
         $response->assertCreated();
@@ -68,6 +71,9 @@ class LayananTest extends TestCase
         $this->assertDatabaseHas('daftar_layanans', [
             'nama' => 'Cuci Sepatu',
             'harga' => 25000,
+            'kategori' => 'Cleaning',
+            'estimasi' => '2–3 Hari',
+            'aktif' => true,
         ]);
     }
 

@@ -1,0 +1,764 @@
+/* Di-scope ke #page-konfirmasi agar desain contoh tidak saling bertabrakan. */
+#page-konfirmasi{
+  font-family: "DM Sans", sans-serif;
+  color: #151d30;
+  background: #f9fafc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #151d30;
+  --muted: #858b97;
+  --blue: #2862ed;
+  --line: #e7e9ee;
+}
+
+#page-konfirmasi *{
+  box-sizing: border-box;
+}
+
+#page-konfirmasi{
+  scroll-behavior: smooth;
+}
+
+#page-konfirmasi{
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#page-konfirmasi button{
+  font: inherit;
+}
+
+#page-konfirmasi a{
+  color: inherit;
+  text-decoration: none;
+}
+
+#page-konfirmasi .site-header{
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: max(24px, calc((100vw - 1180px) / 2));
+  border-bottom: 1px solid rgba(21, 30, 49, 0.06);
+  background: rgba(249, 250, 252, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+#page-konfirmasi .brand{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-family: Manrope, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
+#page-konfirmasi .brand-mark{
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: white;
+}
+
+#page-konfirmasi .brand-mark svg{
+  width: 18px;
+}
+
+#page-konfirmasi .brand-accent{
+  color: var(--blue);
+}
+
+#page-konfirmasi .main-nav, #page-konfirmasi .header-actions{
+  display: flex;
+  align-items: center;
+}
+
+#page-konfirmasi .main-nav{
+  gap: clamp(18px, 3vw, 38px);
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+#page-konfirmasi .main-nav a, #page-konfirmasi .login-link{
+  color: #626a79;
+  font-size: 11px;
+}
+
+#page-konfirmasi .main-nav a:hover, #page-konfirmasi .login-link:hover{
+  color: var(--blue);
+}
+
+#page-konfirmasi .header-actions{
+  gap: 18px;
+}
+
+#page-konfirmasi .button{
+  display: inline-flex;
+  min-height: 39px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  border: 1px solid var(--blue);
+  border-radius: 9px;
+  background: var(--blue);
+  box-shadow: 0 4px 8px rgba(40, 98, 237, 0.15);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+#page-konfirmasi .button:hover{
+  transform: translateY(-1px);
+  background: #1f54d4;
+}
+
+#page-konfirmasi .button--small{
+  min-height: 34px;
+  padding-inline: 15px;
+  font-size: 10px;
+}
+
+#page-konfirmasi .confirmation-layout{
+  display: grid;
+  width: min(1080px, calc(100% - 64px));
+  grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.88fr);
+  align-items: start;
+  gap: clamp(32px, 5vw, 58px);
+  margin: 0 auto;
+  padding-block: 66px 90px;
+}
+
+#page-konfirmasi .confirmation-main{
+  padding-top: 0;
+}
+
+#page-konfirmasi .success-icon{
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 18px;
+  place-items: center;
+  border-radius: 50%;
+  background: #dff9ee;
+  color: #0db67c;
+}
+
+#page-konfirmasi .success-icon svg{
+  width: 28px;
+  height: 28px;
+}
+
+#page-konfirmasi .confirmation-main h1{
+  margin: 0 0 8px;
+  font-family: Manrope, sans-serif;
+  font-size: clamp(24px, 3vw, 31px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 1.2;
+}
+
+#page-konfirmasi .intro{
+  max-width: 480px;
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#page-konfirmasi .next-steps{
+  display: grid;
+  min-height: 220px;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 17px;
+  overflow: hidden;
+  padding: 23px;
+  border-radius: 12px;
+  background: #f4f2fa;
+}
+
+#page-konfirmasi .estimate{
+  display: inline-block;
+  margin-bottom: 17px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: white;
+  color: #6c7280;
+  font-size: 9px;
+}
+
+#page-konfirmasi .estimate strong{
+  color: #343b49;
+}
+
+#page-konfirmasi .steps-copy h2{
+  margin: 0 0 11px;
+  color: var(--blue);
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+#page-konfirmasi .steps-copy ol{
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#page-konfirmasi .steps-copy li{
+  display: grid;
+  grid-template-columns: 17px 1fr;
+  align-items: start;
+  gap: 8px;
+}
+
+#page-konfirmasi .steps-copy li > span{
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--blue);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+#page-konfirmasi .steps-copy li p{
+  margin: 0;
+  color: #5f6675;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+#page-konfirmasi .abstract-art{
+  position: relative;
+  min-height: 173px;
+  overflow: hidden;
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 100% 0%, #82c8ec 0 9%, transparent 10%),
+    linear-gradient(140deg, #a1e6eb 0%, #b5eff0 50%, #8bd8e1 100%);
+}
+
+#page-konfirmasi .art-ring{
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 117px;
+  height: 56px;
+  border: 5px solid rgba(239, 254, 255, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 4px 7px rgba(47, 141, 160, 0.2);
+  transform: rotate(-14deg);
+}
+
+#page-konfirmasi .art-orb{
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: drop-shadow(0 6px 6px rgba(57, 113, 131, 0.2));
+}
+
+#page-konfirmasi .art-orb--blue{
+  top: -23px;
+  right: -6px;
+  width: 55px;
+  height: 35px;
+  background: linear-gradient(135deg, #51a8eb, #256dc9);
+  transform: rotate(-20deg);
+}
+
+#page-konfirmasi .art-orb--peach{
+  top: 65px;
+  left: 21px;
+  width: 55px;
+  height: 55px;
+  background: linear-gradient(135deg, #f8d6d2, #e7a9b0);
+}
+
+#page-konfirmasi .art-orb--pink{
+  right: 14px;
+  bottom: 31px;
+  width: 62px;
+  height: 39px;
+  border: 5px solid rgba(245, 255, 255, 0.83);
+  background: rgba(104, 206, 224, 0.5);
+  transform: rotate(20deg);
+}
+
+#page-konfirmasi .art-orb--violet{
+  bottom: -25px;
+  left: 54px;
+  width: 50px;
+  height: 45px;
+  background: linear-gradient(140deg, #e9c4ea, #9769ce);
+}
+
+#page-konfirmasi .primary-actions{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 21px;
+}
+
+#page-konfirmasi .track-button{
+  width: 100%;
+}
+
+#page-konfirmasi .button--outline{
+  border-color: #e7e9ef;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+}
+
+#page-konfirmasi .button--outline:hover{
+  border-color: #bdcaf0;
+  background: white;
+}
+
+#page-konfirmasi .tracking-message{
+  margin: 8px 0 0;
+  color: var(--blue);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+#page-konfirmasi .tracking-message:empty{
+  display: none;
+}
+
+#page-konfirmasi .support-card{
+  display: grid;
+  min-height: 70px;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 13px 17px;
+  border: 1px solid #eceef2;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+#page-konfirmasi .support-icon{
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0f1f4;
+  color: #828995;
+  font-size: 20px;
+}
+
+#page-konfirmasi .support-card h2{
+  margin: 0 0 3px;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+}
+
+#page-konfirmasi .support-card p{
+  margin: 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+#page-konfirmasi .support-card > a{
+  color: var(--blue);
+  font-size: 10px;
+}
+
+#page-konfirmasi .support-card > a:hover{
+  text-decoration: underline;
+}
+
+#page-konfirmasi .demo-note{
+  margin: 12px 0 0;
+  color: #7e8490;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+#page-konfirmasi .demo-note[hidden]{
+  display: none;
+}
+
+#page-konfirmasi .order-card{
+  overflow: hidden;
+  border: 1px solid #eceef2;
+  border-radius: 13px;
+  background: #fbfbfc;
+  box-shadow: 0 13px 25px rgba(26, 38, 60, 0.15);
+}
+
+#page-konfirmasi .order-card-heading{
+  display: flex;
+  min-height: 69px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #9bb9fb;
+}
+
+#page-konfirmasi .order-card-heading h2{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+#page-konfirmasi .order-card-heading h2 > span{
+  font-size: 13px;
+}
+
+#page-konfirmasi .status-pill{
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  border: 1px solid rgba(40, 98, 237, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #2862ed;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+#page-konfirmasi .order-card-body{
+  min-height: 362px;
+  padding: 19px 20px 16px;
+}
+
+#page-konfirmasi .order-meta{
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eceef1;
+}
+
+#page-konfirmasi .order-meta div{
+  display: grid;
+  gap: 5px;
+}
+
+#page-konfirmasi .order-meta span, #page-konfirmasi .items-section h3{
+  color: #818793;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+#page-konfirmasi .order-meta strong{
+  font-size: 10px;
+  font-weight: 600;
+}
+
+#page-konfirmasi .order-meta > div:first-child strong{
+  font-family: ui-monospace, monospace;
+}
+
+#page-konfirmasi .order-date{
+  text-align: right;
+}
+
+#page-konfirmasi .order-date strong{
+  font-weight: 400;
+}
+
+#page-konfirmasi .order-details{
+  display: grid;
+  gap: 12px;
+  padding-block: 15px;
+  border-bottom: 1px solid #eceef1;
+}
+
+#page-konfirmasi .detail-row{
+  display: grid;
+  grid-template-columns: 13px 1fr;
+  gap: 7px;
+}
+
+#page-konfirmasi .detail-icon{
+  color: var(--blue);
+  font-size: 13px;
+}
+
+#page-konfirmasi .detail-row div{
+  display: grid;
+  gap: 4px;
+}
+
+#page-konfirmasi .detail-row div > span{
+  color: #7d8490;
+  font-size: 9px;
+}
+
+#page-konfirmasi .detail-row strong{
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+#page-konfirmasi .items-section{
+  padding-top: 15px;
+}
+
+#page-konfirmasi .items-section h3{
+  margin: 0 0 8px;
+}
+
+#page-konfirmasi .confirmed-items{
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#page-konfirmasi .confirmed-items li{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #606775;
+  font-size: 10px;
+}
+
+#page-konfirmasi .confirmed-items li strong{
+  color: #3f4654;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#page-konfirmasi .no-items-message{
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+#page-konfirmasi .no-items-message a{
+  color: var(--blue);
+}
+
+#page-konfirmasi .confirmed-total{
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 19px;
+  padding-top: 13px;
+  border-top: 1px solid #e6e8ed;
+  font-size: 12px;
+}
+
+#page-konfirmasi .confirmed-total strong:last-child{
+  color: var(--blue);
+  font-size: 14px;
+}
+
+#page-konfirmasi .order-card-actions{
+  display: grid;
+  min-height: 51px;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: center;
+  padding: 0 13px;
+  background: #cddafa;
+}
+
+#page-konfirmasi .order-card-actions button{
+  display: inline-flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: #202b40;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+#page-konfirmasi .order-card-actions button:hover{
+  color: var(--blue);
+}
+
+#page-konfirmasi .action-divider{
+  width: 1px;
+  height: 23px;
+  background: #53627c;
+}
+
+@media (max-width: 760px){
+  #page-konfirmasi .site-header{
+    padding-inline: 18px;
+  }
+
+  #page-konfirmasi .main-nav{
+    gap: 14px;
+    margin-right: 18px;
+  }
+
+  #page-konfirmasi .main-nav a{
+    font-size: 10px;
+  }
+
+  #page-konfirmasi .confirmation-layout{
+    width: min(100% - 40px, 620px);
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+    gap: 23px;
+    padding-top: 48px;
+  }
+
+  #page-konfirmasi .next-steps{
+    grid-template-columns: 1fr;
+  }
+
+  #page-konfirmasi .abstract-art{
+    display: none;
+  }
+
+  #page-konfirmasi .support-card{
+    grid-template-columns: 34px 1fr;
+  }
+
+  #page-konfirmasi .support-card > a{
+    grid-column: 2;
+  }
+
+  #page-konfirmasi .order-card-heading{
+    flex-wrap: wrap;
+  }
+
+  #page-konfirmasi .order-card-body{
+    padding-inline: 15px;
+  }
+}
+
+@media (max-width: 560px){
+  #page-konfirmasi .site-header{
+    height: 56px;
+  }
+
+  #page-konfirmasi .main-nav{
+    display: none;
+  }
+
+  #page-konfirmasi .header-actions{
+    gap: 12px;
+  }
+
+  #page-konfirmasi .confirmation-layout{
+    width: calc(100% - 32px);
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-block: 35px 50px;
+  }
+
+  #page-konfirmasi .confirmation-main{
+    display: contents;
+  }
+
+  #page-konfirmasi .success-icon{
+    grid-row: 1;
+    margin-bottom: -20px;
+  }
+
+  #page-konfirmasi .confirmation-main h1{
+    grid-row: 2;
+    margin-bottom: -24px;
+  }
+
+  #page-konfirmasi .intro{
+    grid-row: 3;
+    margin-bottom: -19px;
+  }
+
+  #page-konfirmasi .next-steps{
+    grid-row: 4;
+    min-height: 0;
+    padding: 19px;
+  }
+
+  #page-konfirmasi .estimate{
+    margin-bottom: 14px;
+  }
+
+  #page-konfirmasi .primary-actions{
+    grid-row: 5;
+    grid-template-columns: 1fr;
+    gap: 9px;
+    margin-top: -22px;
+  }
+
+  #page-konfirmasi .tracking-message{
+    grid-row: 6;
+    margin-top: -28px;
+  }
+
+  #page-konfirmasi .support-card{
+    grid-row: 7;
+    margin-top: -18px;
+  }
+
+  #page-konfirmasi .demo-note{
+    grid-row: 8;
+    margin-top: -25px;
+  }
+
+  #page-konfirmasi .order-card{
+    grid-row: 9;
+  }
+}
+
+@media print{
+  #page-konfirmasi{
+    background: white;
+  }
+
+  #page-konfirmasi .site-header, #page-konfirmasi .confirmation-main, #page-konfirmasi .order-card-actions{
+    display: none !important;
+  }
+
+  #page-konfirmasi .confirmation-layout{
+    display: block;
+    width: 100%;
+    padding: 0;
+  }
+
+  #page-konfirmasi .order-card{
+    max-width: 520px;
+    margin: 20px auto;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  #page-konfirmasi *, #page-konfirmasi *::before, #page-konfirmasi *::after{
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

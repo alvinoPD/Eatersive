@@ -1,6 +1,6 @@
 # Frontend — React + TypeScript + Vite
 
-Frontend untuk template **Laravel + React TypeScript**. Dokumentasi lengkap ada di [`../README.md`](../README.md).
+Frontend untuk template **Laravel + React TypeScript**. Dokumentasi lengkap ada di [`../README.md`](../README.md). Struktur halaman EaterSive, peta route, dan login demo dijelaskan di [`STRUCTURE.md`](./STRUCTURE.md).
 
 ## Menjalankan
 
@@ -22,6 +22,17 @@ Dev server: `http://localhost:5173`.
 | `npm run lint` | Pemeriksaan ESLint |
 | `npm run lint:fix` | ESLint dengan auto-fix |
 | `npm run preview` | Pratinjau hasil build |
+
+## Login demo
+
+Halaman `/login` menyediakan dua akun lokal untuk mencoba role:
+
+| Role | Email | Password | Redirect |
+| --- | --- | --- | --- |
+| Owner | `owner@eatersive.id` | `owner123` | `/owner` |
+| Pelanggan | `user@eatersive.id` | `user123` | `/layanan` |
+
+Login ini hanya demo frontend (data ada di bundle, tanpa backend). Route `/owner` dilindungi `RequireRole`; halaman user tetap publik.
 
 ## Konfigurasi API
 
