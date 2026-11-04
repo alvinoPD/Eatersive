@@ -26,6 +26,7 @@
 #page-landing{
   min-width: 320px;
   margin: 0;
+  overflow-x: clip;
 }
 
 #page-landing, #page-landing button, #page-landing a{
@@ -1029,6 +1030,10 @@
   #page-landing .trust-card{
     bottom: 10px;
     left: -10px;
+  }
+
+  #page-landing .hero-note{
+    bottom: -16px;
   }
 
   #page-landing .service-grid{
