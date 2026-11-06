@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
+import useAuth from '../../auth/useAuth';
+import { getApiErrorMessage } from '../../api/client';
+import { createOrder } from '../../api/orders';
 import { useCatalog } from '../../lib/catalog-store';
 import {
   formatCurrency,
@@ -22,6 +25,7 @@ const EMPTY_ADDRESS: CheckoutAddress = {
 export default function PembayaranPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { session } = useAuth();
   const { services } = useCatalog();
   const formRef = useRef<HTMLFormElement>(null);
   const [savedAddressState] = useState(() => {
@@ -35,6 +39,7 @@ export default function PembayaranPage() {
     savedAddressState.saved ? 'Alamat tersimpan di perangkat ini.' : '',
   );
   const [bookingMessage, setBookingMessage] = useState('');
+  const [pending, setPending] = useState(false);
 
   const items = useMemo(
     () => parseCartItems(new URLSearchParams(location.search).get('items')),
@@ -87,7 +92,9 @@ export default function PembayaranPage() {
     setBookingMessage('');
   }
 
-  function handleBooking() {
+  async function handleBooking() {
+    if (pending) return;
+
     if (!formRef.current?.reportValidity()) {
       formRef.current?.querySelector<HTMLElement>(':invalid')?.focus();
       setBookingMessage('Lengkapi dan simpan alamat sebelum melanjutkan.');
@@ -104,20 +111,60 @@ export default function PembayaranPage() {
       return;
     }
 
+    if (!session) {
+      setBookingMessage('Silakan masuk terlebih dahulu agar pesanan tersimpan di akun Anda.');
+      return;
+    }
+
+    setPending(true);
+    setBookingMessage('');
+
     try {
+      const created = [];
+      let groupCode: string | undefined;
+
+      for (const [id, quantity] of Object.entries(items)) {
+        if (!serviceById[id]) continue;
+
+        const order = await createOrder({
+          layanan_id: Number(id),
+          jumlah: quantity,
+          nama: address.recipient,
+          nomor_telp: address.phone,
+          alamat: address.address,
+          catatan: address.notes,
+          metode_pembayaran: 'qris',
+          kode_grup: groupCode,
+        });
+
+        groupCode = order.kode_grup ?? groupCode;
+        created.push(order);
+      }
+
+      const first = created[0];
+
+      if (!first) {
+        setBookingMessage('Pesanan tidak dapat dibuat. Silakan coba lagi.');
+        return;
+      }
+
       saveConfirmationOrder({
-        orderId: `ORD-${Date.now().toString(36).toUpperCase()}`,
-        createdAt: new Date().toISOString(),
+        orderId: first.kode_pesanan ?? `#${first.id}`,
+        createdAt: first.created_at,
         address,
         items,
         paymentMethod: paymentMethod === 'qris' ? 'QRIS / E-Wallet' : paymentMethod,
+        orderIds: created.map((order) => order.id),
+        total: created.reduce((sum, order) => sum + order.total_harga, 0),
+        status: first.status_label,
+        groupCode,
       });
-      navigate('/konfirmasi-pesanan');
+
+      navigate(`/konfirmasi-pesanan?order=${first.id}`);
     } catch (error) {
-      console.error('Tidak dapat menyiapkan data konfirmasi:', error);
-      setBookingMessage(
-        'Pesanan tidak dapat disiapkan di browser ini. Coba lagi atau hubungi dukungan.',
-      );
+      setBookingMessage(getApiErrorMessage(error));
+    } finally {
+      setPending(false);
     }
   }
 
@@ -245,11 +292,23 @@ export default function PembayaranPage() {
               <button
                 className="book-button"
                 type="button"
-                disabled={orderItems.length === 0}
-                onClick={handleBooking}
+                disabled={orderItems.length === 0 || pending}
+                onClick={() => void handleBooking()}
               >
-                Booking Sekarang
+                {pending ? 'Menyimpan Pesanan…' : 'Booking Sekarang'}
               </button>
+              {!session && orderItems.length > 0 && (
+                <p className="terms-note">
+                  Anda perlu{' '}
+                  <Link
+                    to="/login"
+                    state={{ from: `${location.pathname}${location.search}` }}
+                  >
+                    masuk
+                  </Link>{' '}
+                  agar pesanan tersimpan di akun dan bisa dilihat di Pesanan Saya.
+                </p>
+              )}
               <p className="terms-note">
                 Dengan mengklik tombol di atas, Anda menyetujui{' '}
                 <Link to="/#faq">Syarat &amp; Ketentuan</Link>

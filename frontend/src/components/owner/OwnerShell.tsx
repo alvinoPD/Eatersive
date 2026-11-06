@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import Brand from '../shared/Brand';
 
-export type OwnerNavKey = 'dashboard' | 'orders' | 'catalog' | 'reviews';
+export type OwnerNavKey = 'dashboard' | 'orders' | 'catalog' | 'reviews' | 'settings';
 
 interface OwnerShellProps {
   pageId: string;
@@ -116,10 +116,15 @@ export default function OwnerShell({
             })}
           </nav>
           <div className="sidebar-bottom">
-            <a className="nav-link" href="#pengaturan">
+            <Link
+              className={`nav-link${activeNav === 'settings' ? ' is-active' : ''}`}
+              to="/owner/settings"
+              aria-current={activeNav === 'settings' ? 'page' : undefined}
+              onClick={() => setSidebarOpen(false)}
+            >
               {SETTINGS_ICON}
               <span>Pengaturan</span>
-            </a>
+            </Link>
             <Link
               className="nav-link nav-link--logout"
               to="/login"

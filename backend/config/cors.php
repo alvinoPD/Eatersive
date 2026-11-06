@@ -33,7 +33,7 @@ return [
 
     'exposed_headers' => [],
 
-    'max_age' => 86400,
+    'max_age' => 0,
 
     // Belum ada authentication berbasis cookie, jadi credentials dimatikan.
     // Aktifkan kembali (dan ganti allowed_origins menjadi origin spesifik)

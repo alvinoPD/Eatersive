@@ -27,7 +27,7 @@ export default function KonfirmasiPesananPage() {
         return service ? [{ service, quantity }] : [];
       })
     : [];
-  const total = orderItems.reduce(
+  const total = order?.total ?? orderItems.reduce(
     (sum, item) => sum + item.service.price * item.quantity,
     0,
   );
@@ -47,15 +47,22 @@ export default function KonfirmasiPesananPage() {
       setMessage('Pilih layanan terlebih dahulu untuk melihat status pesanan.');
       return;
     }
-    navigate('/lacak-pesanan');
+
+    const orderId = order.orderIds?.[0];
+
+    if (!orderId) {
+      setMessage('Pesanan tersimpan, tetapi tautan pelacakan belum tersedia. Buka Pesanan Saya.');
+      return;
+    }
+
+    navigate(`/lacak-pesanan?order=${orderId}`);
   }
 
   async function handleShare() {
     if (!order) return;
 
     const shareData = {
-      title: 'Konfirmasi Pesanan EaterSive',
-      text: `Rincian pesanan demo ${order.orderId}.`,
+      title: 'Konfirmasi Pesanan EaterSive',            text: `Rincian pesanan ${order.orderId}.`,
       url: window.location.href,
     };
 
@@ -93,11 +100,11 @@ export default function KonfirmasiPesananPage() {
             </svg>
           </div>
           <h1 id="confirmation-title">
-            {order ? 'Pesanan Demo Berhasil Disiapkan!' : 'Rincian Pesanan Tidak Ditemukan'}
+            {order ? 'Pesanan Berhasil Dibuat!' : 'Rincian Pesanan Tidak Ditemukan'}
           </h1>
           <p className="intro">
             {order
-              ? 'Terima kasih. Rincian pesanan demo Anda sudah disiapkan di browser ini. Belum ada pesanan yang dikirim ke server.'
+              ? 'Terima kasih. Pesanan Anda sudah tersimpan di server EaterSive dan dapat dipantau kapan saja melalui halaman Pesanan Saya.'
               : 'Halaman ini belum menerima data pesanan. Silakan pilih layanan dan lanjutkan proses checkout.'}
           </p>
 
@@ -167,7 +174,8 @@ export default function KonfirmasiPesananPage() {
           </section>
           {order && (
             <p className="demo-note">
-              Konfirmasi ini hanya demo. Booking belum dikirim atau disimpan di server.
+              Simpan halaman ini atau buka menu <Link to="/pesanan-saya">Pesanan Saya</Link> untuk
+              melihat riwayat dan status pesanan Anda.
             </p>
           )}
         </section>
@@ -178,7 +186,7 @@ export default function KonfirmasiPesananPage() {
               <span aria-hidden="true">▣</span> Rincian Pesanan
             </h2>
             <span className="status-pill">
-              {order ? 'Menunggu Penjemputan' : 'Belum ada pesanan'}
+              {order ? (order.status ?? 'Menunggu') : 'Belum ada pesanan'}
             </span>
           </div>
           <div className="order-card-body">
