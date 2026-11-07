@@ -1,23 +1,77 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
+import { getApiErrorMessage } from '../../api/client';
+import { fetchOrderDetail, type Order } from '../../api/orders';
 import { useCatalog } from '../../lib/catalog-store';
 import { formatCurrency, readConfirmationOrder } from '../../lib/checkout';
+import {
+  chargeOrderPayment,
+  loadSnapScript,
+  payWithSnap,
+  refreshOrderPaymentStatus,
+} from '../../lib/payments';
 import '../../styles/konfirmasi-pesanan.css';
 
 function formatUpperDate(date: Date, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat('id-ID', options).format(date).toUpperCase();
 }
 
+/** Label status pembayaran untuk UI. */
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  pending: 'Menunggu Pembayaran',
+  paid: 'Pembayaran Lunas',
+  expired: 'Pembayaran Kadaluarsa',
+  failed: 'Pembayaran Gagal',
+  refunded: 'Pembayaran Dikembalikan',
+};
+
 export default function KonfirmasiPesananPage() {
   const navigate = useNavigate();
   const { services } = useCatalog();
   const [order] = useState(() => readConfirmationOrder());
   const [message, setMessage] = useState('');
+  const [orderDetail, setOrderDetail] = useState<Order | null>(null);
+  const [paying, setPaying] = useState(false);
+  const [payMessage, setPayMessage] = useState('');
+  /* muat ulang status pembayaran ke backend (dipakai polling & callback Snap). */
+  const syncLocked = useRef(false);
+
+  const orderDbId = order?.orderIds?.[0];
+  const paymentStatus = orderDetail?.pembayaran?.status_pembayaran ?? 'pending';
+  const payable = paymentStatus === 'pending';
 
   useEffect(() => {
     document.title = 'Konfirmasi Pesanan — EaterSive';
   }, []);
+
+  /* Muat status pesanan terbaru dari backend saat halaman dibuka. */
+  useEffect(() => {
+    if (orderDbId === undefined) return;
+
+    fetchOrderDetail(orderDbId)
+      .then((detail) => setOrderDetail(detail))
+      .catch((error: unknown) => setPayMessage(getApiErrorMessage(error)));
+  }, [orderDbId]);
+
+  /* Polling status pembayaran (jalur utama di local) hanya selama masih pending. */
+  useEffect(() => {
+    if (orderDbId === undefined || !payable) return;
+
+    const poll = window.setInterval(() => {
+      if (syncLocked.current) return;
+      syncLocked.current = true;
+
+      void refreshOrderPaymentStatus<Order>(orderDbId)
+        .then((updated) => setOrderDetail(updated))
+        .catch(() => undefined)
+        .finally(() => {
+          syncLocked.current = false;
+        });
+    }, 6000);
+
+    return () => window.clearInterval(poll);
+  }, [orderDbId, payable, paymentStatus]);
 
   const serviceById = Object.fromEntries(services.map((service) => [service.id, service]));
 
@@ -56,6 +110,48 @@ export default function KonfirmasiPesananPage() {
     }
 
     navigate(`/lacak-pesanan?order=${orderId}`);
+  }
+
+  /* Minta snap_token → buka popup Midtrans. Status akhir disinkron via polling/callback. */
+  async function handlePay() {
+    if (!order?.groupCode) {
+      setPayMessage('Kode grup pembayaran tidak tersedia. Muat ulang halaman atau booking ulang.');
+      return;
+    }
+
+    setPaying(true);
+    setPayMessage('');
+
+    try {
+      const charge = await chargeOrderPayment(order.groupCode);
+      await loadSnapScript(charge.client_key, charge.is_production);
+
+      payWithSnap(charge.snap_token, {
+        onSuccess: () => {
+          setPayMessage('Pembayaran berhasil. Status pesanan terbarui.');
+          void syncPaymentStatus();
+        },
+        onPending: () => void syncPaymentStatus(),
+        onError: () => void syncPaymentStatus(),
+        onClose: () => void syncPaymentStatus(),
+      });
+    } catch (error) {
+      setPayMessage(getApiErrorMessage(error));
+    } finally {
+      setPaying(false);
+    }
+  }
+
+  /* Lihat status terbaru: backend mengecek Midtrans lalu sinkron ke DB. */
+  async function syncPaymentStatus() {
+    if (orderDbId === undefined) return;
+
+    try {
+      const updated = await refreshOrderPaymentStatus<Order>(orderDbId);
+      setOrderDetail(updated);
+    } catch (error) {
+      setPayMessage(getApiErrorMessage(error));
+    }
   }
 
   async function handleShare() {
@@ -142,6 +238,29 @@ export default function KonfirmasiPesananPage() {
               <span className="art-orb art-orb--violet" />
             </div>
           </section>
+
+          {order && orderDbId !== undefined && (
+            <div className="primary-actions pay-actions">
+              {payable ? (
+                <button
+                  className="button pay-button"
+                  type="button"
+                  onClick={handlePay}
+                  disabled={paying}
+                >
+                  {paying ? 'Menyiapkan pembayaran…' : 'Bayar Sekarang'}{' '}
+                  <span aria-hidden="true">▸</span>
+                </button>
+              ) : (
+                <span className="status-pill">
+                  {PAYMENT_STATUS_LABELS[paymentStatus] ?? paymentStatus}
+                </span>
+              )}
+              <p className="tracking-message" role="status" aria-live="polite">
+                {payMessage}
+              </p>
+            </div>
+          )}
 
           <div className="primary-actions">
             <button
