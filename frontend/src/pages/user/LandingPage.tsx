@@ -66,6 +66,9 @@ export default function LandingPage() {
               {link.label}
             </a>
           ))}
+          <Link to="/pesanan-saya" onClick={closeMenu}>
+            Pesanan Saya
+          </Link>
         </nav>
 
         <div className="header-actions">

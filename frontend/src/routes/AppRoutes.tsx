@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import RequireAuth from '../auth/RequireAuth';
 import RequireRole from '../auth/RequireRole';
 import MainLayout from '../layouts/MainLayout';
 import AboutPage from '../pages/AboutPage';
@@ -16,6 +17,8 @@ import OwnerDashboardPage from '../pages/owner/OwnerDashboardPage';
 import OwnerOrderDetailPage from '../pages/owner/OwnerOrderDetailPage';
 import OwnerOrdersPage from '../pages/owner/OwnerOrdersPage';
 import OwnerReviewsPage from '../pages/owner/OwnerReviewsPage';
+import OwnerSettingsPage from '../pages/owner/OwnerSettingsPage';
+import PesananSayaPage from '../pages/user/PesananSayaPage';
 
 /**
  * Daftar route frontend. Halaman user dan owner dipisahkan berdasarkan prefix:
@@ -32,7 +35,11 @@ export default function AppRoutes() {
       <Route path="/layanan" element={<PilihLayananPage />} />
       <Route path="/pembayaran" element={<PembayaranPage />} />
       <Route path="/konfirmasi-pesanan" element={<KonfirmasiPesananPage />} />
-      <Route path="/lacak-pesanan" element={<LacakPesananPage />} />
+
+      <Route element={<RequireAuth />}>
+        <Route path="/pesanan-saya" element={<PesananSayaPage />} />
+        <Route path="/lacak-pesanan" element={<LacakPesananPage />} />
+      </Route>
 
       <Route element={<RequireRole role="owner" />}>
         <Route path="/owner" element={<OwnerDashboardPage />} />
@@ -40,6 +47,7 @@ export default function AppRoutes() {
         <Route path="/owner/orders/:orderId" element={<OwnerOrderDetailPage />} />
         <Route path="/owner/catalog" element={<OwnerCatalogPage />} />
         <Route path="/owner/reviews" element={<OwnerReviewsPage />} />
+        <Route path="/owner/settings" element={<OwnerSettingsPage />} />
       </Route>
 
       <Route element={<MainLayout />}>

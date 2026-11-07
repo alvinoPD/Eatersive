@@ -310,6 +310,34 @@
     font-size: 15px;
   }
 
+  #page-login .field-group label, #page-login .label-row label{
+    font-size: 13px;
+  }
+
+  #page-login .input-wrap input{
+    font-size: 16px;
+  }
+
+  #page-login .text-button{
+    font-size: 12px;
+  }
+
+  #page-login .form-message, #page-login .login-notice{
+    font-size: 12px;
+  }
+
+  #page-login .demo-title{
+    font-size: 10px;
+  }
+
+  #page-login .demo-account strong{
+    font-size: 12px;
+  }
+
+  #page-login .demo-account span{
+    font-size: 11px;
+  }
+
   #page-login .desktop-break{
     display: none;
   }

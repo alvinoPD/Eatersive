@@ -103,6 +103,10 @@
   gap: 18px;
 }
 
+#page-pembayaran .menu-toggle{
+  display: none;
+}
+
 #page-pembayaran .button, #page-pembayaran .save-button{
   display: inline-flex;
   min-height: 34px;
@@ -662,17 +666,120 @@
   }
 }
 
+@media (min-width: 561px) and (max-width: 760px){
+  #page-pembayaran .form-field > span{
+    font-size: 12px;
+  }
+
+  #page-pembayaran .form-field input{
+    height: 40px;
+    font-size: 15px;
+  }
+
+  #page-pembayaran .address-actions{
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #page-pembayaran .address-message{
+    font-size: 11px;
+  }
+
+  #page-pembayaran .save-button{
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    margin-left: 0;
+    font-size: 12px;
+  }
+
+  #page-pembayaran .summary-item-info strong{
+    font-size: 12px;
+  }
+
+  #page-pembayaran .summary-item-info small{
+    font-size: 11px;
+  }
+
+  #page-pembayaran .book-button{
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 560px){
   #page-pembayaran .site-header{
     height: 56px;
   }
 
+  #page-pembayaran .menu-toggle{
+    display: flex;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  #page-pembayaran .menu-toggle span{
+    width: 16px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: transform 160ms ease, opacity 160ms ease;
+  }
+
+  #page-pembayaran .menu-toggle[aria-expanded="true"] span:first-child{
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  #page-pembayaran .menu-toggle[aria-expanded="true"] span:nth-child(2){
+    opacity: 0;
+  }
+
+  #page-pembayaran .menu-toggle[aria-expanded="true"] span:last-child{
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
   #page-pembayaran .main-nav{
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    right: 0;
+    left: 0;
     display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 4px 17px 10px;
+    border-bottom: 1px solid var(--border);
+    background: #f9fafc;
+    box-shadow: 0 12px 24px rgba(21, 30, 49, 0.08);
+  }
+
+  #page-pembayaran .main-nav.is-open{
+    display: flex;
+  }
+
+  #page-pembayaran .main-nav a{
+    padding: 12px 0;
+    border-top: 1px solid #eceef2;
+    font-size: 13px;
   }
 
   #page-pembayaran .header-actions{
     gap: 12px;
+    margin-left: 10px;
   }
 
   #page-pembayaran .page-wrap{
@@ -735,15 +842,89 @@
     gap: 12px;
   }
 
+  #page-pembayaran .breadcrumbs{
+    font-size: 11px;
+  }
+
+  #page-pembayaran .form-field > span{
+    font-size: 12px;
+  }
+
+  #page-pembayaran .form-field input{
+    height: 44px;
+    padding-inline: 12px;
+    font-size: 16px;
+  }
+
+  #page-pembayaran .address-message{
+    font-size: 11px;
+  }
+
+  #page-pembayaran .save-button{
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  #page-pembayaran .security-label{
+    font-size: 10px;
+  }
+
+  #page-pembayaran .summary-item-info strong{
+    font-size: 12px;
+  }
+
+  #page-pembayaran .summary-item-info small{
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  #page-pembayaran .summary-item-price{
+    font-size: 12px;
+  }
+
+  #page-pembayaran .book-button{
+    min-height: 46px;
+    font-size: 14px;
+  }
+
+  #page-pembayaran .terms-note{
+    font-size: 10px;
+  }
+
+  #page-pembayaran .booking-message{
+    font-size: 11px;
+  }
+
+  #page-pembayaran .method-copy > small{
+    font-size: 11px;
+  }
+
+  #page-pembayaran .wallet-list i{
+    font-size: 9px;
+  }
+
+  #page-pembayaran .payment-notes h3{
+    font-size: 12px;
+  }
+
+  #page-pembayaran .payment-notes p{
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
   #page-pembayaran .desktop-break{
     display: none;
   }
 }
 
 @media (max-width: 380px){
+  #page-pembayaran .login-link{
+    display: none;
+  }
+
   #page-pembayaran .breadcrumbs{
     gap: 8px;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   #page-pembayaran .page-title{

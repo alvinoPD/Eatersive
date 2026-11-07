@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { apiLogin, apiLogout } from '../api/auth';
 import { getApiErrorMessage } from '../api/client';
 import { clearAuthSession, readAuthSession, writeAuthSession } from './authStorage';
+import { updateStoredSession } from './session-store';
 import { AuthContext } from './auth-context';
 import type { AuthSession, LoginResult } from '../types/auth';
 
@@ -67,8 +68,13 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     setSession(null);
   }
 
+  function updateSessionUser(partial: Partial<Pick<AuthSession, 'name' | 'email'>>): void {
+    updateStoredSession<AuthSession>(partial);
+    setSession((current) => (current ? { ...current, ...partial } : current));
+  }
+
   return (
-    <AuthContext.Provider value={{ session, login, logout }}>
+    <AuthContext.Provider value={{ session, login, logout, updateSessionUser }}>
       {children}
     </AuthContext.Provider>
   );

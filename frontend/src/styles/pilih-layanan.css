@@ -106,6 +106,10 @@
   gap: 18px;
 }
 
+#page-pilih-layanan .menu-toggle{
+  display: none;
+}
+
 #page-pilih-layanan .button{
   display: inline-flex;
   min-height: 34px;
@@ -715,15 +719,19 @@
   }
 
   #page-pilih-layanan .search-box{
-    flex-basis: calc(100% - 42px);
+    min-width: 0;
+    flex: 1 1 140px;
+    order: 1;
   }
 
   #page-pilih-layanan .cart-shortcut{
     border-left: 0;
+    order: 2;
   }
 
   #page-pilih-layanan .filter-tabs{
     width: 100%;
+    order: 3;
     justify-content: space-between;
     border-top: 1px solid #eff0f3;
   }
@@ -755,12 +763,74 @@
     padding-inline: 17px;
   }
 
+  #page-pilih-layanan .menu-toggle{
+    display: flex;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  #page-pilih-layanan .menu-toggle span{
+    width: 16px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: transform 160ms ease, opacity 160ms ease;
+  }
+
+  #page-pilih-layanan .menu-toggle[aria-expanded="true"] span:first-child{
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  #page-pilih-layanan .menu-toggle[aria-expanded="true"] span:nth-child(2){
+    opacity: 0;
+  }
+
+  #page-pilih-layanan .menu-toggle[aria-expanded="true"] span:last-child{
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
   #page-pilih-layanan .main-nav{
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    right: 0;
+    left: 0;
     display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 4px 17px 10px;
+    border-bottom: 1px solid var(--border);
+    background: #f9fafc;
+    box-shadow: 0 12px 24px rgba(21, 30, 49, 0.08);
+  }
+
+  #page-pilih-layanan .main-nav.is-open{
+    display: flex;
+  }
+
+  #page-pilih-layanan .main-nav a{
+    padding: 12px 0;
+    border-top: 1px solid #eceef2;
+    font-size: 13px;
   }
 
   #page-pilih-layanan .header-actions{
     gap: 12px;
+    margin-left: 10px;
   }
 
   #page-pilih-layanan .page-wrap{
@@ -778,7 +848,114 @@
 
   #page-pilih-layanan .page-heading > p{
     max-width: 480px;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  #page-pilih-layanan .breadcrumb{
+    font-size: 10px;
+  }
+
+  #page-pilih-layanan .search-box input{
+    font-size: 13px;
+  }
+
+  #page-pilih-layanan .filter-button{
+    min-height: 36px;
     font-size: 11px;
+  }
+
+  #page-pilih-layanan .catalog-heading h2{
+    font-size: 14px;
+  }
+
+  #page-pilih-layanan .catalog-heading p{
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  #page-pilih-layanan .category-badge{
+    font-size: 10px;
+  }
+
+  #page-pilih-layanan .service-title h3{
+    font-size: 13px;
+  }
+
+  #page-pilih-layanan .rating{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .service-info > p{
+    min-height: 0;
+    margin-block: 6px 9px;
+    font-size: 11px;
+    line-height: 1.5;
+    -webkit-line-clamp: 3;
+  }
+
+  #page-pilih-layanan .service-meta{
+    gap: 7px;
+    font-size: 10px;
+  }
+
+  #page-pilih-layanan .price small{
+    font-size: 10px;
+  }
+
+  #page-pilih-layanan .price strong{
+    font-size: 14px;
+  }
+
+  #page-pilih-layanan .add-button{
+    min-width: 72px;
+    min-height: 32px;
+  }
+
+  #page-pilih-layanan .add-button span{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .order-heading h2{
+    font-size: 13px;
+  }
+
+  #page-pilih-layanan .order-heading p{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .empty-cart p{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .order-item-name{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .order-item-price{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .quantity-control button{
+    width: 28px;
+    height: 28px;
+  }
+
+  #page-pilih-layanan .quantity-control span{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .order-total{
+    font-size: 11px;
+  }
+
+  #page-pilih-layanan .order-total strong{
+    font-size: 14px;
+  }
+
+  #page-pilih-layanan .checkout-button{
+    min-height: 44px;
+    font-size: 13px;
   }
 
   #page-pilih-layanan .desktop-break{
@@ -808,11 +985,7 @@
   }
 
   #page-pilih-layanan .service-title h3{
-    font-size: 11px;
-  }
-
-  #page-pilih-layanan .service-meta{
-    gap: 7px;
+    font-size: 13px;
   }
 
   #page-pilih-layanan .order-column{
@@ -835,6 +1008,10 @@
 }
 
 @media (max-width: 390px){
+  #page-pilih-layanan .login-link{
+    display: none;
+  }
+
   #page-pilih-layanan .service-grid{
     grid-template-columns: 1fr;
   }

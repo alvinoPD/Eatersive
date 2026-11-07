@@ -5,6 +5,8 @@ export interface AuthContextValue {
   session: AuthSession | null;
   login: (email: string, password: string, remember: boolean) => Promise<LoginResult>;
   logout: () => Promise<void>;
+  /** Sinkronkan nama/email sesi setelah profil diperbarui di backend. */
+  updateSessionUser: (partial: Partial<Pick<AuthSession, 'name' | 'email'>>) => void;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);

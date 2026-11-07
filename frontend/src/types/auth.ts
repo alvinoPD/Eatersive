@@ -1,5 +1,14 @@
 export type AuthRole = 'owner' | 'user';
 
+/** Akun demo frontend yang dipakai halaman login. */
+export interface DemoAccount {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: AuthRole;
+}
+
 /**
  * Sesi login yang disimpan di browser.
  * Password tidak pernah disimpan; `token` adalah token Sanctum dari backend.

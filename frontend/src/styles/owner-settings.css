@@ -1,0 +1,69 @@
+/* Tambahan khusus halaman pengaturan owner; memakai shell detail agar desain sama. */
+#page-owner-order-detail .settings-summary{
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+#page-owner-order-detail .settings-summary > div{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #eceef2;
+}
+
+#page-owner-order-detail .settings-summary dt{
+  color: #858b96;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+#page-owner-order-detail .settings-summary dd{
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+#page-owner-order-detail .settings-hint{
+  margin: 12px 0 0;
+  color: #858b96;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+#page-owner-order-detail .settings-hint strong{
+  color: var(--blue);
+}
+
+#page-owner-order-detail .settings-tips{
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 16px;
+  color: #626a79;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+#page-owner-order-detail .status-select:focus{
+  border-color: #a9c1f7;
+  outline: 2px solid rgba(40, 98, 237, 0.16);
+  outline-offset: 1px;
+}
+
+@media (max-width: 620px){
+  #page-owner-order-detail .settings-summary > div{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  #page-owner-order-detail .settings-summary dd{
+    text-align: left;
+  }
+}
