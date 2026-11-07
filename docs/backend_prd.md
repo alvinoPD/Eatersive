@@ -198,3 +198,117 @@ erDiagram
      }
      ```
    * Menggunakan HTTP status code yang representatif (`200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Internal Server Error`).
+---
+
+## Log Implementasi � Tahap 4: Pesanan + Payment Midtrans (Opsi A)
+
+### 8. Rekap Perubahan Code & File
+
+ Tahap 4 dikerjakan sesuai kontrak frontend `src/api/orders.ts` (Opsi A).
+ Status: **Selesai** � 42/42 test lulus (`php artisan test`), frontend
+ typecheck/lint/build lulus.
+
+#### 8.1 Dependensi Baru (composer)
+
+| Paket | Versi | Fungsi |
+| --- | --- | --- |
+| `midtrans/midtrans-php` | ^2.6 | Klien Snap/Charge, Status API |
+| `laravel/boost` (dev) | ^2.10 | Tooling developer (AGENTS.md guidelines) |
+
+#### 8.2 Migrasi Baru
+
+| File | Isi |
+| --- | --- |
+| `2026_11_07_000001_add_order_fields_to_pesanan_table.php` | Kolom baru `pesanan`: `kode_pesanan` (unique nullable), `kode_grup` (index nullable), `catatan` (text), `jumlah` (int, default 1), `total_harga` (decimal 12,2), `estimasi_selesai` (date) |
+| `2026_11_07_000002_create_pesanan_status_logs_table.php` | Tabel `pesanan_status_logs` (timeline status: status, status_label, catatan, changed_by) |
+| `2026_11_07_000003_add_nomor_telp_to_users_table.php` | Kolom `nomor_telp` (nullable) di `users` untuk profil owner |
+
+#### 8.3 Kode Backend Baru / Diubah
+
+| File | Perubahan |
+| --- | --- |
+| `app/Enums/OrderStatus.php` (baru) | Enum status pesanan kontrak frontend + label `Menunggu/Dikonfirmasi/Sedang Dikerjakan/Pengecekan/Selesai/Dibatalkan`, konstanta `INITIAL` dan `ADMIN_SETTABLE` |
+| `app/Enums/PaymentStatus.php` (baru) | Enum status pembayaran PRD: pending/paid/expired/failed/refunded |
+| `app/Models/Pesanan.php` (diubah) | Fillable baru, cast (`status` enum, `total_harga` decimal, `jumlah` int, `estimasi_selesai` date), appends `status_label`, relasi `timeline()` |
+| `app/Models/PesananStatusLog.php` (baru) | Model log timeline + `record()` (label disimpan saat baris dibuat) |
+| `app/Models/Pembayaran.php` (diubah) | Cast `jumlah` decimal & `tanggal_bayar` datetime |
+| `app/Models/User.php` (diubah) | Fillable + `nomor_telp` |
+| `app/Services/MidtransService.php` (baru) | Boot kredensial dari `config/midtrans.php`, `createSnapTransaction`, `getTransactionStatus`, `verifySignature` (sha512 order+status+gross+serverkey), `mapTransactionStatus`, `applyStatus` (idempotent + sinkronisasi pesanan/log) |
+| `app/Http/Controllers/PesananController.php` (diisi) | `index` (pesanan milik user), `store` (hitung ulang total dari DB, buat pembayaran pending + log, kode ORD-/GRUP- unik), `show` (403 antar user), `updateStatus` (admin; timeline + catatan), `ownerOrders` |
+| `app/Http/Controllers/PembayaranController.php` (diisi) | `charge` (Snap per kode_grup; guard configured/ownership; simpan transaction_id), `status` (polling jalur utama local via Get Status API), `webhook` (tanpa auth; verifikasi signature; selalu 200 setelah validasi) |
+| `app/Http/Controllers/OwnerController.php` (baru) | `dashboard` (hitungan per status, total omset paid, recent 10), `profile`/`updateProfile`, `updatePassword` |
+| `routes/api.php` (diubah) | Group `orders` (GET/POST/GET {id}, PATCH {id}/status admin), `pembayaran` (charge, {pesananId}/status, webhook), `owner` (dashboard, orders, profile, password) |
+| `config/midtrans.php` (baru) | Membaca `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, `MIDTRANS_IS_PRODUCTION`, `MIDTRANS_IS_3DS` |
+| `.env` & `.env.example` (diubah) | Bagian baru: kunci Midtrans (server/client/is_production) |
+
+#### 8.4 Pemetaan Status (Webhook/Status API Midtrans)
+
+| transaction_status | status_pembayaran | pesanan.status |
+| --- | --- | --- |
+| `capture` (fraud=accept) / `settlement` | `paid` | `confirmed` (+log) |
+| `capture` (fraud=challenge) | `pending` | `pending` |
+| `pending` | `pending` | `pending` |
+| `deny` / `cancel` | `failed` | `cancelled`(+log, hanya bila belum dikerjakan) |
+| `expire` | `expired` | tetap (bisa charge ulang) |
+| `refund` / `partial_refund` | `refunded` | � |
+
+#### 8.5 Kontrak Endpoint Baru
+
+| Method | URI | Auth | Keterangan |
+| --- | --- | --- | --- |
+| GET/POST | `/api/v1/orders` | sanctum | Daftar milik user / buat pesanan |
+| GET | `/api/v1/orders/{id}` | sanctum | Detail + relasi (403 antar user) |
+| PATCH | `/api/v1/orders/{id}/status` | sanctum+admin | Status flow + timeline |
+| POST | `/api/v1/pembayaran/charge` | sanctum | `snap_token` + `client_key` + `redirect_url` |
+| GET | `/api/v1/pembayaran/{pesananId}/status` | sanctum | Polling status (menghubungi Midtrans bila pending) |
+| POST | `/api/v1/pembayaran/webhook` | publik | Midtrans notification (signature required) |
+| GET | `/api/v1/owner/dashboard`, `GET /api/v1/owner/orders`, `GET/PUT /api/v1/owner/profile`, `PUT /api/v1/owner/password` | sanctum+admin | Dashboard & akun owner |
+
+#### 8.6 Frontend (Ditulis oleh pihak frontend, dicatat untuk referensi)
+
+| File | Perubahan |
+| --- | --- |
+| `src/lib/payments.ts` (baru) | `chargeOrderPayment`, `refreshOrderPaymentStatus`, `loadSnapScript` (client_key dari charge), `payWithSnap` (window.snap.pay) |
+| `src/pages/user/KonfirmasiPesananPage.tsx` (diubah) | Muat detail order → tombol **Bayar Sekarang** (status pending) → popup Snap → polling status tiap 6 detik sampai lunas/berakhir, label status pembayaran |
+| Comment | Front end `api/orders.ts` sudah dipetakan ke endpoint ini (Order, CreateOrderInput, updateOrderStatus, dst.) |
+
+#### 8.7 Pengujian Baru (PHPUnit)
+
+| File | Cakupan |
+| --- | --- |
+| `tests/Feature/Api/PesananTest.php` | Guest 401, store 201 + hitung total sepenuhnya dari DB, validasi required, 403 antar-customer, update_status admin + timeline, status tidak valid 422, customer tidak bisa update status, owner list (admin 200 / user 403) |
+| `tests/Feature/Api/PembayaranWebhookTest.php` | signature salah 401, settlement → paid+confirmed+log, webhook dobel idempotensi, expire → expired (pesanan tetap pending), cancel → failed+cancelled, order_id tidak dikenal diabaikan |
+| `tests/Feature/Api/OwnerTest.php` | dashboard (hitungan + omset), profil nomor_telp, password salah 422 / benar 200, customer tidak akses endpoint owner |
+
+> Catatan teknis: dalam test multi-request, identitas auth tersimpan pada guard
+> (`RequestGuard` meng-cache `$user`). Gunakan `Auth::forgetGuards()` sebelum
+> mengganti user pada request berikutnya dalam satu test method.
+
+#### 8.8 Environment (API key placement)
+
+```
+backend/.env
+MIDTRANS_SERVER_KEY=SB-Mid-server-xxxxx   # kunci rahasia
+MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxxx   # dikirim ke frontend via charge
+MIDTRANS_IS_PRODUCTION=false              # sandbox
+```
+
+#### 8.9 Hotfix Charge-Ulang (GRUP-... "already been taken")
+
+Skenario: popup dibuka lalu ditutup (X) sebelum pembayarannya diperkarakan,
+kemudian tombol Bayar Sekarang dipencet lagi. Transaksi lama masih terbuka di
+Midtrans sehingga charge dengan order_id yang sama ditolak, dan frontend
+menerima HTTP 502.
+
+Perubahan pada `app/Http/Controllers/PembayaranController.php`:
+
+| Aspek | Sebelum | Sesudah |
+| --- | --- | --- |
+| order_id tetap | Gagal 502 bila order_id sudah terpakai | Varian sufis urut: `kode_grup`, `-2`, `-3` (maks `MAX_ORDER_ID_RETRIES = 3` percobaan) |
+| Respons error | 502 generik untuk semua kegagalan createSnap | 409 dengan pesan Indonesia bila `already been taken` (retry habis); 502 untuk kegagalan lain |
+| transaction_id | Tetap kode_grup | Ditimpa oleh order_id varian yang dipakai, agar polling & webhook mengikuti transaksi terbaru |
+
+Terbukti secara manual terhadap sandbox nyata: charge `GRUP-V5W6VEXD` menolak
+(400 already taken), charge `GRUP-V5W6VEXD-2` sukses (201, token diterima).
+42/42 test tetap lulus; skenario ini dicatat sebagai jalur integrasi eksternal
+(yang diverifikasi manual karena lib midtrans-php memanggil API nyata).
