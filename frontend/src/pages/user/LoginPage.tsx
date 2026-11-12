@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Brand from '../../components/shared/Brand';
 import useAuth from '../../auth/useAuth';
 import CaptchaField from '../../components/shared/CaptchaField';
@@ -10,6 +10,9 @@ import '../../styles/login.css';
 
 interface LoginLocationState {
   from?: string;
+  /** Diisi `RegisterPage` setelah pendaftaran berhasil. */
+  registered?: boolean;
+  email?: string;
 }
 
 function resolveRedirect(role: AuthRole, from?: string): string {
@@ -25,9 +28,12 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { session, login } = useAuth();
-  const from = (location.state as LoginLocationState | null)?.from;
+  const locationState = location.state as LoginLocationState | null;
+  const from = locationState?.from;
+  const justRegistered = locationState?.registered === true;
 
-  const [email, setEmail] = useState(session?.email ?? '');
+  /* Setelah daftar, email diisi otomatis supaya pengguna tinggal memasukkan sandi. */
+  const [email, setEmail] = useState(session?.email ?? locationState?.email ?? '');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -73,7 +79,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div id="page-login">
+    <div className="auth-page">
       <main className="login-page">
         <section className="login-card" aria-labelledby="login-title">
           <Brand label="Kembali ke EaterSive" />
@@ -85,6 +91,12 @@ export default function LoginPage() {
               <br className="desktop-break" /> untuk melanjutkan ke EaterSive.
             </p>
           </div>
+
+          {justRegistered && (
+            <p className="login-notice" role="status">
+              Akun berhasil dibuat dan tersimpan. Silakan masuk dengan email dan kata sandi Anda.
+            </p>
+          )}
 
           {from && (
             <p className="login-notice" role="status">
@@ -223,6 +235,10 @@ export default function LoginPage() {
             </p>
           </form>
 
+          <p className="signup-link">
+            Belum punya akun? <Link to="/register">Daftar sekarang</Link>
+          </p>
+
           <div className="divider">
             <span>Atau lanjut dengan</span>
           </div>
@@ -274,6 +290,7 @@ export default function LoginPage() {
               Facebook
             </button>
           </div>
+
         </section>
       </main>
     </div>

@@ -24,3 +24,6 @@ export interface DemoAccount {
 export type LoginResult =
   | { ok: true; session: AuthSession }
   | { ok: false; message: string };
+
+/** Hasil registrasi: hanya penanda berhasil, tanpa sesi (pengguna login manual). */
+export type RegisterResult = { ok: true } | { ok: false; message: string };

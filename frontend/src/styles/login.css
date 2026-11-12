@@ -1,5 +1,5 @@
-/* Di-scope ke #page-login agar desain contoh tidak saling bertabrakan. */
-#page-login{
+/* Di-scope ke .auth-page agar desain contoh tidak saling bertabrakan. */
+.auth-page{
   font-family: "DM Sans", sans-serif;
   color: #151d30;
   background: #fafafa;
@@ -12,36 +12,36 @@
   --border: #e8e9ec;
 }
 
-#page-login *{
+.auth-page *{
   box-sizing: border-box;
 }
 
-#page-login{
+.auth-page{
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
 }
 
-#page-login button, #page-login input{
+.auth-page button, .auth-page input{
   font: inherit;
 }
 
-#page-login button{
+.auth-page button{
   color: inherit;
 }
 
-#page-login .login-page{
+.auth-page .login-page{
   display: grid;
   min-height: 100vh;
   place-items: center;
   padding: 48px 24px;
 }
 
-#page-login .login-card{
+.auth-page .login-card{
   width: min(100%, 430px);
 }
 
-#page-login .brand{
+.auth-page .brand{
   display: flex;
   width: fit-content;
   align-items: center;
@@ -55,7 +55,7 @@
   text-decoration: none;
 }
 
-#page-login .brand-mark{
+.auth-page .brand-mark{
   display: grid;
   width: 29px;
   height: 29px;
@@ -65,20 +65,20 @@
   color: white;
 }
 
-#page-login .brand-mark svg{
+.auth-page .brand-mark svg{
   width: 20px;
 }
 
-#page-login .brand-accent{
+.auth-page .brand-accent{
   color: var(--blue);
 }
 
-#page-login .login-heading{
+.auth-page .login-heading{
   margin-bottom: 33px;
   text-align: center;
 }
 
-#page-login .login-heading h1{
+.auth-page .login-heading h1{
   margin: 0 0 5px;
   font-family: Manrope, sans-serif;
   font-size: clamp(32px, 8vw, 43px);
@@ -87,38 +87,38 @@
   line-height: 1.16;
 }
 
-#page-login .login-heading p{
+.auth-page .login-heading p{
   margin: 0;
   color: var(--muted);
   font-size: 17px;
   line-height: 1.45;
 }
 
-#page-login .login-form{
+.auth-page .login-form{
   display: grid;
   gap: 13px;
 }
 
-#page-login .field-group{
+.auth-page .field-group{
   display: grid;
   gap: 9px;
 }
 
-#page-login .field-group label, #page-login .label-row label{
+.auth-page .field-group label, .auth-page .label-row label{
   color: #262d3b;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
 }
 
-#page-login .label-row{
+.auth-page .label-row{
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-#page-login .text-button{
+.auth-page .text-button{
   padding: 0;
   border: 0;
   background: none;
@@ -127,11 +127,11 @@
   cursor: pointer;
 }
 
-#page-login .text-button:hover{
+.auth-page .text-button:hover{
   text-decoration: underline;
 }
 
-#page-login .input-wrap{
+.auth-page .input-wrap{
   display: flex;
   height: 49px;
   align-items: center;
@@ -143,19 +143,19 @@
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-#page-login .input-wrap:focus-within{
+.auth-page .input-wrap:focus-within{
   border-color: #8aaaf8;
   box-shadow: 0 0 0 3px rgba(40, 98, 237, 0.1);
 }
 
-#page-login .input-icon{
+.auth-page .input-icon{
   width: 19px;
   height: 19px;
   flex: 0 0 auto;
   color: #828895;
 }
 
-#page-login .input-wrap input{
+.auth-page .input-wrap input{
   width: 100%;
   min-width: 0;
   height: 100%;
@@ -167,12 +167,12 @@
   font-size: 13px;
 }
 
-#page-login .input-wrap input::placeholder{
+.auth-page .input-wrap input::placeholder{
   color: #969ba4;
   opacity: 1;
 }
 
-#page-login .password-toggle{
+.auth-page .password-toggle{
   display: grid;
   width: 30px;
   height: 34px;
@@ -185,11 +185,11 @@
   cursor: pointer;
 }
 
-#page-login .password-toggle svg{
+.auth-page .password-toggle svg{
   width: 19px;
 }
 
-#page-login .remember-option{
+.auth-page .remember-option{
   display: inline-flex;
   width: fit-content;
   align-items: center;
@@ -200,14 +200,14 @@
   cursor: pointer;
 }
 
-#page-login .remember-option input{
+.auth-page .remember-option input{
   width: 16px;
   height: 16px;
   margin: 0;
   accent-color: var(--blue);
 }
 
-#page-login .submit-button{
+.auth-page .submit-button{
   min-height: 48px;
   margin-top: 1px;
   border: 1px solid var(--blue);
@@ -221,13 +221,13 @@
   transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
-#page-login .submit-button:hover{
+.auth-page .submit-button:hover{
   transform: translateY(-1px);
   background: #1e54d4;
   box-shadow: 0 7px 15px rgba(40, 98, 237, 0.18);
 }
 
-#page-login .form-message{
+.auth-page .form-message{
   min-height: 0;
   margin: -3px 0 0;
   color: var(--blue);
@@ -235,11 +235,11 @@
   line-height: 1.5;
 }
 
-#page-login .form-message:empty{
+.auth-page .form-message:empty{
   display: none;
 }
 
-#page-login .divider{
+.auth-page .divider{
   display: flex;
   align-items: center;
   gap: 12px;
@@ -250,20 +250,20 @@
   white-space: nowrap;
 }
 
-#page-login .divider::before, #page-login .divider::after{
+.auth-page .divider::before, .auth-page .divider::after{
   height: 1px;
   flex: 1;
   background: #ededef;
   content: "";
 }
 
-#page-login .social-login{
+.auth-page .social-login{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
 
-#page-login .social-button{
+.auth-page .social-button{
   display: inline-flex;
   min-height: 46px;
   align-items: center;
@@ -279,55 +279,55 @@
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-#page-login .social-button:hover{
+.auth-page .social-button:hover{
   border-color: #c9d2e9;
   background: white;
 }
 
-#page-login .google-icon, #page-login .facebook-icon{
+.auth-page .google-icon, .auth-page .facebook-icon{
   width: 16px;
   height: 16px;
 }
 
-#page-login .facebook-icon{
+.auth-page .facebook-icon{
   color: #172033;
 }
 
 @media (max-width: 480px){
-  #page-login .login-page{
+  .auth-page .login-page{
     padding: 35px 22px;
   }
 
-  #page-login .brand{
+  .auth-page .brand{
     margin-bottom: 29px;
   }
 
-  #page-login .login-heading{
+  .auth-page .login-heading{
     margin-bottom: 28px;
   }
 
-  #page-login .login-heading p{
+  .auth-page .login-heading p{
     font-size: 15px;
   }
 
-  #page-login .desktop-break{
+  .auth-page .desktop-break{
     display: none;
   }
 
-  #page-login .social-login{
+  .auth-page .social-login{
     gap: 9px;
   }
 }
 
 @media (prefers-reduced-motion: reduce){
-  #page-login *, #page-login *::before, #page-login *::after{
+  .auth-page *, .auth-page *::before, .auth-page *::after{
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
 }
 
 /* Tambahan untuk login demo owner/pelanggan. */
-#page-login .demo-accounts{
+.auth-page .demo-accounts{
   display: grid;
   margin: 0 0 22px;
   padding: 11px 13px;
@@ -336,7 +336,7 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-#page-login .demo-title{
+.auth-page .demo-title{
   margin: 0 0 3px;
   color: var(--muted);
   font-size: 9px;
@@ -345,7 +345,7 @@
   text-transform: uppercase;
 }
 
-#page-login .demo-account{
+.auth-page .demo-account{
   display: flex;
   min-width: 0;
   align-items: center;
@@ -354,36 +354,36 @@
   padding: 9px 0;
 }
 
-#page-login .demo-account + .demo-account{
+.auth-page .demo-account + .demo-account{
   border-top: 1px solid #ededef;
 }
 
-#page-login .demo-account > div{
+.auth-page .demo-account > div{
   min-width: 0;
 }
 
-#page-login .demo-account strong,
-#page-login .demo-account span{
+.auth-page .demo-account strong,
+.auth-page .demo-account span{
   display: block;
 }
 
-#page-login .demo-account strong{
+.auth-page .demo-account strong{
   color: var(--ink);
   font-size: 11px;
 }
 
-#page-login .demo-account span{
+.auth-page .demo-account span{
   overflow-wrap: anywhere;
   color: var(--muted);
   font-size: 10px;
 }
 
-#page-login .demo-account .text-button{
+.auth-page .demo-account .text-button{
   flex: 0 0 auto;
   font-weight: 600;
 }
 
-#page-login .login-notice{
+.auth-page .login-notice{
   margin: 0 0 18px;
   padding: 9px 11px;
   border: 1px solid #cfdcfb;
@@ -394,6 +394,24 @@
   line-height: 1.5;
 }
 
-#page-login .form-message.is-error{
+.auth-page .form-message.is-error{
   color: #b42318;
+}
+
+/* Tautan silang antara halaman /login dan /register. */
+.auth-page .signup-link{
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.auth-page .signup-link a{
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-page .signup-link a:hover{
+  text-decoration: underline;
 }

@@ -12,6 +12,7 @@ import LandingPage from '../pages/user/LandingPage';
 import LoginPage from '../pages/user/LoginPage';
 import PembayaranPage from '../pages/user/PembayaranPage';
 import PilihLayananPage from '../pages/user/PilihLayananPage';
+import RegisterPage from '../pages/user/RegisterPage';
 import OwnerCatalogPage from '../pages/owner/OwnerCatalogPage';
 import OwnerDashboardPage from '../pages/owner/OwnerDashboardPage';
 import OwnerOrderDetailPage from '../pages/owner/OwnerOrderDetailPage';
@@ -21,7 +22,7 @@ import OwnerSettingsPage from '../pages/owner/OwnerSettingsPage';
 
 /**
  * Daftar route frontend. Halaman user dan owner dipisahkan berdasarkan prefix:
- * - user: /, /login, /layanan, /pembayaran, /konfirmasi-pesanan, /lacak-pesanan
+ * - user: /, /login, /register, /layanan, /pembayaran, /konfirmasi-pesanan, /lacak-pesanan
  * - owner: /owner, /owner/orders, /owner/catalog, /owner/reviews, /owner/settings (butuh login owner)
  *
  * Halaman template lama tetap tersedia di /template, /about, dan /api-status.
@@ -31,6 +32,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/layanan" element={<PilihLayananPage />} />
       <Route path="/pembayaran" element={<PembayaranPage />} />
       <Route path="/konfirmasi-pesanan" element={<KonfirmasiPesananPage />} />

@@ -83,7 +83,7 @@ export default function LandingPage() {
               <Link className="login-link" to="/login">
                 Masuk
               </Link>
-              <Link className="button button--small" to="/login">
+              <Link className="button button--small" to="/register">
                 Daftar
               </Link>
             </>

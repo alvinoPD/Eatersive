@@ -1,10 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { apiLogin, apiLogout } from '../api/auth';
+import { apiLogin, apiLogout, apiRegister, type AuthPayload } from '../api/auth';
 import { getApiErrorMessage } from '../api/client';
 import { clearAuthSession, readAuthSession, writeAuthSession } from './authStorage';
 import { SESSION_KEY } from './session-store';
 import { AuthContext } from './auth-context';
-import type { AuthSession, LoginResult } from '../types/auth';
+import type { AuthSession, LoginResult, RegisterResult } from '../types/auth';
 import type { CaptchaValue } from '../api/captcha';
 
 interface AuthProviderProps {
@@ -33,6 +33,22 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     return () => window.removeEventListener('eatersive:unauthorized', handleUnauthorized);
   }, []);
 
+  /** Ubah payload `token + user` dari backend menjadi sesi browser. */
+  function persistSession(payload: AuthPayload, remember: boolean): AuthSession {
+    const nextSession: AuthSession = {
+      userId: String(payload.user.id),
+      name: payload.user.name,
+      email: payload.user.email,
+      role: payload.user.role === 'admin' ? 'owner' : 'user',
+      token: payload.token,
+    };
+
+    writeAuthSession(nextSession, remember);
+    setSession(nextSession);
+
+    return nextSession;
+  }
+
   async function login(
     email: string,
     password: string,
@@ -42,18 +58,27 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       const payload = await apiLogin(email, password, captcha);
 
-      const nextSession: AuthSession = {
-        userId: String(payload.user.id),
-        name: payload.user.name,
-        email: payload.user.email,
-        role: payload.user.role === 'admin' ? 'owner' : 'user',
-        token: payload.token,
-      };
+      return { ok: true, session: persistSession(payload, remember) };
+    } catch (error) {
+      return { ok: false, message: getApiErrorMessage(error) };
+    }
+  }
 
-      writeAuthSession(nextSession, remember);
-      setSession(nextSession);
+  /**
+   * Daftar akun baru. Backend memang mengembalikan token, tetapi token itu
+   * sengaja TIDAK disimpan: akun harus tersimpan dulu di database, lalu
+   * pengguna masuk lewat halaman login seperti biasa.
+   */
+  async function register(
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+  ): Promise<RegisterResult> {
+    try {
+      await apiRegister(name, email, password, passwordConfirmation);
 
-      return { ok: true, session: nextSession };
+      return { ok: true };
     } catch (error) {
       return { ok: false, message: getApiErrorMessage(error) };
     }
@@ -84,7 +109,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, login, logout, updateSessionUser }}>
+    <AuthContext.Provider value={{ session, login, register, logout, updateSessionUser }}>
       {children}
     </AuthContext.Provider>
   );

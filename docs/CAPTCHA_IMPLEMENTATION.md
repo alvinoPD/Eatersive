@@ -1977,3 +1977,155 @@ curl -s -o /dev/null -w "%{http_code}\n" -X POST \
 
 `500` pada perintah pertama berarti tabel memang tidak ada di database yang sedang dipakai.
 `422` berarti seluruh rantai (route → service → tabel → fingerprint → verifikasi) berjalan normal.
+
+---
+
+## 9. Halaman daftar akun `/register`
+
+Sebelumnya halaman `/login` tidak punya jalan ke registrasi: tombol **Daftar** di landing page
+mengarah ke `/login`, dan tidak ada form daftar sama sekali — meskipun backend `POST /api/v1/auth/register`
+sudah ada dan `apiRegister()` sudah ditulis di `src/api/auth.ts`. Yang hilang hanya lapisan UI.
+
+### 9.1 Keputusan desain
+
+- **Halaman terpisah `/register`, bukan section di bawah form login.** Dua form besar dalam satu
+  kartu membuat halaman login panjang dan mudah tertukar. Halaman daftar punya judul sendiri
+  ("Buat Akun Baru") dan tautan balik ke `/login`.
+- **Satu stylesheet untuk dua halaman.** `login.css` dan `captcha.css` sebelumnya di-scope ke id
+  `#page-login`; scope-nya diubah menjadi kelas `.auth-page` (satu `sed` di kedua file) sehingga
+  halaman login dan daftar memakai aturan CSS yang sama persis tanpa duplikasi. Konsekuensinya:
+  pembungkus di `LoginPage.tsx` sekarang `<div className="auth-page">`, bukan `id="page-login"`.
+- **Form daftar tetap `<form>` sendiri**, tidak berbagi state dengan form login. Nested `<form>`
+  tidak valid di HTML dan akan membuat submit login ikut terkirim.
+- **Tanpa CAPTCHA.** `Authcontroller::register()` belum memverifikasi CAPTCHA, jadi memasang
+  `CaptchaField` di form daftar hanya akan jadi hiasan — nilainya tidak diperiksa siapa pun.
+  Kalau nanti pendaftaran jadi sasaran spam, tambahkan verifikasi di backend dulu, baru widget-nya.
+- **Tidak auto-login.** Response `/auth/register` memang berisi `token`, tetapi token itu tidak
+  disimpan. Setelah akun tersimpan di database, pengguna diarahkan ke `/login` dengan state
+  `{ registered: true, email }`; email terisi otomatis dan pengguna cukup memasukkan kata sandi.
+  Alasannya: sesi baru dibuat setelah kredensial diverifikasi lewat jalur login yang memang sudah
+  punya CAPTCHA, throttle, dan pencatatan. Karena itu checkbox "Ingat saya" tidak ada di halaman
+  daftar — halaman itu tidak membuat sesi sama sekali.
+
+### 9.2 File yang disentuh
+
+| File | Perubahan |
+|---|---|
+| `backend/` | **tidak ada perubahan** — endpoint register sudah siap |
+| `frontend/src/auth/AuthProvider.tsx` | `persistSession()` (ekstrak pemetaan payload → sesi), fungsi baru `register()`, `register` masuk ke value context |
+| `frontend/src/auth/auth-context.ts` | tanda tangan `register` di `AuthContextValue` |
+| `frontend/src/pages/user/RegisterPage.tsx` | **file baru** — halaman daftar lengkap |
+| `frontend/src/pages/user/LoginPage.tsx` | tautan "Belum punya akun? Daftar sekarang" ke `/register`; pembungkus jadi `className="auth-page"` |
+| `frontend/src/routes/AppRoutes.tsx` | route publik `/register` |
+| `frontend/src/pages/user/LandingPage.tsx` | tombol **Daftar** di header mengarah ke `/register` (sebelumnya `/login`) |
+| `frontend/src/styles/login.css` | scope `#page-login` → `.auth-page`, tambah `.signup-link` |
+| `frontend/src/styles/captcha.css` | scope `#page-login` → `.auth-page` |
+
+Bagian `AuthProvider` yang berubah:
+
+```tsx
+/** Ubah payload `token + user` dari backend menjadi sesi browser. */
+function persistSession(payload: AuthPayload, remember: boolean): AuthSession {
+  const nextSession: AuthSession = {
+    userId: String(payload.user.id),
+    name: payload.user.name,
+    email: payload.user.email,
+    role: payload.user.role === 'admin' ? 'owner' : 'user',
+    token: payload.token,
+  };
+
+  writeAuthSession(nextSession, remember);
+  setSession(nextSession);
+
+  return nextSession;
+}
+
+/**
+ * Daftar akun baru. Backend memang mengembalikan token, tetapi token itu
+ * sengaja TIDAK disimpan: akun harus tersimpan dulu di database, lalu
+ * pengguna masuk lewat halaman login seperti biasa.
+ */
+async function register(
+  name: string,
+  email: string,
+  password: string,
+  passwordConfirmation: string,
+): Promise<RegisterResult> {
+  try {
+    await apiRegister(name, email, password, passwordConfirmation);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, message: getApiErrorMessage(error) };
+  }
+}
+```
+
+Handler di `RegisterPage.tsx`. Validasi kecocokan kata sandi dilakukan di frontend karena
+`Authcontroller::register()` hanya memvalidasi `password` (min 8), tidak membandingkan
+`password_confirmation`:
+
+```tsx
+async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  setMessage('');
+
+  if (password !== passwordConfirmation) {
+    setMessageIsError(true);
+    setMessage('Konfirmasi kata sandi tidak cocok.');
+    return;
+  }
+
+  setPending(true);
+  const result = await register(name, email, password, passwordConfirmation);
+  setPending(false);
+
+  if (!result.ok) {
+    setMessageIsError(true);
+    setMessage(result.message);
+    return;
+  }
+
+  /* Akun sudah tersimpan di database → pengguna masuk lewat halaman login. */
+  navigate('/login', {
+    replace: true,
+    state: { registered: true, email: email.trim() },
+  });
+}
+```
+
+Route-nya publik, sejajar dengan `/login`:
+
+```tsx
+<Route path="/login" element={<LoginPage />} />
+<Route path="/register" element={<RegisterPage />} />
+```
+
+### 9.3 Perilaku yang perlu diketahui
+
+- Akun baru selalu berperan `user` (backend mengisi `role` sendiri, tidak bisa ditentukan frontend).
+- Token yang tetap dibuat backend dibiarkan apa adanya: `tests/Feature/Api/AuthTest.php` punya
+  `test_register_user_returns_success_with_token`, jadi menghapus `token` dari response akan
+  merusak kontrak yang sudah diuji. Frontend cuma tidak menyimpannya.
+- Notifikasi sukses dikirim lewat `location.state`, bukan query string, supaya email tidak ikut
+  tersimpan di riwayat browser. Pesannya memakai `.login-notice` yang sudah ada.
+- Halaman daftar **tidak** memakai `from` — pengguna yang mendaftar dari halaman terlindungi
+  diarahkan ke beranda user, bukan kembali ke halaman owner.
+- Pesan error backend (mis. email sudah dipakai) tampil apa adanya lewat `getApiErrorMessage()`,
+  dengan pola `.form-message.is-error` seperti form login.
+- Setelah daftar berhasil, form login dan CAPTCHA yang belum terpakai ditinggal begitu saja —
+  challenge yang tidak dipakai akan dibersihkan `prune()` setelah 2 jam.
+
+### 9.4 Verifikasi yang sudah dilakukan
+
+| Cek | Hasil |
+|---|---|
+| `npx tsc -b` | exit 0 |
+| `POST /api/v1/auth/register` (akun uji `cta-probe-*`) | `{"success":true,"message":"Register berhasil",...,"role":"user"}` + token |
+| Bersih-bersih akun uji | user dihapus (`deleted=1`), token orphan di `personal_access_tokens` juga dihapus |
+| Scope CSS | 67 selector di `login.css` + 12 di `captcha.css` sudah memakai `.auth-page`; tidak ada `#page-login` tersisa |
+| Alur daftar | daftar → redirect `/login` (state `registered`) → email terisi, sesi **belum** dibuat |
+
+Tampilan kedua halaman belum saya buka di browser; kalau ada yang janggal, itu murni CSS.
+
+Catatan: alur registrasi memakai endpoint yang **tidak** saya ubah, jadi tidak ada test baru di backend.
+Yang diverifikasi adalah kontraknya masih cocok dengan pemanggilan frontend.
