@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
-import RequireAuth from '../auth/RequireAuth';
 import RequireRole from '../auth/RequireRole';
 import MainLayout from '../layouts/MainLayout';
 import AboutPage from '../pages/AboutPage';
 import ApiStatusPage from '../pages/ApiStatusPage';
+import CaptchaPreviewPage from '../pages/CaptchaPreviewPage';
 import HomePage from '../pages/HomePage';
 import NotFoundPage from '../pages/NotFoundPage';
 import KonfirmasiPesananPage from '../pages/user/KonfirmasiPesananPage';
@@ -18,12 +18,11 @@ import OwnerOrderDetailPage from '../pages/owner/OwnerOrderDetailPage';
 import OwnerOrdersPage from '../pages/owner/OwnerOrdersPage';
 import OwnerReviewsPage from '../pages/owner/OwnerReviewsPage';
 import OwnerSettingsPage from '../pages/owner/OwnerSettingsPage';
-import PesananSayaPage from '../pages/user/PesananSayaPage';
 
 /**
  * Daftar route frontend. Halaman user dan owner dipisahkan berdasarkan prefix:
  * - user: /, /login, /layanan, /pembayaran, /konfirmasi-pesanan, /lacak-pesanan
- * - owner: /owner, /owner/orders, /owner/catalog, /owner/reviews (butuh login owner)
+ * - owner: /owner, /owner/orders, /owner/catalog, /owner/reviews, /owner/settings (butuh login owner)
  *
  * Halaman template lama tetap tersedia di /template, /about, dan /api-status.
  */
@@ -35,11 +34,7 @@ export default function AppRoutes() {
       <Route path="/layanan" element={<PilihLayananPage />} />
       <Route path="/pembayaran" element={<PembayaranPage />} />
       <Route path="/konfirmasi-pesanan" element={<KonfirmasiPesananPage />} />
-
-      <Route element={<RequireAuth />}>
-        <Route path="/pesanan-saya" element={<PesananSayaPage />} />
-        <Route path="/lacak-pesanan" element={<LacakPesananPage />} />
-      </Route>
+      <Route path="/lacak-pesanan" element={<LacakPesananPage />} />
 
       <Route element={<RequireRole role="owner" />}>
         <Route path="/owner" element={<OwnerDashboardPage />} />
@@ -56,6 +51,8 @@ export default function AppRoutes() {
         <Route path="api-status" element={<ApiStatusPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
+      <Route path="login" element={<LoginPage />} />
+      <Route path="captcha-preview" element={<CaptchaPreviewPage />} />
     </Routes>
   );
 }

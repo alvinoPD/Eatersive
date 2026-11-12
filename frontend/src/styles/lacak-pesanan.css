@@ -106,10 +106,6 @@
   gap: 17px;
 }
 
-#page-lacak .menu-toggle{
-  display: none;
-}
-
 #page-lacak .button{
   display: inline-flex;
   min-height: 34px;
@@ -702,73 +698,8 @@
     padding-inline: 17px;
   }
 
-  #page-lacak .menu-toggle{
-    display: flex;
-    width: 38px;
-    height: 38px;
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin-left: auto;
-    padding: 0;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: #fff;
-    color: inherit;
-    cursor: pointer;
-  }
-
-  #page-lacak .menu-toggle span{
-    width: 16px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--ink);
-    transition: transform 160ms ease, opacity 160ms ease;
-  }
-
-  #page-lacak .menu-toggle[aria-expanded="true"] span:first-child{
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  #page-lacak .menu-toggle[aria-expanded="true"] span:nth-child(2){
-    opacity: 0;
-  }
-
-  #page-lacak .menu-toggle[aria-expanded="true"] span:last-child{
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
   #page-lacak .main-nav{
-    position: absolute;
-    z-index: 20;
-    top: 100%;
-    right: 0;
-    left: 0;
     display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    margin: 0;
-    padding: 4px 17px 10px;
-    border-bottom: 1px solid var(--border);
-    background: #f9fafc;
-    box-shadow: 0 12px 24px rgba(21, 30, 49, 0.08);
-  }
-
-  #page-lacak .main-nav.is-open{
-    display: flex;
-  }
-
-  #page-lacak .main-nav a{
-    padding: 12px 0;
-    border-top: 1px solid #eceef2;
-    font-size: 13px;
-  }
-
-  #page-lacak .header-actions{
-    margin-left: 10px;
   }
 
   #page-lacak .tracking-layout{
@@ -780,93 +711,6 @@
 
   #page-lacak .tracking-column{
     gap: 13px;
-  }
-
-  #page-lacak .eyebrow{
-    font-size: 11px;
-  }
-
-  #page-lacak .page-heading > p:last-child{
-    font-size: 12px;
-    line-height: 1.55;
-  }
-
-  #page-lacak .page-heading > p strong{
-    font-size: 11px;
-  }
-
-  #page-lacak .timeline-copy h3{
-    font-size: 12px;
-  }
-
-  #page-lacak .timeline-copy p{
-    font-size: 12px;
-    line-height: 1.55;
-  }
-
-  #page-lacak .timeline-copy time{
-    font-size: 10px;
-  }
-
-  #page-lacak .current-status{
-    font-size: 9px;
-  }
-
-  #page-lacak .empty-order{
-    font-size: 12px;
-  }
-
-  #page-lacak .service-name-row h3{
-    font-size: 13px;
-  }
-
-  #page-lacak .service-label{
-    font-size: 9px;
-  }
-
-  #page-lacak .service-description{
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-  #page-lacak .service-specs span{
-    font-size: 10px;
-  }
-
-  #page-lacak .service-specs strong{
-    font-size: 11px;
-  }
-
-  #page-lacak .detail-info h3{
-    font-size: 11px;
-  }
-
-  #page-lacak .detail-info p{
-    font-size: 11px;
-    line-height: 1.55;
-  }
-
-  #page-lacak .info-alert strong{
-    font-size: 11px;
-  }
-
-  #page-lacak .info-alert p{
-    font-size: 11px;
-    line-height: 1.55;
-  }
-
-  #page-lacak .review-header h2{
-    font-size: 13px;
-  }
-
-  #page-lacak .review-header p{
-    max-width: none;
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-  #page-lacak .review-message{
-    font-size: 11px;
   }
 
   #page-lacak .review-card{
@@ -900,38 +744,33 @@
   }
 
   #page-lacak .rating-field legend{
-    font-size: 12px;
+    font-size: 11px;
   }
 
   #page-lacak .star-rating button{
     font-size: 27px;
   }
 
-  #page-lacak .review-label{
-    font-size: 12px;
+  #page-lacak .review-label, #page-lacak #review-text{
+    font-size: 10px;
   }
 
   #page-lacak #review-text{
-    min-height: 100px;
-    font-size: 14px;
+    min-height: 84px;
   }
 
   #page-lacak .upload-box{
-    min-height: 88px;
-    font-size: 11px;
+    min-height: 84px;
+    font-size: 9px;
   }
 
   #page-lacak .submit-review{
-    min-height: 46px;
-    font-size: 13px;
+    min-height: 40px;
+    font-size: 11px;
   }
 }
 
 @media (max-width: 380px){
-  #page-lacak .login-link{
-    display: none;
-  }
-
   #page-lacak .detail-info-grid{
     grid-template-columns: 1fr;
   }

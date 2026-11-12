@@ -32,9 +32,6 @@ class LayananController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'deskripsi' => ['nullable', 'string', 'max:65535'],
             'harga' => ['required', 'numeric', 'min:0'],
-            'kategori' => ['nullable', 'string', 'max:32'],
-            'estimasi' => ['nullable', 'string', 'max:64'],
-            'aktif' => ['sometimes', 'boolean'],
         ]);
 
         $layanan = daftar_layanan::create($attributes);
@@ -88,9 +85,6 @@ class LayananController extends Controller
             'nama' => ['sometimes', 'required', 'string', 'max:255'],
             'deskripsi' => ['sometimes', 'nullable', 'string', 'max:65535'],
             'harga' => ['sometimes', 'required', 'numeric', 'min:0'],
-            'kategori' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'estimasi' => ['sometimes', 'nullable', 'string', 'max:64'],
-            'aktif' => ['sometimes', 'boolean'],
         ]));
 
         return response()->json([

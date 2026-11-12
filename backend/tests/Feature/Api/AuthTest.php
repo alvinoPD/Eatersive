@@ -3,12 +3,38 @@
 namespace Tests\Feature\Api;
 
 use App\Models\User;
+use App\Services\CaptchaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Challenge terikat pada IP + User-Agent, jadi kedua nilai itu disamakan
+     * antara pembuatan challenge dan request login.
+     */
+    private function makeCaptcha(): array
+    {
+        $request = Request::create('/api/v1/captcha', 'GET', server: [
+            'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_USER_AGENT' => 'phpunit',
+        ]);
+
+        return app(CaptchaService::class)->issue($request, 'login');
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function postLogin(array $payload)
+    {
+        return $this->withHeader('User-Agent', 'phpunit')
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->postJson('/api/v1/auth/login', $payload);
+    }
 
     public function test_register_user_returns_success_with_token(): void
     {
@@ -43,9 +69,13 @@ class AuthTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response = $this->postJson('/api/v1/auth/login', [
+        $captcha = $this->makeCaptcha();
+
+        $response = $this->postLogin([
             'email' => 'customer@example.com',
             'password' => 'password123',
+            'captcha_id' => $captcha['challenge']->id,
+            'captcha_answer' => $captcha['answer'],
         ]);
 
         $response
@@ -67,12 +97,29 @@ class AuthTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response = $this->postJson('/api/v1/auth/login', [
+        $captcha = $this->makeCaptcha();
+
+        $response = $this->postLogin([
             'email' => 'customer@example.com',
             'password' => 'wrongpassword',
+            'captcha_id' => $captcha['challenge']->id,
+            'captcha_answer' => $captcha['answer'],
         ]);
 
         $response->assertStatus(401);
+    }
+
+    public function test_login_without_captcha_is_rejected(): void
+    {
+        User::factory()->create([
+            'email' => 'customer@example.com',
+            'password' => 'password123',
+        ]);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => 'customer@example.com',
+            'password' => 'password123',
+        ])->assertStatus(422);
     }
 
     public function test_me_requires_authentication(): void

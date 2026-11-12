@@ -102,10 +102,6 @@
   gap: 18px;
 }
 
-#page-konfirmasi .menu-toggle{
-  display: none;
-}
-
 #page-konfirmasi .button{
   display: inline-flex;
   min-height: 39px;
@@ -667,148 +663,12 @@
     height: 56px;
   }
 
-  #page-konfirmasi .menu-toggle{
-    display: flex;
-    width: 38px;
-    height: 38px;
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin-left: auto;
-    padding: 0;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: #fff;
-    color: inherit;
-    cursor: pointer;
-  }
-
-  #page-konfirmasi .menu-toggle span{
-    width: 16px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--ink);
-    transition: transform 160ms ease, opacity 160ms ease;
-  }
-
-  #page-konfirmasi .menu-toggle[aria-expanded="true"] span:first-child{
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  #page-konfirmasi .menu-toggle[aria-expanded="true"] span:nth-child(2){
-    opacity: 0;
-  }
-
-  #page-konfirmasi .menu-toggle[aria-expanded="true"] span:last-child{
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
   #page-konfirmasi .main-nav{
-    position: absolute;
-    z-index: 20;
-    top: 100%;
-    right: 0;
-    left: 0;
     display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    margin: 0;
-    padding: 4px 17px 10px;
-    border-bottom: 1px solid var(--line);
-    background: #f9fafc;
-    box-shadow: 0 12px 24px rgba(21, 30, 49, 0.08);
-  }
-
-  #page-konfirmasi .main-nav.is-open{
-    display: flex;
-  }
-
-  #page-konfirmasi .main-nav a{
-    padding: 12px 0;
-    border-top: 1px solid #eceef2;
-    font-size: 13px;
   }
 
   #page-konfirmasi .header-actions{
     gap: 12px;
-    margin-left: 10px;
-  }
-
-  #page-konfirmasi .estimate{
-    font-size: 11px;
-  }
-
-  #page-konfirmasi .steps-copy li > span{
-    font-size: 11px;
-  }
-
-  #page-konfirmasi .steps-copy li p{
-    font-size: 12px;
-    line-height: 1.55;
-  }
-
-  #page-konfirmasi .tracking-message{
-    font-size: 11px;
-  }
-
-  #page-konfirmasi .support-card h2{
-    font-size: 13px;
-  }
-
-  #page-konfirmasi .support-card p{
-    font-size: 11px;
-  }
-
-  #page-konfirmasi .support-card > a{
-    font-size: 12px;
-  }
-
-  #page-konfirmasi .demo-note{
-    font-size: 11px;
-  }
-
-  #page-konfirmasi .status-pill{
-    font-size: 10px;
-  }
-
-  #page-konfirmasi .order-meta span, #page-konfirmasi .items-section h3{
-    font-size: 10px;
-  }
-
-  #page-konfirmasi .order-meta strong{
-    font-size: 12px;
-  }
-
-  #page-konfirmasi .detail-row div > span{
-    font-size: 11px;
-  }
-
-  #page-konfirmasi .detail-row strong{
-    font-size: 12px;
-  }
-
-  #page-konfirmasi .confirmed-items li, #page-konfirmasi .confirmed-items li strong{
-    font-size: 12px;
-  }
-
-  #page-konfirmasi .confirmed-total{
-    font-size: 13px;
-  }
-
-  #page-konfirmasi .confirmed-total strong:last-child{
-    font-size: 16px;
-  }
-
-  #page-konfirmasi .no-items-message{
-    font-size: 12px;
-  }
-
-  #page-konfirmasi .order-card-actions button{
-    min-height: 46px;
-    font-size: 12px;
   }
 
   #page-konfirmasi .confirmation-layout{
@@ -871,12 +731,6 @@
 
   #page-konfirmasi .order-card{
     grid-row: 9;
-  }
-}
-
-@media (max-width: 380px){
-  #page-konfirmasi .login-link{
-    display: none;
   }
 }
 

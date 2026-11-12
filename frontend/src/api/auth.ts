@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import type { CaptchaValue } from './captcha';
 import type { ApiResponse } from '../types/api';
 
 export type ApiRole = 'admin' | 'user';
@@ -16,10 +17,17 @@ export interface AuthPayload {
   user: ApiUser;
 }
 
-export async function apiLogin(email: string, password: string): Promise<AuthPayload> {
+export async function apiLogin(
+  email: string,
+  password: string,
+  captcha: CaptchaValue,
+): Promise<AuthPayload> {
+  /* Backend memverifikasi CAPTCHA sebelum memeriksa kredensial. */
   const { data } = await apiClient.post<ApiResponse<AuthPayload>>('/auth/login', {
     email,
     password,
+    captcha_id: captcha.id,
+    captcha_answer: captcha.answer,
   });
 
   return data.data;

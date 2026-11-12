@@ -124,6 +124,11 @@ export default function OwnerShell({
             >
               {SETTINGS_ICON}
               <span>Pengaturan</span>
+              {activeNav === 'settings' && (
+                <span className="nav-chevron" aria-hidden="true">
+                  ›
+                </span>
+              )}
             </Link>
             <Link
               className="nav-link nav-link--logout"

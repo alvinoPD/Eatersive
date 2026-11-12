@@ -477,13 +477,6 @@
   margin-top: 20px;
 }
 
-#page-owner-dashboard .chart-wrap .empty-state{
-  grid-column: 1 / -1;
-  align-self: center;
-  padding: 20px 12px;
-  line-height: 1.6;
-}
-
 #page-owner-dashboard .chart-y-labels{
   display: flex;
   flex-direction: column;

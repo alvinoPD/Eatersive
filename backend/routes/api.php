@@ -1,12 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\CaptchaController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\PingController;
 use App\Http\Controllers\Authcontroller;
 use App\Http\Controllers\LayananController;
-use App\Http\Controllers\OwnerDashboardController;
-use App\Http\Controllers\OwnerProfileController;
-use App\Http\Controllers\PesananController;
 use App\Http\Controllers\RiviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,10 +24,15 @@ Route::prefix('v1')->group(function (): void {
 
     // Contoh endpoint untuk pola penambahan fitur API baru.
     Route::get('/ping', PingController::class)->name('api.v1.ping');
+    Route::get('/captcha', [CaptchaController::class, 'show'])
+        ->middleware('throttle:30,1')
+        ->name('api.v1.captcha.show');
 
     Route::prefix('auth')->group(function (): void {
         Route::post('/register', [Authcontroller::class, 'register'])->name('api.v1.auth.register');
-        Route::post('/login', [Authcontroller::class, 'login'])->name('api.v1.auth.login');
+        Route::post('/login', [Authcontroller::class, 'login'])
+            ->middleware('throttle:10,1')
+            ->name('api.v1.auth.login');
         Route::post('/logout', [Authcontroller::class, 'logout'])->middleware('auth:sanctum')->name('api.v1.auth.logout');
         Route::get('/me', [Authcontroller::class, 'me'])->middleware('auth:sanctum')->name('api.v1.auth.me');
     });
@@ -44,23 +47,5 @@ Route::prefix('v1')->group(function (): void {
 
     Route::prefix('reviews')->group(function (): void {
         Route::post('/', [RiviewController::class, 'store'])->middleware('auth:sanctum')->name('api.v1.reviews.store');
-    });
-
-    Route::prefix('orders')->middleware('auth:sanctum')->group(function (): void {
-        Route::get('/', [PesananController::class, 'index'])->name('api.v1.orders.index');
-        Route::post('/', [PesananController::class, 'store'])->name('api.v1.orders.store');
-        Route::get('/{id}', [PesananController::class, 'show'])->whereNumber('id')->name('api.v1.orders.show');
-        Route::patch('/{id}/status', [PesananController::class, 'updateStatus'])
-            ->whereNumber('id')
-            ->middleware('admin')
-            ->name('api.v1.orders.update-status');
-    });
-
-    Route::prefix('owner')->middleware(['auth:sanctum', 'admin'])->group(function (): void {
-        Route::get('/orders', [PesananController::class, 'ownerIndex'])->name('api.v1.owner.orders');
-        Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('api.v1.owner.dashboard');
-        Route::get('/profile', [OwnerProfileController::class, 'show'])->name('api.v1.owner.profile.show');
-        Route::put('/profile', [OwnerProfileController::class, 'update'])->name('api.v1.owner.profile.update');
-        Route::put('/password', [OwnerProfileController::class, 'updatePassword'])->name('api.v1.owner.password.update');
     });
 });

@@ -9,15 +9,7 @@ class daftar_layanan extends Model
 {
     protected $table = 'daftar_layanans';
 
-    protected $fillable = ['foto', 'nama', 'deskripsi', 'harga', 'kategori', 'estimasi', 'aktif'];
-
-    protected function casts(): array
-    {
-        return [
-            'harga' => 'float',
-            'aktif' => 'boolean',
-        ];
-    }
+    protected $fillable = ['foto', 'nama', 'deskripsi', 'harga'];
 
     public function pesanan(): HasMany
     {

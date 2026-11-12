@@ -1,23 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import OwnerShell from '../../components/owner/OwnerShell';
-import { getApiErrorMessage } from '../../api/client';
-import { fetchOwnerOrders, type Order } from '../../api/orders';
-import { FALLBACK_IMAGE } from '../../api/layanan';
+import { OWNER_ORDERS } from '../../data/ownerOrders';
+import type { OwnerOrder } from '../../types/eatersive';
 import '../../styles/owner-orders.css';
 
 type SortOrder = 'newest' | 'oldest' | 'customer';
-type CategoryFilter = 'all' | 'Cleaning' | 'Treatment' | 'Repair' | 'Unyellowing';
+type CategoryFilter = 'all' | OwnerOrder['category'];
 
-/** Status yang masih dikerjakan (belum selesai/dibatalkan). */
-const ACTIVE_STATUSES = ['pending', 'confirmed', 'processing', 'quality_check'];
+const STATUS_CLASS: Record<OwnerOrder['status'], string> = {
+  Selesai: 'status--done',
+  Proses: 'status--process',
+};
 
 export default function OwnerOrdersPage() {
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [sort, setSort] = useState<SortOrder>('newest');
@@ -26,54 +24,26 @@ export default function OwnerOrdersPage() {
     document.title = 'Kelola Pesanan — EaterSive';
   }, []);
 
-  useEffect(() => {
-    let alive = true;
-
-    fetchOwnerOrders()
-      .then((data) => {
-        if (!alive) return;
-        setOrders(data);
-        setError('');
-      })
-      .catch((fetchError) => {
-        if (!alive) return;
-        setError(getApiErrorMessage(fetchError));
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-
-    return () => {
-      alive = false;
-    };
-  }, []);
-
   const visibleOrders = useMemo(() => {
     const query = search.trim().toLocaleLowerCase('id');
+    return OWNER_ORDERS.filter((order) => {
+      const matchesCategory = category === 'all' || order.category === category;
+      const matchesQuery = `${order.id} ${order.customer} ${order.service} ${order.category}`
+        .toLocaleLowerCase('id')
+        .includes(query);
+      return matchesCategory && matchesQuery;
+    }).sort((first, second) => {
+      if (sort === 'oldest') return first.sequence - second.sequence;
+      if (sort === 'customer') return first.customer.localeCompare(second.customer, 'id');
+      return second.sequence - first.sequence;
+    });
+  }, [category, search, sort]);
 
-    return orders
-      .filter((order) => {
-        const serviceCategory = order.layanan?.kategori ?? '';
-        const matchesCategory = category === 'all' || serviceCategory === category;
-        const haystack = `${order.kode_pesanan ?? ''} ${order.nama} ${order.layanan?.nama ?? ''} ${serviceCategory}`;
-        const matchesQuery = haystack.toLocaleLowerCase('id').includes(query);
+  const totalOrders = OWNER_ORDERS.length;
+  const processOrders = OWNER_ORDERS.filter((order) => order.status === 'Proses').length;
+  const doneOrders = OWNER_ORDERS.filter((order) => order.status === 'Selesai').length;
 
-        return matchesCategory && matchesQuery;
-      })
-      .sort((first, second) => {
-        if (sort === 'customer') return first.nama.localeCompare(second.nama, 'id');
-        if (sort === 'oldest') return first.id - second.id;
-        return second.id - first.id;
-      });
-  }, [category, orders, search, sort]);
-
-  const totalOrders = orders.length;
-  const processOrders = orders.filter((order) =>
-    ACTIVE_STATUSES.includes(order.status),
-  ).length;
-  const doneOrders = orders.filter((order) => order.status === 'completed').length;
-
-  function openOrder(orderId: number) {
+  function openOrder(orderId: string) {
     navigate(`/owner/orders/${orderId}`);
   }
 
@@ -99,7 +69,7 @@ export default function OwnerOrdersPage() {
             </span>
             <div>
               <p>Total Pesanan</p>
-              <strong>{loading ? '—' : totalOrders}</strong>
+              <strong>{totalOrders}</strong>
             </div>
           </article>
           <article className="summary-card">
@@ -111,7 +81,7 @@ export default function OwnerOrdersPage() {
             </span>
             <div>
               <p>Proses</p>
-              <strong>{loading ? '—' : processOrders}</strong>
+              <strong>{processOrders}</strong>
             </div>
           </article>
           <article className="summary-card">
@@ -123,7 +93,7 @@ export default function OwnerOrdersPage() {
             </span>
             <div>
               <p>Selesai</p>
-              <strong>{loading ? '—' : doneOrders}</strong>
+              <strong>{doneOrders}</strong>
             </div>
           </article>
         </section>
@@ -139,7 +109,7 @@ export default function OwnerOrdersPage() {
               <input
                 ref={searchRef}
                 type="search"
-                placeholder="Cari kode pesanan, nama, atau layanan..."
+                placeholder="Cari nama layanan atau kategori..."
                 autoComplete="off"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -158,7 +128,6 @@ export default function OwnerOrdersPage() {
                 <option value="Cleaning">Cleaning</option>
                 <option value="Treatment">Treatment</option>
                 <option value="Repair">Repair</option>
-                <option value="Unyellowing">Unyellowing</option>
               </select>
               <span className="select-chevron" aria-hidden="true">
                 ⌄
@@ -197,88 +166,65 @@ export default function OwnerOrdersPage() {
                 </tr>
               </thead>
               <tbody>
-                {!loading &&
-                  !error &&
-                  visibleOrders.map((order, index) => (
-                    <tr
-                      className="order-row"
-                      key={order.id}
-                      tabIndex={0}
-                      aria-label={`Buka detail pesanan ${order.kode_pesanan ?? order.id}, ${order.nama}`}
-                      onClick={(event) => {
-                        if ((event.target as HTMLElement).closest('a, button, input, select')) {
-                          return;
-                        }
-                        openOrder(order.id);
-                      }}
-                      onKeyDown={(event) => {
-                        if (
-                          event.target !== event.currentTarget ||
-                          (event.key !== 'Enter' && event.key !== ' ')
-                        ) {
-                          return;
-                        }
-                        event.preventDefault();
-                        openOrder(order.id);
-                      }}
-                    >
-                      <td className="number-cell row-number">
-                        {String(index + 1).padStart(2, '0')}
-                      </td>
-                      <td>
-                        <Link className="order-id" to={`/owner/orders/${order.id}`}>
-                          {order.kode_pesanan ?? `#${order.id}`}
-                        </Link>
-                      </td>
-                      <td className="customer-name">{order.nama}</td>
-                      <td>
-                        <div className="service-cell">
-                          <img
-                            src={order.layanan?.foto || FALLBACK_IMAGE}
-                            alt=""
-                            loading="lazy"
-                          />
-                          <span>{order.layanan?.nama ?? '—'}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="estimate">
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="12" cy="12" r="8" />
-                            <path d="M12 7v5l3 2" />
-                          </svg>
-                          {order.layanan?.estimasi ?? '—'}
-                        </span>
-                      </td>
-                      <td className="status-cell">
-                        <span
-                          className={`status ${
-                            order.status === 'completed'
-                              ? 'status--done'
-                              : order.status === 'cancelled'
-                                ? 'status--cancelled'
-                                : 'status--process'
-                          }`}
-                        >
-                          {order.status_label}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                {visibleOrders.map((order, index) => (
+                  <tr
+                    className="order-row"
+                    key={order.id}
+                    tabIndex={0}
+                    aria-label={`Buka detail pesanan ${order.id}, ${order.customer}`}
+                    onClick={(event) => {
+                      if ((event.target as HTMLElement).closest('a, button, input, select')) {
+                        return;
+                      }
+                      openOrder(order.id);
+                    }}
+                    onKeyDown={(event) => {
+                      if (
+                        event.target !== event.currentTarget ||
+                        (event.key !== 'Enter' && event.key !== ' ')
+                      ) {
+                        return;
+                      }
+                      event.preventDefault();
+                      openOrder(order.id);
+                    }}
+                  >
+                    <td className="number-cell row-number">
+                      {String(index + 1).padStart(2, '0')}
+                    </td>
+                    <td>
+                      <Link className="order-id" to={`/owner/orders/${order.id}`}>
+                        {order.id}
+                      </Link>
+                    </td>
+                    <td className="customer-name">{order.customer}</td>
+                    <td>
+                      <div className="service-cell">
+                        <img src={order.serviceImage} alt="" />
+                        <span>{order.service}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="estimate">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <circle cx="12" cy="12" r="8" />
+                          <path d="M12 7v5l3 2" />
+                        </svg>
+                        {order.estimate}
+                      </span>
+                    </td>
+                    <td className="status-cell">
+                      <span className={`status ${STATUS_CLASS[order.status]}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-
-            {loading && <p className="empty-state">Memuat pesanan dari server…</p>}
-
-            {!loading && error && (
-              <p className="empty-state" role="alert">
-                {error}
-              </p>
-            )}
-
-            {!loading && !error && visibleOrders.length === 0 && (
+            {visibleOrders.length === 0 && (
               <p className="empty-state">
-                {orders.length === 0
+                {OWNER_ORDERS.length === 0
                   ? 'Belum ada pesanan. Pesanan pelanggan akan muncul di sini.'
                   : 'Tidak ada pesanan yang cocok.'}
               </p>

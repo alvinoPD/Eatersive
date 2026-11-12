@@ -100,14 +100,8 @@ export function readConfirmationOrder(): CheckoutOrder | null {
         ? candidate.createdAt
         : new Date().toISOString();
 
-    const orderIds = Array.isArray(candidate.orderIds)
-      ? candidate.orderIds.filter(
-          (value): value is number => typeof value === 'number' && Number.isInteger(value),
-        )
-      : undefined;
-
     return {
-      orderId: typeof candidate.orderId === 'string' ? candidate.orderId : '',
+      orderId: typeof candidate.orderId === 'string' ? candidate.orderId : 'ORD-DEMO',
       createdAt,
       address,
       items,
@@ -115,10 +109,6 @@ export function readConfirmationOrder(): CheckoutOrder | null {
         typeof candidate.paymentMethod === 'string'
           ? candidate.paymentMethod
           : 'QRIS / E-Wallet',
-      orderIds,
-      total: typeof candidate.total === 'number' ? candidate.total : undefined,
-      status: typeof candidate.status === 'string' ? candidate.status : undefined,
-      groupCode: typeof candidate.groupCode === 'string' ? candidate.groupCode : undefined,
     };
   } catch {
     return null;

@@ -35,29 +35,6 @@ export function writeStoredSession(session: unknown, remember: boolean): void {
   }
 }
 
-/** Memperbarui sebagian data sesi pada storage yang sedang dipakai. */
-export function updateStoredSession<T extends object>(partial: Partial<T>): T | null {
-  try {
-    for (const storage of storages()) {
-      const raw = storage.getItem(SESSION_KEY);
-      if (!raw) continue;
-
-      try {
-        const current = JSON.parse(raw) as T;
-        const next = { ...current, ...partial };
-        storage.setItem(SESSION_KEY, JSON.stringify(next));
-        return next;
-      } catch {
-        storage.removeItem(SESSION_KEY);
-      }
-    }
-  } catch {
-    /* Storage bisa diblokir oleh browser. */
-  }
-
-  return null;
-}
-
 export function clearStoredSession(): void {
   try {
     for (const storage of storages()) storage.removeItem(SESSION_KEY);

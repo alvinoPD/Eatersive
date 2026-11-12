@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import { ROLE_HOME } from '../../auth/roles';
@@ -10,47 +9,16 @@ import Brand from '../shared/Brand';
  */
 export default function UserHeader() {
   const { session, logout } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="site-header">
       <Brand label="EaterSive, beranda" />
 
-      <button
-        className="menu-toggle"
-        type="button"
-        aria-expanded={menuOpen}
-        aria-controls="main-nav"
-        aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
-        onClick={() => setMenuOpen((isOpen) => !isOpen)}
-      >
-        <span />
-        <span />
-        <span />
-      </button>
-
-      <nav
-        className={`main-nav${menuOpen ? ' is-open' : ''}`}
-        id="main-nav"
-        aria-label="Navigasi utama"
-      >
-        <Link to="/layanan" onClick={closeMenu}>
-          Layanan
-        </Link>
-        <Link to="/pesanan-saya" onClick={closeMenu}>
-          Pesanan Saya
-        </Link>
-        <Link to="/#cara-kerja" onClick={closeMenu}>
-          Cara Kerja
-        </Link>
-        <Link to="/#ulasan" onClick={closeMenu}>
-          Ulasan
-        </Link>
-        <Link to="/#faq" onClick={closeMenu}>
-          Pertanyaan
-        </Link>
+      <nav className="main-nav" aria-label="Navigasi utama">
+        <Link to="/layanan">Layanan</Link>
+        <Link to="/#cara-kerja">Cara Kerja</Link>
+        <Link to="/#ulasan">Ulasan</Link>
+        <Link to="/#faq">Pertanyaan</Link>
       </nav>
 
       <div className="header-actions">

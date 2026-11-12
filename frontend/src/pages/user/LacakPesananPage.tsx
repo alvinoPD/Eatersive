@@ -1,37 +1,56 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
-import { getApiErrorMessage } from '../../api/client';
-import {
-  fetchOrderDetail,
-  formatOrderDateTime,
-  type Order,
-  type OrderStatus,
-} from '../../api/orders';
-import { FALLBACK_IMAGE } from '../../api/layanan';
-import { formatCurrency } from '../../lib/checkout';
+import { useCatalog } from '../../lib/catalog-store';
+import { formatCurrency, readConfirmationOrder } from '../../lib/checkout';
 import '../../styles/lacak-pesanan.css';
 
-const STATUS_MARKERS: Record<OrderStatus, string> = {
-  pending: '▣',
-  confirmed: '⌖',
-  processing: '✳',
-  quality_check: '♧',
-  completed: '◇',
-  cancelled: '✕',
-};
+const REVIEW_STORAGE_KEY = 'eatersive-order-review';
+const STAGE_OFFSETS = [-2, -1, -0.05, 1, 2];
 
-function formatDate(value: string | null, options: Intl.DateTimeFormatOptions) {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat('id-ID', options).format(new Date(value));
+const TIMELINE_STEPS = [
+  {
+    marker: '▣',
+    title: 'Pesanan Diterima',
+    description:
+      'Pesanan Anda telah masuk ke sistem kami dan sedang menunggu verifikasi.',
+    showStatus: false,
+  },
+  {
+    marker: '⌖',
+    title: 'Kurir Menuju Lokasi',
+    description: 'Kurir EaterSive sedang dalam perjalanan untuk menjemput sepatu Anda.',
+    showStatus: false,
+  },
+  {
+    marker: '✳',
+    title: 'Sedang Dibersihkan',
+    description:
+      'Sepatu Anda sedang ditangani oleh spesialis kami menggunakan metode deep cleaning.',
+    showStatus: true,
+  },
+  {
+    marker: '♧',
+    title: 'Pengecekan Kualitas',
+    description: 'Memastikan setiap detail sepatu bersih sempurna sebelum dikembalikan.',
+    showStatus: false,
+  },
+  {
+    marker: '◇',
+    title: 'Pesanan Selesai',
+    description: 'Sepatu bersih Anda siap dikirimkan kembali ke alamat tujuan.',
+    showStatus: false,
+  },
+];
+
+function formatDate(date: Date, options: Intl.DateTimeFormatOptions) {
+  return new Intl.DateTimeFormat('id-ID', options).format(date);
 }
 
 export default function LacakPesananPage() {
-  const [searchParams] = useSearchParams();
-  const orderId = searchParams.get('order');
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(Boolean(orderId));
-  const [error, setError] = useState('');
+  const { services } = useCatalog();
+  const [order] = useState(() => readConfirmationOrder());
+  const [now] = useState(() => new Date());
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
@@ -53,34 +72,43 @@ export default function LacakPesananPage() {
     [previewUrl],
   );
 
-  useEffect(() => {
-    if (!orderId) return;
+  const itemEntries = order ? Object.entries(order.items) : [];
+  const firstItem = itemEntries[0];
+  const service = firstItem
+    ? services.find((item) => item.id === firstItem[0]) ?? null
+    : null;
+  const firstQuantity = firstItem ? firstItem[1] : 0;
 
-    let alive = true;
+  const elapsedMinutes = order
+    ? Math.max(0, (now.getTime() - new Date(order.createdAt).getTime()) / 60000)
+    : 0;
+  const currentStage = !order
+    ? 0
+    : elapsedMinutes >= 2880
+      ? 4
+      : elapsedMinutes >= 1440
+        ? 3
+        : elapsedMinutes >= 180
+          ? 2
+          : elapsedMinutes >= 30
+            ? 1
+            : 0;
 
-    fetchOrderDetail(orderId)
-      .then((detail) => {
-        if (!alive) return;
-        setOrder(detail);
-        setError('');
-      })
-      .catch((fetchError) => {
-        if (!alive) return;
-        setOrder(null);
-        setError(getApiErrorMessage(fetchError));
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
+  const currentStatusLabel =
+    currentStage === 0
+      ? 'Menunggu'
+      : currentStage === 1
+        ? 'Dalam Perjalanan'
+        : currentStage === 4
+          ? 'Selesai'
+          : 'Sedang Berjalan';
 
-    return () => {
-      alive = false;
-    };
-  }, [orderId]);
+  const address =
+    order &&
+    [order.address.address, order.address.recipient].map((part) => part.trim()).filter(Boolean);
 
-  const timeline = useMemo(() => order?.timeline ?? [], [order]);
-  const isFinished = order?.status === 'completed' || order?.status === 'cancelled';
-  const canReview = order?.status === 'completed';
+  const estimatedDate = order ? new Date(order.createdAt) : null;
+  estimatedDate?.setDate(estimatedDate.getDate() + 3);
 
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -118,12 +146,6 @@ export default function LacakPesananPage() {
       return;
     }
 
-    if (!canReview) {
-      setMessageIsError(true);
-      setMessage('Ulasan dapat dikirim setelah status pesanan selesai.');
-      return;
-    }
-
     if (rating === 0) {
       setMessageIsError(true);
       setMessage('Pilih rating bintang terlebih dahulu.');
@@ -135,18 +157,18 @@ export default function LacakPesananPage() {
 
     try {
       window.localStorage.setItem(
-        `eatersive-order-review-${order.id}`,
+        REVIEW_STORAGE_KEY,
         JSON.stringify({
-          orderId: order.kode_pesanan ?? order.id,
+          orderId: order.orderId,
           rating,
           text: trimmedReview,
           createdAt: new Date().toISOString(),
         }),
       );
-      setMessage('Terima kasih! Ulasan Anda tersimpan di perangkat ini.');
+      setMessage('Terima kasih! Ulasan Anda tersimpan di perangkat ini untuk demo.');
       setReviewSaved(true);
-    } catch (reviewError) {
-      console.error('Tidak dapat menyimpan ulasan:', reviewError);
+    } catch (error) {
+      console.error('Tidak dapat menyimpan ulasan:', error);
       setMessageIsError(true);
       setMessage('Ulasan siap, tetapi tidak dapat disimpan di perangkat ini.');
     }
@@ -164,104 +186,104 @@ export default function LacakPesananPage() {
             </p>
             <h1>Lacak Pesanan Anda</h1>
             <p>
-              Order ID: <strong>{order?.kode_pesanan ?? '—'}</strong>{' '}
-              <span>{order ? formatOrderDateTime(order.created_at) : ''}</span>
+              Order ID: <strong>{order?.orderId ?? '—'}</strong>{' '}
+              <span>
+                {order
+                  ? formatDate(new Date(order.createdAt), {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                  : ''}
+              </span>
             </p>
-            <p>Status dan riwayat di bawah ini diambil langsung dari server EaterSive.</p>
+            <p>Status di bawah ini merupakan simulasi demo lokal, bukan data dari server.</p>
           </section>
 
           <section className="timeline-card" aria-labelledby="timeline-title">
             <h2 id="timeline-title">
               <span aria-hidden="true">◷</span> Timeline Pengerjaan
             </h2>
-
-            {loading && <p className="empty-order">Memuat status pesanan…</p>}
-
-            {!loading && !orderId && (
-              <p className="empty-order">
-                Belum ada pesanan yang dipilih. Buka{' '}
-                <Link to="/pesanan-saya">Pesanan Saya</Link> lalu pilih pesanan yang ingin
-                dilacak.
-              </p>
-            )}
-
-            {!loading && orderId && error && (
-              <p className="empty-order" role="alert">
-                {error}{' '}
-                <Link to="/pesanan-saya">Kembali ke Pesanan Saya</Link>.
-              </p>
-            )}
-
-            {!loading && order && timeline.length === 0 && (
-              <p className="empty-order">Belum ada riwayat status untuk pesanan ini.</p>
-            )}
-
-            {!loading && order && timeline.length > 0 && (
+            {order ? (
               <ol className="timeline">
-                {timeline.map((entry, index) => {
-                  const isCurrent = index === timeline.length - 1 && !isFinished;
-                  const isComplete = !isCurrent;
+                {TIMELINE_STEPS.map((step, index) => {
+                  const eventDate = new Date(
+                    new Date(order.createdAt).getTime() + STAGE_OFFSETS[index] * 60 * 60 * 1000,
+                  );
+                  const isComplete = index < currentStage;
+                  const isCurrent = index === currentStage;
 
                   return (
                     <li
                       className={`timeline-step${isComplete ? ' is-complete' : ''}${
                         isCurrent ? ' is-current' : ''
                       }`}
-                      key={`${entry.status}-${entry.created_at}`}
+                      key={step.title}
                       aria-current={isCurrent ? 'step' : undefined}
                     >
                       <span className="timeline-marker" aria-hidden="true">
-                        {STATUS_MARKERS[entry.status] ?? '•'}
+                        {step.marker}
                       </span>
                       <div className="timeline-copy">
                         <h3>
-                          {entry.status_label}{' '}
-                          {isCurrent && (
-                            <span className="current-status">Status saat ini</span>
+                          {step.title}{' '}
+                          {step.showStatus && (
+                            <span className="current-status">{currentStatusLabel}</span>
                           )}
                         </h3>
-                        <p>{entry.catatan || 'Status pesanan diperbarui.'}</p>
-                        <time dateTime={entry.created_at}>
-                          {formatOrderDateTime(entry.created_at)}
-                          {entry.changed_by ? ` · oleh ${entry.changed_by}` : ''}
+                        <p>{step.description}</p>
+                        <time>
+                          {isComplete
+                            ? formatDate(eventDate, {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            : isCurrent
+                              ? `Update ${formatDate(now, {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}`
+                              : `Estimasi: ${formatDate(eventDate, {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })}`}
                         </time>
                       </div>
                     </li>
                   );
                 })}
               </ol>
+            ) : (
+              <p className="empty-order">
+                Data pesanan belum tersedia. Silakan <Link to="/layanan">pilih layanan</Link> dan
+                selesaikan checkout.
+              </p>
             )}
           </section>
 
-          {order && (
+          {order && service && (
             <section className="service-details" aria-labelledby="details-title">
               <h2 id="details-title">
                 <span aria-hidden="true">▧</span> Detail Item &amp; Layanan
               </h2>
               <article className="service-detail-card">
-                <img
-                  src={order.layanan?.foto || FALLBACK_IMAGE}
-                  alt={order.layanan?.nama ?? 'Layanan'}
-                />
+                <img src={service.image} alt={service.name} />
                 <div className="service-detail-main">
                   <div className="service-name-row">
                     <h3>
-                      {order.layanan?.nama ?? 'Layanan'}
-                      {order.jumlah > 1 ? ` × ${order.jumlah}` : ''}
+                      {firstQuantity > 1 ? `${service.name} × ${firstQuantity}` : service.name}
                     </h3>
-                    {order.layanan?.kategori && (
-                      <span className="service-label">{order.layanan.kategori}</span>
-                    )}
+                    <span className="service-label">{service.category}</span>
                   </div>
-                  <p className="service-description">
-                    {order.status === 'cancelled'
-                      ? 'Pesanan ini dibatalkan.'
-                      : `Status pesanan: ${order.status_label}.`}
-                  </p>
+                  <p className="service-description">{service.description}</p>
                   <div className="service-specs">
                     <span>
                       Biaya Layanan
-                      <strong>{formatCurrency(order.total_harga)}</strong>
+                      <strong>{formatCurrency(service.price * firstQuantity)}</strong>
                     </span>
                     <span>
                       Penjemputan<strong>Gratis</strong>
@@ -277,33 +299,20 @@ export default function LacakPesananPage() {
                   <h3>
                     <span aria-hidden="true">⌖</span> Alamat Penjemputan
                   </h3>
-                  <p>{order.alamat || 'Alamat belum diisi'}</p>
+                  <p>{address?.join(' · ') || 'Alamat belum diisi'}</p>
                 </article>
                 <article className="detail-info">
                   <h3>
                     <span aria-hidden="true">◷</span> Estimasi Selesai
                   </h3>
                   <p>
-                    {order.estimasi_selesai
-                      ? `Pesanan Anda diperkirakan selesai pada ${formatDate(
-                          order.estimasi_selesai,
-                          {
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric',
-                          },
-                        )}.`
-                      : 'Estimasi selesai belum tersedia.'}
-                  </p>
-                </article>
-                <article className="detail-info">
-                  <h3>
-                    <span aria-hidden="true">▱</span> Pembayaran
-                  </h3>
-                  <p>
-                    {order.pembayaran
-                      ? `${order.pembayaran.metode_pembayaran ?? '—'} · ${order.pembayaran.status_pembayaran} · ${formatCurrency(order.pembayaran.jumlah)}`
-                      : 'Belum ada data pembayaran.'}
+                    {estimatedDate
+                      ? `Pesanan Anda diperkirakan selesai pada ${formatDate(estimatedDate, {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric',
+                        })}.`
+                      : '—'}
                   </p>
                 </article>
               </div>
@@ -332,15 +341,13 @@ export default function LacakPesananPage() {
             <div>
               <h2 id="review-title">Berikan Penilaian</h2>
               <p>
-                {!order
-                  ? 'Buat pesanan terlebih dahulu untuk memberikan ulasan.'
-                  : canReview
-                    ? 'Bantu kami meningkatkan kualitas layanan EaterSive.'
-                    : 'Ulasan dapat dikirim setelah pesanan selesai.'}
+                {order
+                  ? 'Bantu kami meningkatkan kualitas layanan EaterSive.'
+                  : 'Buat pesanan terlebih dahulu untuk memberikan ulasan.'}
               </p>
             </div>
           </div>
-          {order && canReview && (
+          {order && (
             <form id="review-form" onSubmit={handleReviewSubmit}>
               <fieldset className="rating-field">
                 <legend>Bagaimana pengalaman Anda?</legend>

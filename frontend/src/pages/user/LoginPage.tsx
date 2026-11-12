@@ -2,6 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Brand from '../../components/shared/Brand';
 import useAuth from '../../auth/useAuth';
+import CaptchaField from '../../components/shared/CaptchaField';
+import type { CaptchaValue } from '../../api/captcha';
 import { ROLE_HOME } from '../../auth/roles';
 import type { AuthRole } from '../../types/auth';
 import '../../styles/login.css';
@@ -32,6 +34,8 @@ export default function LoginPage() {
   const [message, setMessage] = useState('');
   const [messageIsError, setMessageIsError] = useState(false);
   const [pending, setPending] = useState(false);
+  const [captcha, setCaptcha] = useState<CaptchaValue>({ id: null, answer: '' });
+  const [captchaReset, setCaptchaReset] = useState(0);
 
   useEffect(() => {
     document.title = 'Masuk ke Akun — EaterSive';
@@ -40,16 +44,27 @@ export default function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setPending(true);
     setMessage('');
 
-    const result = await login(email, password, remember);
+    if (!captcha.id || captcha.answer.trim() === '') {
+      setMessageIsError(true);
+      setMessage('Jawab soal CAPTCHA terlebih dahulu.');
+      return;
+    }
+
+    setPending(true);
+
+    const result = await login(email, password, remember, captcha);
 
     setPending(false);
 
     if (!result.ok) {
       setMessageIsError(true);
       setMessage(result.message);
+
+      // Challenge sudah terpakai/kedaluwarsa → wajib soal baru.
+      setCaptcha({ id: null, answer: '' });
+      setCaptchaReset((current) => current + 1);
       return;
     }
 
@@ -184,6 +199,17 @@ export default function LoginPage() {
               />
               <span>Ingat saya di perangkat ini</span>
             </label>
+            <div className="field-group">
+              <label>Verifikasi Keamanan</label>
+              <CaptchaField
+                context="login"
+                value={captcha}
+                onChange={setCaptcha}
+                disabled={pending}
+                invalid={messageIsError}
+                resetSignal={captchaReset}
+              />
+            </div>
 
             <button className="submit-button" type="submit" disabled={pending}>
               {pending ? 'Memproses…' : 'Masuk ke Akun'}

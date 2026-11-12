@@ -39,14 +39,6 @@ export interface CheckoutOrder {
   address: CheckoutAddress;
   items: CartItems;
   paymentMethod: string;
-  /** ID pesanan dari database, dipakai untuk membuka tracking. */
-  orderIds?: number[];
-  /** Total yang dihitung backend. */
-  total?: number;
-  /** Label status dari backend saat pesanan dibuat. */
-  status?: string;
-  /** Kode grup untuk checkout multi-layanan. */
-  groupCode?: string;
 }
 
 export type OwnerOrderStatus = 'Selesai' | 'Proses';

@@ -2,9 +2,10 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { apiLogin, apiLogout } from '../api/auth';
 import { getApiErrorMessage } from '../api/client';
 import { clearAuthSession, readAuthSession, writeAuthSession } from './authStorage';
-import { updateStoredSession } from './session-store';
+import { SESSION_KEY } from './session-store';
 import { AuthContext } from './auth-context';
 import type { AuthSession, LoginResult } from '../types/auth';
+import type { CaptchaValue } from '../api/captcha';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -36,9 +37,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     email: string,
     password: string,
     remember: boolean,
+    captcha: CaptchaValue,
   ): Promise<LoginResult> {
     try {
-      const payload = await apiLogin(email, password);
+      const payload = await apiLogin(email, password, captcha);
 
       const nextSession: AuthSession = {
         userId: String(payload.user.id),
@@ -57,8 +59,21 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  async function logout(): Promise<void> {
-    try {
+  /** Sinkronkan nama/email sesi lokal setelah profil diperbarui di backend. */
+  function updateSessionUser(partial: Partial<Pick<AuthSession, 'name' | 'email'>>) {
+    setSession((current) => {
+      if (!current) return current;
+
+      const next: AuthSession = { ...current, ...partial };
+      /* Pertahankan pilihan "ingat saya": sesi tetap di storage yang sama. */
+      const remembered = window.localStorage.getItem(SESSION_KEY) !== null;
+      writeAuthSession(next, remembered);
+
+      return next;
+    });
+  }
+
+  async function logout(): Promise<void> {    try {
       await apiLogout();
     } catch {
       /* Token mungkin sudah dicabut — sesi lokal tetap dibersihkan. */
@@ -66,11 +81,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     clearAuthSession();
     setSession(null);
-  }
-
-  function updateSessionUser(partial: Partial<Pick<AuthSession, 'name' | 'email'>>): void {
-    updateStoredSession<AuthSession>(partial);
-    setSession((current) => (current ? { ...current, ...partial } : current));
   }
 
   return (
