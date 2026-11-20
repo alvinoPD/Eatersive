@@ -2,10 +2,20 @@
 /backend/vendor/
 /frontend/node_modules/
 
-# Environment files (jangan commit nilai rahasia)
+# Environment files
 .env
 .env.*
 !.env.example
+
+# Backend Laravel
+/backend/.env
+/backend/.env.*
+!/backend/.env.example
+
+# Frontend
+/frontend/.env
+/frontend/.env.*
+!/frontend/.env.example
 
 # Build output
 /frontend/dist/
