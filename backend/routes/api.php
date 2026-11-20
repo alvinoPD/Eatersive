@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\PingController;
 use App\Http\Controllers\Authcontroller;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\OwnerProfileController;
 use App\Http\Controllers\RiviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,5 +48,11 @@ Route::prefix('v1')->group(function (): void {
 
     Route::prefix('reviews')->group(function (): void {
         Route::post('/', [RiviewController::class, 'store'])->middleware('auth:sanctum')->name('api.v1.reviews.store');
+    });
+
+    Route::prefix('owner')->middleware(['auth:sanctum', 'admin'])->group(function (): void {
+        Route::get('/profile', [OwnerProfileController::class, 'show'])->name('api.v1.owner.profile.show');
+        Route::put('/profile', [OwnerProfileController::class, 'update'])->name('api.v1.owner.profile.update');
+        Route::put('/password', [OwnerProfileController::class, 'updatePassword'])->name('api.v1.owner.password.update');
     });
 });
