@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f8fa" />
+    <meta
+      name="description"
+      content="Kelola pesanan dan pantau status layanan EaterSive."
+    />
+    <title>Kelola Pesanan — EaterSive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <div class="orders-shell">
+      <aside class="sidebar" id="sidebar">
+        <p class="sidebar-label">Manajemen</p>
+        <nav class="sidebar-nav" aria-label="Navigasi manajemen">
+          <a class="nav-link" href="../eatersive-owner-dashboard/index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+            <span>Dashboard</span>
+          </a>
+          <a class="nav-link is-active" href="./index.html" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4.5h6M9 9h6M9 13h6m-6 3h4"/></svg>
+            <span>Pesanan</span><span class="nav-chevron" aria-hidden="true">›</span>
+          </a>
+          <a class="nav-link" href="../eatersive-catalog/index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 13-7 7-10-10V4h6l11 9Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>
+            <span>Kelola Katalog</span>
+          </a>
+          <a class="nav-link" href="../eatersive-reviews/index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-6 3V7a2 2 0 0 1 2-2Z"/></svg>
+            <span>Ulasan Pelanggan</span>
+          </a>
+        </nav>
+        <div class="sidebar-bottom">
+          <a class="nav-link" href="#pengaturan">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>
+            <span>Pengaturan</span>
+          </a>
+          <a class="nav-link nav-link--logout" href="#keluar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5m5-4 4-4-4-4m4 4H9"/></svg>
+            <span>Keluar</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Buka navigasi">
+            <span></span><span></span><span></span>
+          </button>
+          <a class="brand" href="../eatersive-owner-dashboard/index.html" aria-label="EaterSive, ke dashboard">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 14.2c2.1-.2 3.6-1.5 4.5-4.1l1.3.5c1.5 2.2 3.2 3.6 6.1 4l3.3.5c1.2.2 1.9 1 1.9 2.1 0 1.2-.9 2-2.1 2H6.2C4.4 19.2 3 18 3 16.4c0-.9.4-1.6 1-2.2Z" fill="currentColor"/><path d="m9.7 11.2 1.2.8m1.1.1 1.2.7m1.2.1 1.2.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg>
+            </span>
+            <span>Eater<span class="brand-accent">Sive</span></span>
+          </a>
+          <button class="profile-button" type="button" aria-label="Profil pemilik">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>
+          </button>
+        </header>
+
+        <main class="orders-content">
+          <section class="page-heading" aria-labelledby="page-title">
+            <h1 id="page-title">Kelola Pesanan</h1>
+            <p>Atur daftar layanan cuci, perbaikan, dan perawatan sepatu Anda.</p>
+          </section>
+
+          <section class="summary-grid" aria-label="Ringkasan pesanan">
+            <article class="summary-card summary-card--total">
+              <span class="summary-icon summary-icon--blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.2 7.6 7.8 4.5 7.8-4.5M12 12v9"/></svg>
+              </span>
+              <div><p>Total Pesanan</p><strong>24</strong></div>
+            </article>
+            <article class="summary-card">
+              <span class="summary-icon summary-icon--orange" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>
+              </span>
+              <div><p>Proses</p><strong>18</strong></div>
+            </article>
+            <article class="summary-card">
+              <span class="summary-icon summary-icon--green" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg>
+              </span>
+              <div><p>Selesai</p><strong>4</strong></div>
+            </article>
+          </section>
+
+          <section class="orders-panel" aria-label="Daftar pesanan">
+            <div class="table-toolbar">
+              <label class="search-field">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4 4"/></svg>
+                <span class="visually-hidden">Cari nama layanan atau kategori</span>
+                <input id="order-search" type="search" placeholder="Cari nama layanan atau kategori..." autocomplete="off" />
+              </label>
+              <label class="select-field select-field--category">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.2 7.2V19l-3.6-1.8v-5L4 5Z"/></svg>
+                <span class="visually-hidden">Filter kategori</span>
+                <select id="category-filter">
+                  <option value="all">Filter Kategori</option>
+                  <option value="Cleaning">Cleaning</option>
+                  <option value="Treatment">Treatment</option>
+                  <option value="Repair">Repair</option>
+                </select>
+                <span class="select-chevron" aria-hidden="true">⌄</span>
+              </label>
+              <label class="select-field select-field--sort">
+                <span class="visually-hidden">Urutkan pesanan</span>
+                <select id="sort-orders">
+                  <option value="newest">Urutkan: Terbaru</option>
+                  <option value="oldest">Urutkan: Terlama</option>
+                  <option value="customer">Urutkan: Nama A–Z</option>
+                </select>
+                <span class="select-chevron" aria-hidden="true">⌄</span>
+              </label>
+            </div>
+
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col" class="number-cell">No</th>
+                    <th scope="col">ID Pesanan</th>
+                    <th scope="col">Nama Pelanggan</th>
+                    <th scope="col">Layanan</th>
+                    <th scope="col">Estimasi</th>
+                    <th scope="col" class="status-cell">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-body">
+                  <tr class="order-row" data-category="Cleaning" data-order="5" data-order-id="ORD-6758892" tabindex="0">
+                    <td class="number-cell row-number">01</td>
+                    <td><a class="order-id" href="../eatersive-order-detail/index.html?id=ORD-6758892">ORD-6758892</a></td>
+                    <td class="customer-name">Rio Amamiya</td>
+                    <td>
+                      <div class="service-cell">
+                        <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80" alt="" />
+                        <span>Basic</span>
+                      </div>
+                    </td>
+                    <td><span class="estimate"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>2–3 Hari</span></td>
+                    <td class="status-cell"><span class="status status--done">Selesai</span></td>
+                  </tr>
+                  <tr class="order-row" data-category="Treatment" data-order="4" data-order-id="ORD-9821039" tabindex="0">
+                    <td class="number-cell row-number">02</td>
+                    <td><a class="order-id" href="../eatersive-order-detail/index.html?id=ORD-9821039">ORD-9821039</a></td>
+                    <td class="customer-name">Jeong Jaehyun</td>
+                    <td>
+                      <div class="service-cell">
+                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80" alt="" />
+                        <span>Hard</span>
+                      </div>
+                    </td>
+                    <td><span class="estimate"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>4–5 Hari</span></td>
+                    <td class="status-cell"><span class="status status--process">Proses</span></td>
+                  </tr>
+                  <tr class="order-row" data-category="Repair" data-order="3" data-order-id="ORD-3548992" tabindex="0">
+                    <td class="number-cell row-number">03</td>
+                    <td><a class="order-id" href="../eatersive-order-detail/index.html?id=ORD-3548992">ORD-3548992</a></td>
+                    <td class="customer-name">Arianto Samsul</td>
+                    <td>
+                      <div class="service-cell">
+                        <img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80" alt="" />
+                        <span>Suede / Nubuck</span>
+                      </div>
+                    </td>
+                    <td><span class="estimate"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>7 Hari</span></td>
+                    <td class="status-cell"><span class="status status--process">Proses</span></td>
+                  </tr>
+                  <tr class="order-row" data-category="Cleaning" data-order="2" data-order-id="ORD-2675492" tabindex="0">
+                    <td class="number-cell row-number">04</td>
+                    <td><a class="order-id" href="../eatersive-order-detail/index.html?id=ORD-2675492">ORD-2675492</a></td>
+                    <td class="customer-name">Hades Alejandro</td>
+                    <td>
+                      <div class="service-cell">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80" alt="" />
+                        <span>Helm &amp; Bag</span>
+                      </div>
+                    </td>
+                    <td><span class="estimate"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>30 Menit</span></td>
+                    <td class="status-cell"><span class="status status--process">Proses</span></td>
+                  </tr>
+                  <tr class="order-row" data-category="Treatment" data-order="1" data-order-id="ORD-5437895" tabindex="0">
+                    <td class="number-cell row-number">05</td>
+                    <td><a class="order-id" href="../eatersive-order-detail/index.html?id=ORD-5437895">ORD-5437895</a></td>
+                    <td class="customer-name">Jamalludin Mansyur</td>
+                    <td>
+                      <div class="service-cell">
+                        <img src="https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80" alt="" />
+                        <span>Hat/Cap</span>
+                      </div>
+                    </td>
+                    <td><span class="estimate"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>10–14 Hari</span></td>
+                    <td class="status-cell"><span class="status status--done">Selesai</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="empty-state" id="empty-state" hidden>Tidak ada pesanan yang cocok.</p>
+            </div>
+            <div class="table-footer">
+              <p id="results-count">Menampilkan 5 pesanan terbaru</p>
+              <button class="reset-button" id="reset-filters" type="button">Atur Ulang Filter</button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+  </body>
+</html>

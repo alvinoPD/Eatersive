@@ -1,4 +1,5 @@
 import axios, { type AxiosError } from 'axios';
+import { readToken } from '../auth/session-store';
 
 /**
  * URL backend diambil dari environment variable VITE_API_BASE_URL.
@@ -17,14 +18,35 @@ export const API_BASE_URL = apiBaseUrl;
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,
-  timeout: 10_000,
+  timeout: 15_000,
   headers: {
     Accept: 'application/json',
   },
 });
 
+/* Setiap request otomatis membawa token Sanctum bila pengguna sudah login. */
+apiClient.interceptors.request.use((config) => {
+  const token = readToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+/* Token dicabut/kedaluwarsa → beri tahu AuthProvider lewat event global. */
+apiClient.interceptors.response.use(undefined, (error: AxiosError) => {
+  if (error.response?.status === 401 && readToken()) {
+    window.dispatchEvent(new Event('eatersive:unauthorized'));
+  }
+
+  return Promise.reject(error);
+});
+
 interface BackendErrorBody {
   message?: string;
+  errors?: Record<string, string[]>;
 }
 
 /**
@@ -39,18 +61,20 @@ export function getApiErrorMessage(error: unknown): string {
     }
 
     if (axiosError.code === 'ECONNABORTED') {
-      return 'Permintaan ke backend melebihi batas waktu 10 detik.';
+      return 'Permintaan ke backend melebihi batas waktu 15 detik.';
     }
 
-    const status = axiosError.response?.status;
-    const backendMessage = axiosError.response?.data?.message;
+    const body = axiosError.response?.data;
+    const firstValidationError = body?.errors ? Object.values(body.errors)[0]?.[0] : undefined;
+    const backendMessage = firstValidationError ?? body?.message;
 
     if (backendMessage) {
+      const status = axiosError.response?.status;
       return status ? `${backendMessage} (HTTP ${status})` : backendMessage;
     }
 
-    if (status) {
-      return `Backend merespons dengan status HTTP ${status}.`;
+    if (axiosError.response?.status) {
+      return `Backend merespons dengan status HTTP ${axiosError.response.status}.`;
     }
 
     return axiosError.message;

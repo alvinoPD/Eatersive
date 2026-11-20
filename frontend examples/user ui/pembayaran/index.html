@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f9fc" />
+    <meta name="description" content="Lengkapi alamat dan metode pembayaran untuk pesanan EaterSive." />
+    <title>Pembayaran — EaterSive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../eatersive-landing-page/index.html" aria-label="EaterSive, beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 14.2c2.1-.2 3.6-1.5 4.5-4.1l1.3.5c1.5 2.2 3.2 3.6 6.1 4l3.3.5c1.2.2 1.9 1 1.9 2.1 0 1.2-.9 2-2.1 2H6.2C4.4 19.2 3 18 3 16.4c0-.9.4-1.6 1-2.2Z" fill="currentColor"/>
+            <path d="m9.7 11.2 1.2.8m1.1.1 1.2.7m1.2.1 1.2.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>Eater<span class="brand-accent">Sive</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="../eatersive-landing-page/index.html#layanan">Layanan</a>
+        <a href="../eatersive-landing-page/index.html#cara-kerja">Cara Kerja</a>
+        <a href="../eatersive-landing-page/index.html#ulasan">Ulasan</a>
+        <a href="../eatersive-landing-page/index.html#faq">Pertanyaan</a>
+      </nav>
+      <div class="header-actions">
+        <a class="login-link" href="../login/index.html">Masuk</a>
+        <a class="button button--small" href="../login/index.html">Daftar</a>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <div class="breadcrumbs">
+        <a href="../pilih-layanan/index.html"><span aria-hidden="true">←</span> Kembali ke Layanan</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Pembayaran</span>
+      </div>
+      <h1 class="page-title">Selesaikan Pembayaran Anda</h1>
+
+      <div class="checkout-layout">
+        <section class="address-card" aria-labelledby="address-title">
+          <div class="card-title">
+            <span class="title-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+            </span>
+            <h2 id="address-title">Tambah Alamat</h2>
+          </div>
+          <form id="address-form">
+            <label class="form-field">
+              <span>Alamat Lengkap</span>
+              <input name="address" autocomplete="street-address" placeholder="Contoh: Jl. Yang pernah ada" required />
+            </label>
+            <label class="form-field">
+              <span>Nama Penerima</span>
+              <input name="recipient" autocomplete="name" placeholder="Contoh: Jeong Jaehyun" required />
+            </label>
+            <label class="form-field">
+              <span>Nomor Telp</span>
+              <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Contoh: 08123456789" pattern="[0-9+() -]{8,20}" required />
+            </label>
+            <label class="form-field">
+              <span>Catatan</span>
+              <input name="notes" placeholder="Contoh: Rumah warna hitam" />
+            </label>
+            <div class="address-actions">
+              <p class="address-message" id="address-message" role="status" aria-live="polite"></p>
+              <button class="save-button" type="submit">Simpan Alamat</button>
+            </div>
+          </form>
+        </section>
+
+        <div class="payment-column">
+          <div class="security-label"><span aria-hidden="true">♢</span> Terenkripsi Aman</div>
+          <section class="summary-card" aria-labelledby="summary-title">
+            <div class="summary-heading">
+              <h2 id="summary-title">Ringkasan Pesanan</h2>
+              <p>Detail layanan yang telah Anda pilih</p>
+            </div>
+            <ul class="summary-items" id="summary-items" aria-live="polite"></ul>
+            <div class="summary-empty" id="summary-empty" hidden>
+              Pesanan belum tersedia. <a href="../pilih-layanan/index.html">Pilih layanan</a> terlebih dahulu.
+            </div>
+            <div class="summary-total">
+              <strong>Total Bayar</strong>
+              <strong id="summary-total">Rp 0</strong>
+            </div>
+            <button class="book-button" id="book-button" type="button" disabled>Booking Sekarang</button>
+            <p class="terms-note">Dengan mengklik tombol di atas, Anda menyetujui <a href="../eatersive-landing-page/index.html#faq">Syarat &amp; Ketentuan</a><br class="desktop-break" /> layanan EaterSive.</p>
+            <p class="booking-message" id="booking-message" role="status" aria-live="polite"></p>
+          </section>
+
+          <section class="method-section" aria-labelledby="method-title">
+            <h2 id="method-title">Metode Pembayaran</h2>
+            <label class="payment-method">
+              <input type="radio" name="payment-method" value="qris" checked />
+              <span class="qris-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <path d="M5 5h8v8H5zM19 5h8v8h-8zM5 19h8v8H5z" stroke="currentColor" stroke-width="2.2"/>
+                  <path d="M8 8h2v2H8zm14 0h2v2h-2zM8 22h2v2H8zm8-7h3v3h-3zm5 0h5m-5 3h2m-7 2h3v5m4-5h5v5h-5z" fill="currentColor"/>
+                </svg>
+              </span>
+              <span class="method-copy">
+                <strong>QRIS (Pembayaran Instan)</strong>
+                <small>Scan Qris</small>
+                <span class="wallet-list"><i>Shopeepay</i><i>Gopay</i><i>OVO</i><i>LinkAja</i><i>Dana</i></span>
+              </span>
+              <span class="radio-indicator" aria-hidden="true"></span>
+            </label>
+          </section>
+
+          <div class="payment-notes">
+            <article>
+              <span class="note-icon" aria-hidden="true">↺</span>
+              <div><h3>Kebijakan Pembatalan</h3><p>Pembatalan dapat dilakukan sebelum kurir kami menjemput sepatu Anda. Refund akan diproses maksimal 3 hari kerja.</p></div>
+            </article>
+            <article>
+              <span class="note-icon" aria-hidden="true">✓</span>
+              <div><h3>Konfirmasi Otomatis</h3><p>Pembayaran menggunakan QRIS dan Virtual Account akan terverifikasi secara otomatis oleh sistem kami.</p></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </body>
+</html>

@@ -1,0 +1,504 @@
+/* Di-scope ke #page-pesanan-saya agar tidak bertabrakan dengan halaman lain. */
+#page-pesanan-saya{
+  font-family: "DM Sans", sans-serif;
+  color: #151d30;
+  background: #f8f9fc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #151d30;
+  --muted: #858b97;
+  --blue: #2862ed;
+  --border: #e7e9ef;
+  --panel: #fff;
+}
+
+#page-pesanan-saya *{
+  box-sizing: border-box;
+}
+
+#page-pesanan-saya{
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#page-pesanan-saya button, #page-pesanan-saya input{
+  font: inherit;
+}
+
+#page-pesanan-saya a{
+  color: inherit;
+  text-decoration: none;
+}
+
+#page-pesanan-saya .site-header{
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: max(24px, calc((100vw - 1180px) / 2));
+  border-bottom: 1px solid rgba(21, 30, 49, 0.06);
+  background: rgba(249, 250, 252, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+#page-pesanan-saya .brand{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-family: Manrope, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
+#page-pesanan-saya .brand-mark{
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+}
+
+#page-pesanan-saya .brand-mark svg{
+  width: 18px;
+}
+
+#page-pesanan-saya .brand-accent{
+  color: var(--blue);
+}
+
+#page-pesanan-saya .main-nav, #page-pesanan-saya .header-actions{
+  display: flex;
+  align-items: center;
+}
+
+#page-pesanan-saya .main-nav{
+  gap: clamp(18px, 3vw, 38px);
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+#page-pesanan-saya .main-nav a, #page-pesanan-saya .login-link{
+  color: #626a79;
+  font-size: 11px;
+  transition: color 150ms ease;
+}
+
+#page-pesanan-saya .main-nav a:hover, #page-pesanan-saya .login-link:hover{
+  color: var(--blue);
+}
+
+#page-pesanan-saya .header-actions{
+  gap: 18px;
+}
+
+#page-pesanan-saya .menu-toggle{
+  display: none;
+}
+
+#page-pesanan-saya .button{
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-inline: 16px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--blue);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#page-pesanan-saya .page-wrap{
+  width: min(980px, calc(100% - 48px));
+  margin: 0 auto;
+  padding-block: 35px 48px;
+}
+
+#page-pesanan-saya .page-heading{
+  margin-bottom: 22px;
+}
+
+#page-pesanan-saya .breadcrumb{
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 4px 9px;
+  border: 1px solid #cbd8fa;
+  border-radius: 999px;
+  background: #f1f5ff;
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+#page-pesanan-saya .page-heading h1{
+  margin: 0 0 6px;
+  font-family: Manrope, sans-serif;
+  font-size: clamp(29px, 4vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1.2;
+}
+
+#page-pesanan-saya .page-heading > p{
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+#page-pesanan-saya .orders-toolbar{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+#page-pesanan-saya .orders-toolbar p{
+  margin: 0;
+  color: #626a79;
+  font-size: 11px;
+}
+
+#page-pesanan-saya .orders-list{
+  display: grid;
+  gap: 14px;
+}
+
+#page-pesanan-saya .order-history-card{
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 10px 30px rgba(21, 30, 49, 0.04);
+}
+
+#page-pesanan-saya .order-history-head{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f1f5;
+}
+
+#page-pesanan-saya .order-history-code{
+  margin: 0 0 3px;
+  font-family: Manrope, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+#page-pesanan-saya .order-history-head time{
+  color: var(--muted);
+  font-size: 10px;
+}
+
+#page-pesanan-saya .order-history-status{
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eef2fb;
+  color: #3f5373;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+#page-pesanan-saya .order-history-status.status--completed{
+  background: #e7f7ef;
+  color: #0c9d70;
+}
+
+#page-pesanan-saya .order-history-status.status--cancelled{
+  background: #fdecea;
+  color: #d04437;
+}
+
+#page-pesanan-saya .order-history-status.status--processing,
+#page-pesanan-saya .order-history-status.status--quality_check{
+  background: #fff4e5;
+  color: #b76a00;
+}
+
+#page-pesanan-saya .order-history-status.status--confirmed{
+  background: #e9f1ff;
+  color: var(--blue);
+}
+
+#page-pesanan-saya .order-history-body{
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding-block: 14px;
+}
+
+#page-pesanan-saya .order-history-body > img{
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+#page-pesanan-saya .order-history-info h2{
+  margin: 0 0 4px;
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#page-pesanan-saya .order-history-category{
+  display: inline-block;
+  margin-bottom: 5px;
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+#page-pesanan-saya .order-history-address{
+  margin: 0 0 4px;
+  color: #626a79;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+#page-pesanan-saya .order-history-address span{
+  margin-right: 4px;
+  color: var(--blue);
+}
+
+#page-pesanan-saya .order-history-payment{
+  margin: 0;
+  color: #b76a00;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+#page-pesanan-saya .order-history-payment.is-paid{
+  color: #0c9d70;
+}
+
+#page-pesanan-saya .order-history-total{
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+#page-pesanan-saya .order-history-total span{
+  color: var(--muted);
+  font-size: 9px;
+}
+
+#page-pesanan-saya .order-history-total strong{
+  font-family: Manrope, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+#page-pesanan-saya .order-history-details{
+  border-top: 1px solid #f0f1f5;
+  padding-top: 10px;
+}
+
+#page-pesanan-saya .order-history-details summary{
+  width: fit-content;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#page-pesanan-saya .order-history-details dl{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+#page-pesanan-saya .order-history-details dt{
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+#page-pesanan-saya .order-history-details dd{
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+#page-pesanan-saya .order-history-actions{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+#page-pesanan-saya .orders-state{
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 46px 24px;
+  border: 1px dashed #d9dde7;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+#page-pesanan-saya .orders-state h2{
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  font-size: 16px;
+}
+
+#page-pesanan-saya .orders-state p{
+  max-width: 420px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+#page-pesanan-saya .orders-state--error{
+  border-color: #f3c9c4;
+  background: #fff8f7;
+}
+
+#page-pesanan-saya .orders-state--error h2{
+  color: #d04437;
+}
+
+#page-pesanan-saya .orders-spinner{
+  width: 24px;
+  height: 24px;
+  border: 2px solid #dfe5f2;
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: pesanan-saya-spin 800ms linear infinite;
+}
+
+@keyframes pesanan-saya-spin{
+  to{
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 620px){
+  #page-pesanan-saya .site-header{
+    height: 56px;
+    padding-inline: 17px;
+  }
+
+  #page-pesanan-saya .menu-toggle{
+    display: flex;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  #page-pesanan-saya .menu-toggle span{
+    width: 16px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+
+  #page-pesanan-saya .menu-toggle[aria-expanded="true"] span:first-child{
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  #page-pesanan-saya .menu-toggle[aria-expanded="true"] span:nth-child(2){
+    opacity: 0;
+  }
+
+  #page-pesanan-saya .menu-toggle[aria-expanded="true"] span:last-child{
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  #page-pesanan-saya .main-nav{
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 4px 17px 10px;
+    border-bottom: 1px solid var(--border);
+    background: #f9fafc;
+    box-shadow: 0 12px 24px rgba(21, 30, 49, 0.08);
+  }
+
+  #page-pesanan-saya .main-nav.is-open{
+    display: flex;
+  }
+
+  #page-pesanan-saya .main-nav a{
+    padding: 12px 0;
+    border-top: 1px solid #eceef2;
+    font-size: 13px;
+  }
+
+  #page-pesanan-saya .header-actions{
+    gap: 12px;
+    margin-left: 10px;
+  }
+
+  #page-pesanan-saya .page-wrap{
+    width: calc(100% - 32px);
+    padding-block: 26px 36px;
+  }
+
+  #page-pesanan-saya .order-history-body{
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  #page-pesanan-saya .order-history-body > img{
+    width: 52px;
+    height: 52px;
+  }
+
+  #page-pesanan-saya .order-history-total{
+    grid-column: 1 / -1;
+    justify-items: start;
+    padding-top: 6px;
+    border-top: 1px dashed #eceef2;
+  }
+
+  #page-pesanan-saya .order-history-actions .button{
+    width: 100%;
+  }
+}

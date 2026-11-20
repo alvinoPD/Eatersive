@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f9fc" />
+    <meta name="description" content="Lacak status pesanan perawatan sepatu EaterSive." />
+    <title>Lacak Pesanan — EaterSive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../eatersive-landing-page/index.html" aria-label="EaterSive, beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 14.2c2.1-.2 3.6-1.5 4.5-4.1l1.3.5c1.5 2.2 3.2 3.6 6.1 4l3.3.5c1.2.2 1.9 1 1.9 2.1 0 1.2-.9 2-2.1 2H6.2C4.4 19.2 3 18 3 16.4c0-.9.4-1.6 1-2.2Z" fill="currentColor"/>
+            <path d="m9.7 11.2 1.2.8m1.1.1 1.2.7m1.2.1 1.2.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>Eater<span class="brand-accent">Sive</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="../eatersive-landing-page/index.html#layanan">Layanan</a>
+        <a href="../eatersive-landing-page/index.html#cara-kerja">Cara Kerja</a>
+        <a href="../eatersive-landing-page/index.html#ulasan">Ulasan</a>
+        <a href="../eatersive-landing-page/index.html#faq">Pertanyaan</a>
+      </nav>
+      <div class="header-actions">
+        <a class="login-link" href="../login/index.html">Masuk</a>
+        <a class="button button--small" href="../login/index.html">Daftar</a>
+      </div>
+    </header>
+
+    <main class="tracking-layout">
+      <div class="tracking-column">
+        <section class="page-heading">
+          <p class="eyebrow"><span aria-hidden="true">◉</span> Status Pesanan</p>
+          <h1>Lacak Pesanan Anda</h1>
+          <p>Order ID: <strong id="order-id">—</strong> <span id="order-date">—</span></p>
+        </section>
+
+        <section class="timeline-card" aria-labelledby="timeline-title">
+          <h2 id="timeline-title"><span aria-hidden="true">◷</span> Timeline Pengerjaan</h2>
+          <ol class="timeline" id="timeline">
+            <li class="timeline-step" data-stage="0">
+              <span class="timeline-marker" aria-hidden="true">▣</span>
+              <div class="timeline-copy">
+                <h3>Pesanan Diterima</h3>
+                <p>Pesanan Anda telah masuk ke sistem kami dan sedang menunggu verifikasi.</p>
+                <time></time>
+              </div>
+            </li>
+            <li class="timeline-step" data-stage="1">
+              <span class="timeline-marker" aria-hidden="true">⌖</span>
+              <div class="timeline-copy">
+                <h3>Kurir Menuju Lokasi</h3>
+                <p>Kurir EaterSive sedang dalam perjalanan untuk menjemput sepatu Anda.</p>
+                <time></time>
+              </div>
+            </li>
+            <li class="timeline-step" data-stage="2">
+              <span class="timeline-marker" aria-hidden="true">✳</span>
+              <div class="timeline-copy">
+                <h3>Sedang Dibersihkan <span class="current-status">Sedang Berjalan</span></h3>
+                <p>Sepatu Anda sedang ditangani oleh spesialis kami menggunakan metode deep cleaning.</p>
+                <time></time>
+              </div>
+            </li>
+            <li class="timeline-step" data-stage="3">
+              <span class="timeline-marker" aria-hidden="true">♧</span>
+              <div class="timeline-copy">
+                <h3>Pengecekan Kualitas</h3>
+                <p>Memastikan setiap detail sepatu bersih sempurna sebelum dikembalikan.</p>
+                <time></time>
+              </div>
+            </li>
+            <li class="timeline-step" data-stage="4">
+              <span class="timeline-marker" aria-hidden="true">◇</span>
+              <div class="timeline-copy">
+                <h3>Pesanan Selesai</h3>
+                <p>Sepatu bersih Anda siap dikirimkan kembali ke alamat tujuan.</p>
+                <time></time>
+              </div>
+            </li>
+          </ol>
+          <p class="empty-order" id="empty-order" hidden>
+            Data pesanan belum tersedia. Silakan <a href="../pilih-layanan/index.html">pilih layanan</a> dan selesaikan checkout.
+          </p>
+        </section>
+
+        <section class="service-details" aria-labelledby="details-title">
+          <h2 id="details-title"><span aria-hidden="true">▧</span> Detail Item &amp; Layanan</h2>
+          <article class="service-detail-card" id="service-detail-card">
+            <img id="service-image" src="" alt="" />
+            <div class="service-detail-main">
+              <div class="service-name-row"><h3 id="service-name">Layanan</h3><span class="service-label" id="service-label">Treatment</span></div>
+              <p class="service-description" id="service-description"></p>
+              <div class="service-specs">
+                <span>Biaya Layanan<strong id="service-price">—</strong></span>
+                <span>Penjemputan<strong>Gratis</strong></span>
+                <span>Metode<strong>Antar Jemput</strong></span>
+              </div>
+            </div>
+          </article>
+          <div class="detail-info-grid">
+            <article class="detail-info">
+              <h3><span aria-hidden="true">⌖</span> Alamat Penjemputan</h3>
+              <p id="pickup-address">—</p>
+            </article>
+            <article class="detail-info">
+              <h3><span aria-hidden="true">◷</span> Estimasi Selesai</h3>
+              <p id="estimated-date">—</p>
+            </article>
+          </div>
+        </section>
+
+        <aside class="info-alert">
+          <span aria-hidden="true">ⓘ</span>
+          <div><strong>Informasi Penting</strong><p>Kami menjamin keamanan sepatu Anda 100%. Jika ada kendala dalam pengerjaan, tim kami akan segera menghubungi Anda.</p></div>
+        </aside>
+      </div>
+
+      <aside class="review-card" aria-labelledby="review-title">
+        <div class="review-header">
+          <span class="review-icon" aria-hidden="true">▢</span>
+          <div><h2 id="review-title">Berikan Penilaian</h2><p>Bantu kami meningkatkan kualitas layanan EaterSive.</p></div>
+        </div>
+        <form id="review-form">
+          <fieldset class="rating-field">
+            <legend>Bagaimana pengalaman Anda?</legend>
+            <div class="star-rating" role="radiogroup" aria-label="Rating layanan">
+              <button type="button" data-rating="1" aria-label="1 bintang" aria-pressed="false">☆</button>
+              <button type="button" data-rating="2" aria-label="2 bintang" aria-pressed="false">☆</button>
+              <button type="button" data-rating="3" aria-label="3 bintang" aria-pressed="false">☆</button>
+              <button type="button" data-rating="4" aria-label="4 bintang" aria-pressed="false">☆</button>
+              <button type="button" data-rating="5" aria-label="5 bintang" aria-pressed="false">☆</button>
+            </div>
+          </fieldset>
+          <label class="review-label" for="review-text">Tuliskan ulasan Anda</label>
+          <textarea id="review-text" name="review" placeholder="Ceritakan pengalaman Anda menggunakan EaterSive..." required></textarea>
+          <label class="review-label" for="review-photo">Lampirkan Foto (Opsional)</label>
+          <label class="upload-box" for="review-photo">
+            <input id="review-photo" type="file" accept="image/*" />
+            <span class="camera-icon" aria-hidden="true">▣</span>
+            <span id="upload-label">Klik untuk unggah foto sepatu bersih Anda</span>
+          </label>
+          <img class="photo-preview" id="photo-preview" alt="Pratinjau foto ulasan" hidden />
+          <p class="review-message" id="review-message" role="status" aria-live="polite"></p>
+          <button class="submit-review" type="submit">Kirim Ulasan</button>
+        </form>
+      </aside>
+    </main>
+  </body>
+</html>

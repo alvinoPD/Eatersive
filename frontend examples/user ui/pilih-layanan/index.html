@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f9fc" />
+    <meta name="description" content="Pilih layanan perawatan sepatu EaterSive." />
+    <title>Pilih Layanan — EaterSive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../eatersive-landing-page/index.html" aria-label="EaterSive, beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 14.2c2.1-.2 3.6-1.5 4.5-4.1l1.3.5c1.5 2.2 3.2 3.6 6.1 4l3.3.5c1.2.2 1.9 1 1.9 2.1 0 1.2-.9 2-2.1 2H6.2C4.4 19.2 3 18 3 16.4c0-.9.4-1.6 1-2.2Z" fill="currentColor"/>
+            <path d="m9.7 11.2 1.2.8m1.1.1 1.2.7m1.2.1 1.2.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>Eater<span class="brand-accent">Sive</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="../eatersive-landing-page/index.html#layanan">Layanan</a>
+        <a href="../eatersive-landing-page/index.html#cara-kerja">Cara Kerja</a>
+        <a href="../eatersive-landing-page/index.html#ulasan">Ulasan</a>
+        <a href="../eatersive-landing-page/index.html#faq">Pertanyaan</a>
+      </nav>
+      <div class="header-actions">
+        <a class="login-link" href="../login/index.html">Masuk</a>
+        <a class="button button--small" href="../login/index.html">Daftar</a>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <section class="page-heading">
+        <span class="breadcrumb">Pilih Layanan</span>
+        <h1>Rawat Sepatu Anda</h1>
+        <p>Pesan layanan cuci sepatu dengan mudah dan praktis. Kami siap membantu<br class="desktop-break" /> merawat sepatu kesayangan Anda agar kembali bersih dan nyaman digunakan.</p>
+      </section>
+
+      <div class="catalog-layout">
+        <section class="catalog" aria-label="Katalog layanan">
+          <div class="catalog-toolbar">
+            <label class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/>
+                <path d="m16 16 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <input id="search-input" type="search" placeholder="Cari layanan cuci, unyellowing, repaint..." aria-label="Cari layanan" />
+            </label>
+            <div class="filter-tabs" role="group" aria-label="Filter kategori layanan">
+              <button class="filter-button is-active" type="button" data-filter="Semua">Semua</button>
+              <button class="filter-button" type="button" data-filter="Cleaning">Cleaning</button>
+              <button class="filter-button" type="button" data-filter="Treatment">Treatment</button>
+              <button class="filter-button" type="button" data-filter="Repair">Repair</button>
+            </div>
+            <button class="cart-shortcut" id="cart-shortcut" type="button" aria-label="Lihat ringkasan pesanan">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3.5 5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.5L21 8H6.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="10" cy="20" r="1.2" fill="currentColor"/><circle cx="18" cy="20" r="1.2" fill="currentColor"/>
+              </svg>
+              <span class="cart-count" id="cart-count">0</span>
+            </button>
+          </div>
+
+          <div class="catalog-heading">
+            <h2 id="results-heading">Semua (6)</h2>
+            <p id="empty-state" hidden>Tidak ada layanan yang cocok. Coba kata kunci atau kategori lain.</p>
+          </div>
+
+          <div class="service-grid" id="service-grid">
+            <article class="service-card" data-category="Cleaning" data-search="basic cleaning cuci luar dalam sepatu">
+              <div class="service-image">
+                <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=800&q=85" alt="Sepatu sneaker putih untuk layanan basic cleaning" />
+                <span class="category-badge">Cleaning</span>
+              </div>
+              <div class="service-info">
+                <div class="service-title"><h3>Basic</h3><span class="rating">★ 4.9</span></div>
+                <p>Jasa cuci luar dan dalam</p>
+                <div class="service-meta"><span>◷ &nbsp;2–3 Hari</span><span>✳ &nbsp;1240 ulasan</span></div>
+                <div class="service-bottom"><span class="price"><small>Mulai dari</small><strong>Rp 35.000</strong></span><button class="add-button" type="button" data-id="basic">＋ <span>Pilih</span></button></div>
+              </div>
+            </article>
+
+            <article class="service-card" data-category="Treatment" data-search="hard deep cleaning treatment sepatu">
+              <div class="service-image">
+                <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=85" alt="Sneaker biru untuk layanan hard cleaning" />
+                <span class="category-badge">Treatment</span>
+              </div>
+              <div class="service-info">
+                <div class="service-title"><h3>Hard</h3><span class="rating">★ 4.8</span></div>
+                <p>Untuk sepatu berlumur yang susah dibersihkan</p>
+                <div class="service-meta"><span>◷ &nbsp;2–3 Hari</span><span>✳ &nbsp;856 ulasan</span></div>
+                <div class="service-bottom"><span class="price"><small>Mulai dari</small><strong>Rp 40.000</strong></span><button class="add-button" type="button" data-id="hard">＋ <span>Pilih</span></button></div>
+              </div>
+            </article>
+
+            <article class="service-card" data-category="Repair" data-search="suede nubuck treatment repair sepatu kulit">
+              <div class="service-image">
+                <img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=800&q=85" alt="Perawatan material suede dan nubuck" />
+                <span class="category-badge">Repair</span>
+              </div>
+              <div class="service-info">
+                <div class="service-title"><h3>Suede / Nubuck</h3><span class="rating">★ 4.7</span></div>
+                <p>Treatment khusus sepatu suede/nubuck, 3M (Menyegarkan, Menghidupkan, Melembutkan)</p>
+                <div class="service-meta"><span>◷ &nbsp;2–4 Hari</span><span>✳ &nbsp;452 ulasan</span></div>
+                <div class="service-bottom"><span class="price"><small>Mulai dari</small><strong>Rp 50.000</strong></span><button class="add-button" type="button" data-id="suede">＋ <span>Pilih</span></button></div>
+              </div>
+            </article>
+
+            <article class="service-card" data-category="Cleaning" data-search="helm bag tas cleaning cuci">
+              <div class="service-image">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=85" alt="Perlengkapan untuk layanan helm dan bag" />
+                <span class="category-badge">Cleaning</span>
+              </div>
+              <div class="service-info">
+                <div class="service-title"><h3>Helm &amp; Bag</h3><span class="rating">★ 4.9</span></div>
+                <p>Perawatan helm &amp; tas untuk mengangkat noda dan menjaga kualitas material.</p>
+                <div class="service-meta"><span>◷ &nbsp;24 Jam</span><span>✳ &nbsp;2105 ulasan</span></div>
+                <div class="service-bottom"><span class="price"><small>Mulai dari</small><strong>Rp 30.000 – 50.000</strong></span><button class="add-button" type="button" data-id="helm">＋ <span>Pilih</span></button></div>
+              </div>
+            </article>
+
+            <article class="service-card" data-category="Treatment" data-search="hat cap topi treatment cleaning">
+              <div class="service-image">
+                <img src="https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=800&q=85" alt="Topi hitam untuk layanan perawatan hat dan cap" />
+                <span class="category-badge">Treatment</span>
+              </div>
+              <div class="service-info">
+                <div class="service-title"><h3>Hat / Cap</h3><span class="rating">★ 4.8</span></div>
+                <p>Perawatan topi untuk mengangkat noda dan menjaga bentuk serta kualitas bahan.</p>
+                <div class="service-meta"><span>◷ &nbsp;2–3 Hari</span><span>✳ &nbsp;370 ulasan</span></div>
+                <div class="service-bottom"><span class="price"><small>Mulai dari</small><strong>Rp 30.000</strong></span><button class="add-button" type="button" data-id="hat">＋ <span>Pilih</span></button></div>
+              </div>
+            </article>
+
+            <article class="service-card" data-category="Treatment" data-search="flat shoes kid shoes sepatu anak">
+              <div class="service-image">
+                <img src="https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=800&q=85" alt="Pilihan sepatu anak untuk layanan flat shoes dan kid shoes" />
+                <span class="category-badge">Treatment</span>
+              </div>
+              <div class="service-info">
+                <div class="service-title"><h3>Flat Shoes &amp; Kid Shoes</h3><span class="rating">★ 4.6</span></div>
+                <p>Perawatan flat shoes &amp; sepatu anak untuk membersihkan noda dan menjaga kualitas serta kenyamanan sepatu.</p>
+                <div class="service-meta"><span>◷ &nbsp;7–10 Hari</span><span>✳ &nbsp;189 ulasan</span></div>
+                <div class="service-bottom"><span class="price"><small>Mulai dari</small><strong>Rp 25.000 – 30.000</strong></span><button class="add-button" type="button" data-id="kids">＋ <span>Pilih</span></button></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="order-column" id="order-summary" aria-label="Ringkasan pesanan">
+          <section class="order-card">
+            <div class="order-heading">
+              <h2><span aria-hidden="true">♧</span> Ringkasan Pesanan <span class="order-total-count" id="summary-count"></span></h2>
+              <p id="order-subtitle">Belum ada layanan yang dipilih</p>
+            </div>
+            <div class="order-content">
+              <div class="empty-cart" id="empty-cart">
+                <span class="empty-cart-icon" aria-hidden="true">♧</span>
+                <p>Silakan pilih layanan cuci sepatu Anda dari katalog di sebelah kiri.</p>
+              </div>
+              <ul class="order-items" id="order-items" aria-live="polite"></ul>
+              <div class="order-total" id="order-total" hidden>
+                <span>Total estimasi</span>
+                <strong id="total-price">Rp 0</strong>
+              </div>
+              <button class="checkout-button" id="checkout-button" type="button" disabled>
+                Lanjut ke Pembayaran <span aria-hidden="true">→</span>
+              </button>
+              <p class="checkout-message" id="checkout-message" role="status" aria-live="polite"></p>
+            </div>
+          </section>
+          <section class="help-card">
+            <h2>Butuh bantuan memilih?</h2>
+            <p>Konsultasikan kondisi sepatu Anda dengan CS kami untuk mendapatkan rekomendasi layanan yang paling tepat.</p>
+            <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer">Chat WhatsApp <span aria-hidden="true">↗</span></a>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

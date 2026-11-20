@@ -1,6 +1,10 @@
-# Laravel + React TypeScript Starter Template
+# laravel-react-template
 
-Template fullstack minimalis dengan **backend Laravel (REST API)** dan **frontend React + TypeScript (Vite)** sebagai dua aplikasi terpisah.
+Template starter Laravel API + React TypeScript SPA — dengan backend dan frontend berjalan sebagai dua aplikasi terpisah.
+
+Pendekatan: backend dan frontend adalah dua aplikasi terpisah yang berkomunikasi lewat HTTP + JSON. Backend hanya berfungsi sebagai API JSON. Frontend tidak dirender oleh Blade.
+
+Frontend berjalan sebagai aplikasi terpisah di dalam `frontend/`.
 
 Repo ini bukan aplikasi jadi — tidak ada CRUD, dashboard, atau autentikasi. Isinya fondasi yang sudah tersambung: routing di kedua sisi, satu Axios client, konfigurasi CORS, contoh endpoint, dan test. Clone, jalankan dua server, lalu mulai bangun fitur.
 
@@ -34,7 +38,16 @@ Repo ini bukan aplikasi jadi — tidak ada CRUD, dashboard, atau autentikasi. Is
 
 ## Fitur
 
-- **Backend & frontend terpisah** — Laravel hanya menyajikan JSON API, React hanya menyajikan UI. Tidak ada Blade yang merender halaman aplikasi.
+- **Backend & frontend terpisah** — Laravel hanya menyajikan JSON API, React hanya menyajikan UI. Frontend tidak dirender oleh Blade.
+- **Frontend berjalan sebagai aplikasi terpisah di folder frontend/**
+
+Frontend berjalan sebagai aplikasi terpisah di folder `frontend/`:
+- React + TypeScript (Vite) menyajikan tampilan dan logika aplikasi.
+- Frontend hanya menyajikan halaman dan **tidak menerima request aplikasi** dari browser.
+- Frontend **tidak** dirender oleh Blade — ia berjalan melalui dev server Vite atau file statis produksi.
+- Komunikasi dengan backend hanya lewat HTTP + JSON via Axios yanng dibaca dari VITE_API_BASE_URL.
+
+Frontend dan backend **berkomunikasi melalui HTTP + JSON**, bukan melalui shared state, WebSocket, atau proses yang sama.
 - **API versioning sejak awal** — semua endpoint berada di `/api/v1/*`.
 - **Satu Axios client** — `frontend/src/api/client.ts` membaca `VITE_API_BASE_URL`, menangani timeout, dan menormalkan pesan error.
 - **CORS terkonfigurasi** — daftar origin diambil dari variabel `FRONTEND_URL`, bukan hardcode di kode.
@@ -218,6 +231,8 @@ Jika ingin tanpa server database, pakai SQLite:
 DB_CONNECTION=sqlite
 DB_DATABASE=/path/absolut/ke/backend/database/database.sqlite
 ```
+
+> Sesuaikan DB_CONNECTION di .env.example menjadi `sqlite`, lalu jalankan `php artisan migrate`. APP_KEY kosong di `.env.example` — jalankan `php artisan key:generate` setelah setup.
 
 ### `frontend/.env`
 
@@ -428,6 +443,7 @@ netstat -ano | grep -E "8000|5173"
 ## Catatan & Batasan
 
 - Template ini **tidak** menyertakan autentikasi, CRUD, atau state management global.
+- Backend dan frontend adalah aplikasi terpisah; frontend **tidak** dirender oleh Blade.
 - Frontend dan backend dideploy terpisah. Untuk hosting frontend sebagai static site, konfigurasikan SPA fallback (semua path diarahkan ke `index.html`); atur `VITE_API_BASE_URL` ke URL backend produksi dan tambahkan origin produksi ke `FRONTEND_URL`.
 - Health check sengaja tidak memeriksa database, cache, atau service eksternal.
 - `APP_DEBUG=true` di environment lokal membuat response error menyertakan detail trace. Set `APP_DEBUG=false` di produksi.
