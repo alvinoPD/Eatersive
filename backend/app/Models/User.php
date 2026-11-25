@@ -43,4 +43,46 @@ class User extends Authenticatable
     {
         return $this->hasMany(Riview::class);
     }
+
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(UserMembership::class);
+    }
+
+    /** Langganan yang masih berlaku (tanggal selesai belum lewat). */
+    public function currentMembership(): ?UserMembership
+    {
+        return $this->memberships()
+            ->with('plan')
+            ->whereDate('expires_at', '>=', now()->toDateString())
+            ->orderByDesc('expires_at')
+            ->orderByDesc('id')
+            ->first();
+    }
+
+    /**
+     * Ringkasan membership untuk payload auth dan checkout.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function membershipSummary(): ?array
+    {
+        $membership = $this->currentMembership();
+
+        if (! $membership) {
+            return null;
+        }
+
+        return [
+            'plan' => $membership->plan?->nama,
+            'diskon_persen' => $membership->effectiveDiscount(),
+            'starts_at' => $membership->starts_at?->toDateString(),
+            'expires_at' => $membership->expires_at?->toDateString(),
+        ];
+    }
+
+    public function isMember(): bool
+    {
+        return $this->currentMembership() !== null;
+    }
 }

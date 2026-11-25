@@ -769,6 +769,27 @@
   }
 }
 
+#page-owner-orders .order-time{
+  display: block;
+  margin-top: 2px;
+  color: #7b8698;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+#page-owner-orders .page-error{
+  margin: 0 0 14px;
+  padding: 10px 13px;
+  border-radius: 8px;
+  background: #fdecec;
+  color: #b42318;
+  font-size: 12px;
+}
+
+#page-owner-orders .service-cell img{
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce){
   #page-owner-orders *, #page-owner-orders *::before, #page-owner-orders *::after{
     scroll-behavior: auto !important;

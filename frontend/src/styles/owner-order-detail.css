@@ -929,6 +929,41 @@
   }
 }
 
+#page-owner-order-detail .payment-heading{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#page-owner-order-detail .payment-row.is-discount strong{
+  color: #16803c;
+}
+
+#page-owner-order-detail .payment-card .save-button{
+  width: 100%;
+  margin-top: 12px;
+}
+
+#page-owner-order-detail .order-photo-carousel{
+  max-height: 360px;
+  margin-top: 6px;
+}
+
+#page-owner-order-detail .heading-dot{
+  margin-inline: 8px;
+}
+
+#page-owner-order-detail .status{
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #eef2fa;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 @media (prefers-reduced-motion: reduce){
   #page-owner-order-detail *, #page-owner-order-detail *::before, #page-owner-order-detail *::after{
     scroll-behavior: auto !important;

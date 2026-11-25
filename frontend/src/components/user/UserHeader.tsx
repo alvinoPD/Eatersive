@@ -24,6 +24,11 @@ export default function UserHeader() {
       <div className="header-actions">
         {session ? (
           <>
+            {session.role === 'user' && (
+              <Link className="login-link" to="/pesanan-saya">
+                Pesanan Saya
+              </Link>
+            )}
             <Link className="login-link" to={ROLE_HOME[session.role]}>
               {session.name}
             </Link>

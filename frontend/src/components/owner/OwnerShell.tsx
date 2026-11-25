@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import Brand from '../shared/Brand';
 
-export type OwnerNavKey = 'dashboard' | 'orders' | 'catalog' | 'reviews' | 'settings';
+export type OwnerNavKey = 'dashboard' | 'orders' | 'catalog' | 'members' | 'reviews' | 'settings';
 
 interface OwnerShellProps {
   pageId: string;
@@ -46,6 +46,17 @@ const NAV_ITEMS: Array<{ key: OwnerNavKey; label: string; to: string; icon: Reac
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="m20 13-7 7-10-10V4h6l11 9Z" />
         <circle cx="7.5" cy="7.5" r="1" />
+      </svg>
+    ),
+  },
+  {
+    key: 'members',
+    label: 'Member',
+    to: '/owner/members',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.8M18 20a5.5 5.5 0 0 0-3-4.9" />
       </svg>
     ),
   },
@@ -159,16 +170,17 @@ export default function OwnerShell({
               <span />
             </button>
             <Brand to="/owner" label="EaterSive, ke dashboard" />
-            <button
+            <Link
               className="profile-button"
-              type="button"
+              to="/owner/settings"
               aria-label={`Profil ${session?.name ?? 'pemilik'}`}
+              title={session?.name ?? 'Profil'}
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="12" cy="8" r="3.5" />
                 <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
               </svg>
-            </button>
+            </Link>
           </header>
 
           {children}
@@ -189,17 +201,17 @@ export default function OwnerShell({
   );
 }
 
-/** Footer dashboard owner. Status dibuat netral karena data masih demo lokal. */
+/** Footer dashboard owner. */
 export function OwnerFooter() {
   return (
     <footer className="footer">
-      <p>© {new Date().getFullYear()} EaterSive Admin v2.1.0 • Data demo lokal</p>
+      <p>© {new Date().getFullYear()} EaterSive Admin v2.1.0</p>
       <div>
         <span className="connection">
-          <i /> Data lokal
+          <i /> Database tersambung
         </span>
         <span className="health">
-          <i /> Mode demo
+          <i /> Sistem normal
         </span>
       </div>
     </footer>

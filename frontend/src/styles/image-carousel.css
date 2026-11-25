@@ -1,0 +1,153 @@
+.image-carousel {
+  position: relative;
+  overflow: hidden;
+  background: #eef2fa;
+  touch-action: pan-y;
+}
+
+.image-carousel:focus-visible {
+  outline: 3px solid #2862ed;
+  outline-offset: 3px;
+}
+
+.image-carousel__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.45s ease;
+}
+
+.image-carousel__slide {
+  position: relative;
+  display: block;
+  flex: 0 0 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.image-carousel__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-carousel__slide figcaption {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.image-carousel__nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+  color: #0f172a;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.image-carousel__nav:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.image-carousel__nav--prev {
+  left: 12px;
+}
+
+.image-carousel__nav--next {
+  right: 12px;
+}
+
+.image-carousel__dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  display: flex;
+  gap: 6px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.35);
+  transform: translateX(-50%);
+}
+
+.image-carousel__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.image-carousel__dot.is-active {
+  width: 18px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+/* Hero landing memakai bingkai yang sama dengan gambar lama. */
+#page-landing .hero-carousel {
+  position: relative;
+  width: min(480px, 100%);
+  height: 360px;
+  border: 8px solid #fff;
+  border-radius: 18px;
+  box-shadow: 0 26px 50px rgba(19, 27, 42, 0.22);
+}
+
+#page-landing .hero-carousel .image-carousel__slide img {
+  object-position: center 53%;
+}
+
+@media (max-width: 1024px) {
+  #page-landing .hero-carousel {
+    height: 300px;
+  }
+}
+
+@media (max-width: 760px) {
+  #page-landing .hero-carousel {
+    width: 100%;
+    height: min(66vw, 340px);
+    border-width: 6px;
+    border-radius: 15px;
+  }
+}
+
+/* Galeri foto barang di dashboard/detail owner. */
+.order-photo-carousel {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+}
+
+.order-photo-carousel .image-carousel__nav {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+}
+
+.dashboard-gallery {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+}

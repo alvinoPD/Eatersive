@@ -23,7 +23,17 @@ function isValidSession(value: unknown): value is AuthSession {
 /** Membaca sesi login dari localStorage (ingat saya) atau sessionStorage (satu tab). */
 export function readAuthSession(): AuthSession | null {
   const session = readStoredSession<unknown>();
-  return isValidSession(session) ? session : null;
+  if (!isValidSession(session)) return null;
+
+  /* Sesi lama (sebelum fitur member) tetap valid dengan default non-member. */
+  return {
+    ...session,
+    isMember: session.isMember === true,
+    discountPercent:
+      typeof session.discountPercent === 'number' ? session.discountPercent : 0,
+    membershipPlan: session.membershipPlan ?? null,
+    membershipExpiresAt: session.membershipExpiresAt ?? null,
+  };
 }
 
 export function writeAuthSession(session: AuthSession, remember: boolean): void {

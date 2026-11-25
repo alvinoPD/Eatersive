@@ -1,8 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
-import { useCatalog } from '../../lib/catalog-store';
-import { formatCurrency, readConfirmationOrder } from '../../lib/checkout';
+import ImageCarousel from '../../components/shared/ImageCarousel';
+import { getApiErrorMessage } from '../../api/client';
+import {
+  fetchMyOrders,
+  fetchOrderDetail,
+  formatOrderDateTime,
+  paymentMethodLabel,
+  PAYMENT_STATUS_LABELS,
+  type Order,
+} from '../../api/orders';
+import { formatCurrency } from '../../lib/checkout';
 import '../../styles/konfirmasi-pesanan.css';
 
 function formatUpperDate(date: Date, options: Intl.DateTimeFormatOptions) {
@@ -10,52 +19,81 @@ function formatUpperDate(date: Date, options: Intl.DateTimeFormatOptions) {
 }
 
 export default function KonfirmasiPesananPage() {
-  const navigate = useNavigate();
-  const { services } = useCatalog();
-  const [order] = useState(() => readConfirmationOrder());
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('order');
+  const [order, setOrder] = useState<Order | null>(null);
+  const [groupOrders, setGroupOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(Boolean(orderId));
+  const [error, setError] = useState(orderId ? '' : 'Nomor pesanan belum tersedia.');
   const [message, setMessage] = useState('');
+  const [photoWarning] = useState(() => {
+    const warning = window.sessionStorage.getItem('eatersive-checkout-warning');
+    window.sessionStorage.removeItem('eatersive-checkout-warning');
+    return warning ?? '';
+  });
 
   useEffect(() => {
     document.title = 'Konfirmasi Pesanan — EaterSive';
   }, []);
 
-  const serviceById = Object.fromEntries(services.map((service) => [service.id, service]));
+  useEffect(() => {
+    if (!orderId) return;
 
-  const orderItems = order
-    ? Object.entries(order.items).flatMap(([id, quantity]) => {
-        const service = serviceById[id];
-        return service ? [{ service, quantity }] : [];
+    let alive = true;
+
+    Promise.all([fetchOrderDetail(orderId), fetchMyOrders()])
+      .then(([detail, mine]) => {
+        if (!alive) return;
+        setOrder(detail);
+        setGroupOrders(
+          detail.kode_grup
+            ? mine.filter((item) => item.kode_grup === detail.kode_grup)
+            : [detail],
+        );
+        setError('');
       })
-    : [];
-  const total = orderItems.reduce(
-    (sum, item) => sum + item.service.price * item.quantity,
-    0,
+      .catch((fetchError) => {
+        if (alive) setError(getApiErrorMessage(fetchError));
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [orderId]);
+
+  const items = groupOrders.length > 0 ? groupOrders : order ? [order] : [];
+
+  const totals = items.reduce(
+    (sum, item) => ({
+      subtotal: sum.subtotal + item.subtotal,
+      discount: sum.discount + item.diskon,
+      total: sum.total + item.total_harga,
+    }),
+    { subtotal: 0, discount: 0, total: 0 },
   );
 
-  const createdAt = order ? new Date(order.createdAt) : null;
-  const completionDate = createdAt ? new Date(createdAt) : null;
-  completionDate?.setDate(completionDate.getDate() + 3);
+  const photos = (order?.photos ?? []).map((photo) => ({
+    src: photo.url,
+    alt: `Foto sepatu sisi ${photo.sisi}`,
+    caption: photo.sisi,
+  }));
 
-  const addressParts = order
-    ? [order.address.address, order.address.recipient]
-        .map((part) => part.trim())
-        .filter(Boolean)
-    : [];
-
-  function handleTrack() {
-    if (!order) {
-      setMessage('Pilih layanan terlebih dahulu untuk melihat status pesanan.');
-      return;
-    }
-    navigate('/lacak-pesanan');
-  }
+  const createdAt = order ? new Date(order.created_at) : null;
+  const completionDate = order?.estimasi_selesai
+    ? new Date(`${order.estimasi_selesai}T00:00:00`)
+    : createdAt
+      ? new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000)
+      : null;
 
   async function handleShare() {
     if (!order) return;
 
     const shareData = {
       title: 'Konfirmasi Pesanan EaterSive',
-      text: `Rincian pesanan demo ${order.orderId}.`,
+      text: `Rincian pesanan ${order.kode_pesanan ?? `#${order.id}`}.`,
       url: window.location.href,
     };
 
@@ -67,11 +105,48 @@ export default function KonfirmasiPesananPage() {
 
       await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
       setMessage('Tautan konfirmasi berhasil disalin.');
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return;
+    } catch (shareError) {
+      if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
       setMessage('Konfirmasi tidak dapat dibagikan. Silakan coba lagi.');
-      console.error('Tidak dapat membagikan konfirmasi:', error);
+      console.error('Tidak dapat membagikan konfirmasi:', shareError);
     }
+  }
+
+  if (loading) {
+    return (
+      <div id="page-konfirmasi">
+        <UserHeader />
+        <main className="confirmation-layout">
+          <section className="confirmation-main">
+            <p className="empty-order" role="status">
+              Memuat rincian pesanan…
+            </p>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (!order || error) {
+    return (
+      <div id="page-konfirmasi">
+        <UserHeader />
+        <main className="confirmation-layout">
+          <section className="confirmation-main">
+            <h1 id="confirmation-title">Rincian Pesanan Tidak Ditemukan</h1>
+            <p className="intro">{error}</p>
+            <div className="primary-actions">
+              <Link className="button button--outline" to="/pesanan-saya">
+                Lihat Pesanan Saya
+              </Link>
+              <Link className="button" to="/layanan">
+                Pesan Layanan Lagi
+              </Link>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -92,14 +167,28 @@ export default function KonfirmasiPesananPage() {
               />
             </svg>
           </div>
-          <h1 id="confirmation-title">
-            {order ? 'Pesanan Demo Berhasil Disiapkan!' : 'Rincian Pesanan Tidak Ditemukan'}
-          </h1>
+          <h1 id="confirmation-title">Pesanan Berhasil Dibuat!</h1>
           <p className="intro">
-            {order
-              ? 'Terima kasih. Rincian pesanan demo Anda sudah disiapkan di browser ini. Belum ada pesanan yang dikirim ke server.'
-              : 'Halaman ini belum menerima data pesanan. Silakan pilih layanan dan lanjutkan proses checkout.'}
+            Pesanan Anda sudah tersimpan di server dan diteruskan ke dashboard owner. Simpan
+            nomor pesanan <strong>{order.kode_pesanan ?? `#${order.id}`}</strong> untuk melacak.
           </p>
+
+          {photoWarning && (
+            <p className="tracking-message is-error" role="alert">
+              {photoWarning}
+            </p>
+          )}
+
+          {photos.length > 0 && (
+            <section className="confirmation-photos" aria-labelledby="photos-title">
+              <h2 id="photos-title">Foto Sepatu Yang Diunggah</h2>
+              <ImageCarousel
+                images={photos}
+                className="order-photo-carousel"
+                ariaLabel="Foto sepatu pelanggan"
+              />
+            </section>
+          )}
 
           <section className="next-steps" aria-labelledby="steps-title">
             <div className="steps-copy">
@@ -123,7 +212,7 @@ export default function KonfirmasiPesananPage() {
                 </li>
                 <li>
                   <span>2</span>
-                  <p>Tunggu kurir SoleCare menghubungi Anda di nomor terdaftar.</p>
+                  <p>Tunggu kurir EaterSive menghubungi Anda di nomor terdaftar.</p>
                 </li>
               </ol>
             </div>
@@ -137,16 +226,14 @@ export default function KonfirmasiPesananPage() {
           </section>
 
           <div className="primary-actions">
-            <button
-              className="button track-button"
-              type="button"
-              onClick={handleTrack}
-              disabled={!order}
-            >
+            <Link className="button track-button" to={`/lacak-pesanan?order=${order.id}`}>
               Lacak Status Pesanan <span aria-hidden="true">→</span>
-            </button>
-            <Link className="button button--outline" to="/layanan">
-              Pesan Layanan Lagi
+            </Link>
+            <Link className="button button--outline" to="/pesanan-saya">
+              Lihat Pesanan Saya
+            </Link>
+            <Link className="button button--outline" to={`/nota/${order.id}`}>
+              Cetak Nota
             </Link>
           </div>
           <p className="tracking-message" role="status" aria-live="polite">
@@ -165,11 +252,6 @@ export default function KonfirmasiPesananPage() {
               Chat Sekarang
             </a>
           </section>
-          {order && (
-            <p className="demo-note">
-              Konfirmasi ini hanya demo. Booking belum dikirim atau disimpan di server.
-            </p>
-          )}
         </section>
 
         <aside className="order-card" aria-labelledby="order-title">
@@ -177,30 +259,17 @@ export default function KonfirmasiPesananPage() {
             <h2 id="order-title">
               <span aria-hidden="true">▣</span> Rincian Pesanan
             </h2>
-            <span className="status-pill">
-              {order ? 'Menunggu Penjemputan' : 'Belum ada pesanan'}
-            </span>
+            <span className={`status-pill status--${order.status}`}>{order.status_label}</span>
           </div>
           <div className="order-card-body">
             <div className="order-meta">
               <div>
                 <span>ID Pesanan</span>
-                <strong>{order?.orderId ?? '—'}</strong>
+                <strong>{order.kode_pesanan ?? `#${order.id}`}</strong>
               </div>
               <div className="order-date">
                 <span>Tanggal</span>
-                <strong>
-                  {createdAt
-                    ? `${formatUpperDate(createdAt, {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: 'Asia/Jakarta',
-                      })} WIB`
-                    : '—'}
-                </strong>
+                <strong>{formatOrderDateTime(order.created_at)} WIB</strong>
               </div>
             </div>
             <div className="order-details">
@@ -210,7 +279,9 @@ export default function KonfirmasiPesananPage() {
                 </span>
                 <div>
                   <span>Alamat Penjemputan</span>
-                  <strong>{addressParts.join(' · ') || '—'}</strong>
+                  <strong>
+                    {[order.alamat, order.nama].filter(Boolean).join(' · ') || '—'}
+                  </strong>
                 </div>
               </div>
               <div className="detail-row">
@@ -219,20 +290,33 @@ export default function KonfirmasiPesananPage() {
                 </span>
                 <div>
                   <span>Metode Pembayaran</span>
-                  <strong>{order?.paymentMethod ?? '—'}</strong>
+                  <strong>{paymentMethodLabel(order.pembayaran?.metode_pembayaran)}</strong>
+                </div>
+              </div>
+              <div className="detail-row">
+                <span className="detail-icon" aria-hidden="true">
+                  ◎
+                </span>
+                <div>
+                  <span>Status Pembayaran</span>
+                  <strong>
+                    {PAYMENT_STATUS_LABELS[order.pembayaran?.status_pembayaran ?? ''] ??
+                      'Belum dibayar'}
+                  </strong>
                 </div>
               </div>
             </div>
             <div className="items-section">
               <h3>Item &amp; Layanan</h3>
-              {orderItems.length > 0 ? (
+              {items.length > 0 ? (
                 <ul className="confirmed-items">
-                  {orderItems.map(({ service, quantity }) => (
-                    <li key={service.id}>
+                  {items.map((item) => (
+                    <li key={item.id}>
                       <span>
-                        {service.name} ×{quantity}
+                        {item.layanan?.nama ?? 'Layanan'}
+                        {item.jumlah > 1 ? ` × ${item.jumlah}` : ''}
                       </span>
-                      <strong>{formatCurrency(service.price * quantity)}</strong>
+                      <strong>{formatCurrency(item.subtotal)}</strong>
                     </li>
                   ))}
                 </ul>
@@ -242,17 +326,31 @@ export default function KonfirmasiPesananPage() {
                 </p>
               )}
             </div>
+
+            <div className="summary-breakdown">
+              <div>
+                <span>Subtotal</span>
+                <span>{formatCurrency(totals.subtotal)}</span>
+              </div>
+              {totals.discount > 0 && (
+                <div className="is-discount">
+                  <span>Diskon member</span>
+                  <span>−{formatCurrency(totals.discount)}</span>
+                </div>
+              )}
+            </div>
+
             <div className="confirmed-total">
               <strong>Total Bayar</strong>
-              <strong>{formatCurrency(total)}</strong>
+              <strong>{formatCurrency(totals.total)}</strong>
             </div>
           </div>
           <div className="order-card-actions">
-            <button type="button" onClick={() => window.print()} disabled={!order}>
-              <span aria-hidden="true">♧</span> Simpan Struk
-            </button>
+            <Link to={`/nota/${order.id}`}>
+              <span aria-hidden="true">♧</span> Cetak Nota
+            </Link>
             <span className="action-divider" />
-            <button type="button" onClick={handleShare} disabled={!order}>
+            <button type="button" onClick={handleShare}>
               <span aria-hidden="true">⌯</span> Bagikan
             </button>
           </div>

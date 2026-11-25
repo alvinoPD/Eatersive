@@ -1354,6 +1354,103 @@
   }
 }
 
+#page-landing .member-chip {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #e6f6ec;
+  color: #16803c;
+  font-size: 9px;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+
+#page-landing .member-section {
+  padding-block: 20px 80px;
+}
+
+#page-landing .member-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 26px;
+}
+
+#page-landing .member-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 22px;
+  border: 1px solid #e4e9f2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(20, 32, 51, 0.06);
+}
+
+#page-landing .member-card-tag {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #eef2fa;
+  color: #2862ed;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+#page-landing .member-card h3 {
+  margin: 0;
+  font-size: 19px;
+}
+
+#page-landing .member-card p {
+  margin: 0;
+  color: #5b6779;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+#page-landing .member-price {
+  margin-top: auto;
+  color: #142033;
+  font-size: 24px;
+}
+
+#page-landing .member-price small {
+  color: #6b7688;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#page-landing .member-discount {
+  color: #16803c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#page-landing .member-card .button {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+#page-landing .member-empty {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px dashed #cfd8e6;
+  border-radius: 12px;
+  color: #5b6779;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  #page-landing .member-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (prefers-reduced-motion: reduce){
   #page-landing *, #page-landing *::before, #page-landing *::after{
     scroll-behavior: auto !important;

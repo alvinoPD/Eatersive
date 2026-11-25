@@ -4,11 +4,22 @@ import type { ApiResponse } from '../types/api';
 
 export type ApiRole = 'admin' | 'user';
 
+export interface ApiMembership {
+  plan: string | null;
+  diskon_persen: number;
+  starts_at: string | null;
+  expires_at: string | null;
+}
+
 export interface ApiUser {
   id: number;
   name: string;
   email: string;
   role: ApiRole;
+  nomor_telp: string | null;
+  is_member: boolean;
+  diskon_persen: number;
+  membership: ApiMembership | null;
 }
 
 export interface AuthPayload {

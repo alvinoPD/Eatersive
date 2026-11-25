@@ -10,6 +10,10 @@ export interface AuthSession {
   email: string;
   role: AuthRole;
   token: string;
+  isMember: boolean;
+  discountPercent: number;
+  membershipPlan: string | null;
+  membershipExpiresAt: string | null;
 }
 
 /** Akun demo lokal (tanpa backend) yang dipakai halaman template lama. */

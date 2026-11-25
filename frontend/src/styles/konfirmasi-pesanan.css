@@ -756,6 +756,51 @@
   }
 }
 
+#page-konfirmasi .confirmation-photos{
+  margin: 18px 0 6px;
+  padding: 16px;
+  border: 1px solid #e2e7f0;
+  border-radius: 14px;
+  background: #fff;
+}
+
+#page-konfirmasi .confirmation-photos h2{
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+#page-konfirmasi .confirmation-photos .order-photo-carousel{
+  max-height: 320px;
+}
+
+#page-konfirmasi .summary-breakdown{
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #dfe3e9;
+  font-size: 12px;
+}
+
+#page-konfirmasi .summary-breakdown > div{
+  display: flex;
+  justify-content: space-between;
+  color: #5b6779;
+}
+
+#page-konfirmasi .summary-breakdown .is-discount{
+  color: #16803c;
+  font-weight: 600;
+}
+
+#page-konfirmasi .tracking-message.is-error{
+  color: #b42318;
+}
+
+#page-konfirmasi .primary-actions{
+  flex-wrap: wrap;
+}
+
 @media (prefers-reduced-motion: reduce){
   #page-konfirmasi *, #page-konfirmasi *::before, #page-konfirmasi *::after{
     scroll-behavior: auto !important;

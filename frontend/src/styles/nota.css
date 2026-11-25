@@ -1,0 +1,254 @@
+#page-nota {
+  min-height: 100vh;
+  padding: 24px;
+  background: #eef2f7;
+  color: #142033;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+.nota-toolbar {
+  display: flex;
+  width: min(210mm, 100%);
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 auto 18px;
+  font-size: 13px;
+}
+
+.nota-toolbar a {
+  color: #2457c5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nota-toolbar div {
+  display: flex;
+  gap: 10px;
+}
+
+.nota-sheet {
+  width: min(210mm, 100%);
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 18mm 16mm;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(20, 32, 51, 0.16);
+}
+
+.nota-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #142033;
+}
+
+.nota-header p {
+  margin: 3px 0;
+  color: #526079;
+  font-size: 12px;
+}
+
+.nota-brand {
+  margin: 0 0 6px !important;
+  color: #142033 !important;
+  font-size: 26px !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.nota-title {
+  text-align: right;
+}
+
+.nota-title h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+}
+
+.nota-title p {
+  color: #142033;
+}
+
+.nota-status {
+  display: inline-block;
+  margin-top: 6px !important;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #eef2fa;
+  font-size: 11px !important;
+  font-weight: 700;
+}
+
+.nota-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid #dbe2ee;
+}
+
+.nota-meta h2,
+.nota-photos h2,
+.nota-note h2 {
+  margin: 0 0 8px;
+  color: #526079;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nota-meta p {
+  margin: 3px 0;
+  font-size: 12px;
+}
+
+.nota-table {
+  width: 100%;
+  margin-top: 18px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.nota-table th {
+  padding: 9px 10px;
+  border-bottom: 1.5px solid #142033;
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nota-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #e4e9f2;
+}
+
+.nota-table th:nth-child(3),
+.nota-table th:nth-child(4),
+.nota-table th:nth-child(5),
+.nota-table td:nth-child(3),
+.nota-table td:nth-child(4),
+.nota-table td:nth-child(5) {
+  text-align: right;
+}
+
+.nota-totals {
+  display: grid;
+  gap: 6px;
+  width: 55%;
+  margin: 16px 0 0 auto;
+  font-size: 12px;
+}
+
+.nota-totals > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nota-grand-total {
+  margin-top: 5px;
+  padding-top: 9px;
+  border-top: 2px solid #142033;
+  font-size: 15px;
+}
+
+.nota-photos {
+  margin-top: 24px;
+}
+
+.nota-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.nota-photo-grid figure {
+  margin: 0;
+}
+
+.nota-photo-grid img,
+.nota-photo-empty {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #dbe2ee;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.nota-photo-empty {
+  display: grid;
+  place-items: center;
+  background: #f6f8fc;
+  color: #8a95a8;
+  font-size: 10px;
+}
+
+.nota-photo-grid figcaption {
+  margin-top: 4px;
+  color: #526079;
+  font-size: 10px;
+  text-align: center;
+}
+
+.nota-note {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f6f8fc;
+}
+
+.nota-note p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.nota-footer {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid #dbe2ee;
+  color: #526079;
+  font-size: 10px;
+  text-align: center;
+}
+
+.nota-footer p {
+  margin: 4px 0;
+}
+
+.nota-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  #page-nota {
+    padding: 0;
+    background: #fff;
+  }
+
+  .nota-sheet {
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+  }
+}

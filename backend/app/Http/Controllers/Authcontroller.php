@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-
 class Authcontroller extends Controller
 {
     /**
@@ -37,12 +36,12 @@ class Authcontroller extends Controller
             'data' => [
                 'token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user,
+                'user' => $this->presentUser($user),
             ],
         ]);
     }
 
-        /**
+    /**
      * Login user. CAPTCHA diverifikasi SEBELUM kredensial diperiksa.
      */
     public function login(Request $request, CaptchaService $captcha): JsonResponse
@@ -85,7 +84,7 @@ class Authcontroller extends Controller
             'data' => [
                 'token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user,
+                'user' => $this->presentUser($user),
             ],
         ]);
     }
@@ -111,14 +110,33 @@ class Authcontroller extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user();
-
         return response()->json([
             'success' => true,
             'message' => 'User berhasil diambil',
             'data' => [
-                'user' => $user,
+                'user' => $this->presentUser($request->user()),
             ],
         ]);
+    }
+
+    /**
+     * Payload user yang konsisten untuk frontend (termasuk membership).
+     *
+     * @return array<string, mixed>
+     */
+    private function presentUser(User $user): array
+    {
+        $membership = $user->membershipSummary();
+
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'nomor_telp' => $user->nomor_telp,
+            'is_member' => $membership !== null,
+            'diskon_persen' => $membership['diskon_persen'] ?? 0,
+            'membership' => $membership,
+        ];
     }
 }

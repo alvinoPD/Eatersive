@@ -51,8 +51,10 @@ export function toCatalogService(item: Layanan): CatalogService {
   };
 }
 
-export async function fetchLayanan(): Promise<Layanan[]> {
-  const { data } = await apiClient.get<ApiResponse<Layanan[]>>('/layanan');
+export async function fetchLayanan(includeInactive = false): Promise<Layanan[]> {
+  const { data } = await apiClient.get<ApiResponse<Layanan[]>>('/layanan', {
+    params: includeInactive ? { include_inactive: 1 } : undefined,
+  });
   return data.data;
 }
 
@@ -61,8 +63,25 @@ export async function fetchLayananById(id: string | number): Promise<Layanan> {
   return data.data;
 }
 
-export async function createLayanan(input: LayananInput): Promise<Layanan> {
-  const { data } = await apiClient.post<ApiResponse<Layanan>>('/layanan', input);
+export async function createLayanan(
+  input: LayananInput,
+  photoFile?: File | null,
+): Promise<Layanan> {
+  if (!photoFile) {
+    const { data } = await apiClient.post<ApiResponse<Layanan>>('/layanan', input);
+    return data.data;
+  }
+
+  const formData = new FormData();
+  formData.append('nama', input.nama);
+  formData.append('deskripsi', input.deskripsi ?? '');
+  formData.append('harga', String(input.harga));
+  formData.append('kategori', input.kategori ?? '');
+  formData.append('estimasi', input.estimasi ?? '');
+  formData.append('aktif', input.aktif === false ? '0' : '1');
+  formData.append('foto', photoFile);
+
+  const { data } = await apiClient.post<ApiResponse<Layanan>>('/layanan', formData);
   return data.data;
 }
 
@@ -71,6 +90,17 @@ export async function updateLayanan(
   input: Partial<LayananInput>,
 ): Promise<Layanan> {
   const { data } = await apiClient.put<ApiResponse<Layanan>>(`/layanan/${id}`, input);
+  return data.data;
+}
+
+export async function uploadLayananPhoto(
+  id: string | number,
+  file: File,
+): Promise<Layanan> {
+  const formData = new FormData();
+  formData.append('foto', file);
+
+  const { data } = await apiClient.post<ApiResponse<Layanan>>(`/layanan/${id}/foto`, formData);
   return data.data;
 }
 

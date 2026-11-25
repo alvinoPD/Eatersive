@@ -41,6 +41,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       email: payload.user.email,
       role: payload.user.role === 'admin' ? 'owner' : 'user',
       token: payload.token,
+      isMember: payload.user.is_member === true,
+      discountPercent: payload.user.diskon_persen ?? 0,
+      membershipPlan: payload.user.membership?.plan ?? null,
+      membershipExpiresAt: payload.user.membership?.expires_at ?? null,
     };
 
     writeAuthSession(nextSession, remember);

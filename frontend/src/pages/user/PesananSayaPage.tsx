@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import UserHeader from '../../components/user/UserHeader';
 import { getApiErrorMessage } from '../../api/client';
-import { fetchMyOrders, formatOrderDateTime, type Order } from '../../api/orders';
+import {
+  fetchMyOrders,
+  formatOrderDateTime,
+  paymentMethodLabel,
+  type Order,
+} from '../../api/orders';
 import { FALLBACK_IMAGE } from '../../api/layanan';
 import { formatCurrency } from '../../lib/checkout';
 import '../../styles/pesanan-saya.css';
@@ -149,8 +154,14 @@ export default function PesananSayaPage() {
                         {order.alamat ?? 'Alamat belum tersedia'}
                       </p>
                       <p className={`order-history-payment${payment?.status_pembayaran === 'paid' ? ' is-paid' : ''}`}>
-                        Pembayaran: {paymentLabel(payment?.status_pembayaran)}
+                        Pembayaran: {paymentLabel(payment?.status_pembayaran)} ·{' '}
+                        {paymentMethodLabel(payment?.metode_pembayaran)}
                       </p>
+                      {order.diskon > 0 && (
+                        <p className="order-history-discount">
+                          Diskon member {order.diskon_persen}%: −{formatCurrency(order.diskon)}
+                        </p>
+                      )}
                     </div>
                     <div className="order-history-total">
                       <span>Total</span>
@@ -175,7 +186,13 @@ export default function PesananSayaPage() {
                       </div>
                       <div>
                         <dt>Metode pembayaran</dt>
-                        <dd>{payment?.metode_pembayaran ?? '—'}</dd>
+                        <dd>{paymentMethodLabel(payment?.metode_pembayaran)}</dd>
+                      </div>
+                      <div>
+                        <dt>Subtotal / diskon</dt>
+                        <dd>
+                          {formatCurrency(order.subtotal)} / −{formatCurrency(order.diskon)}
+                        </dd>
                       </div>
                       <div>
                         <dt>Estimasi selesai</dt>
@@ -187,6 +204,15 @@ export default function PesananSayaPage() {
                   <footer className="order-history-actions">
                     <Link className="button" to={detailUrl}>
                       Lacak Pesanan <span aria-hidden="true">→</span>
+                    </Link>
+                    <Link
+                      className="button button--outline"
+                      to={`/konfirmasi-pesanan?order=${order.id}`}
+                    >
+                      Lihat Konfirmasi
+                    </Link>
+                    <Link className="button button--outline" to={`/nota/${order.id}`}>
+                      Cetak Nota
                     </Link>
                   </footer>
                 </article>

@@ -61,6 +61,14 @@ export function saveCheckoutAddress(address: CheckoutAddress): void {
   window.localStorage.setItem(ADDRESS_STORAGE_KEY, JSON.stringify(address));
 }
 
+export function createGroupCode(): string {
+  const date = new Date();
+  const stamp = `${String(date.getFullYear()).slice(2)}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
+  const random = Math.random().toString(36).slice(2, 6).toUpperCase();
+
+  return `GRP-${stamp}-${random}`;
+}
+
 export function saveConfirmationOrder(order: CheckoutOrder): void {
   window.sessionStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
 }
@@ -109,6 +117,12 @@ export function readConfirmationOrder(): CheckoutOrder | null {
         typeof candidate.paymentMethod === 'string'
           ? candidate.paymentMethod
           : 'QRIS / E-Wallet',
+      orderIds: Array.isArray(candidate.orderIds)
+        ? candidate.orderIds.filter((id): id is number => typeof id === 'number')
+        : undefined,
+      total: typeof candidate.total === 'number' ? candidate.total : undefined,
+      status: typeof candidate.status === 'string' ? candidate.status : undefined,
+      groupCode: typeof candidate.groupCode === 'string' ? candidate.groupCode : undefined,
     };
   } catch {
     return null;

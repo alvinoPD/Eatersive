@@ -13,6 +13,7 @@ import {
   deleteLayanan,
   fetchLayanan,
   updateLayanan,
+  uploadLayananPhoto,
   type Layanan,
 } from '../../api/layanan';
 import { formatCurrency } from '../../lib/checkout';
@@ -39,36 +40,6 @@ function toOwnerService(item: Layanan): OwnerCatalogService {
   };
 }
 
-async function compressPhoto(file: File): Promise<string> {
-  const dataUrl = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => {
-      if (typeof reader.result === 'string') resolve(reader.result);
-      else reject(new Error('Foto tidak dapat dibaca.'));
-    });
-    reader.addEventListener('error', () => reject(new Error('Foto tidak dapat dibaca.')));
-    reader.readAsDataURL(file);
-  });
-
-  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-    const element = new Image();
-    element.addEventListener('load', () => resolve(element));
-    element.addEventListener('error', () => reject(new Error('Foto tidak dapat diproses.')));
-    element.src = dataUrl;
-  });
-
-  const maxDimension = 1400;
-  const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(image.width * scale));
-  canvas.height = Math.max(1, Math.round(image.height * scale));
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('Foto tidak dapat diproses di browser ini.');
-
-  context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/jpeg', 0.82);
-}
-
 export default function OwnerCatalogPage() {
   const [services, setServices] = useState<OwnerCatalogService[]>([]);
   const [pageMessage, setPageMessage] = useState('');
@@ -80,7 +51,9 @@ export default function OwnerCatalogPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dialogMessage, setDialogMessage] = useState('');
-  const [selectedPhoto, setSelectedPhoto] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState('');
+  const [photoRemoved, setPhotoRemoved] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [formName, setFormName] = useState('');
   const [formCategory, setFormCategory] = useState<ServiceCategory>('Cleaning');
@@ -100,7 +73,7 @@ export default function OwnerCatalogPage() {
   async function reload() {
     try {
       setLoading(true);
-      const list = await fetchLayanan();
+      const list = await fetchLayanan(true);
       setServices(list.map(toOwnerService));
       setPageMessage('');
     } catch (error) {
@@ -113,7 +86,7 @@ export default function OwnerCatalogPage() {
   useEffect(() => {
     let alive = true;
 
-    fetchLayanan()
+    fetchLayanan(true)
       .then((list) => {
         if (!alive) return;
         setServices(list.map(toOwnerService));
@@ -174,7 +147,9 @@ export default function OwnerCatalogPage() {
     setFormEstimate(service?.estimate ?? '');
     setFormActive(String(service?.active ?? true));
     setFormDescription(service?.description ?? '');
-    setSelectedPhoto(service?.image ?? '');
+    setPhotoFile(null);
+    setPhotoPreview(service?.image ?? '');
+    setPhotoRemoved(false);
     setDialogMessage('');
     setDialogOpen(true);
   }
@@ -183,30 +158,27 @@ export default function OwnerCatalogPage() {
     setDialogOpen(false);
   }
 
-  async function readPhoto(file: File) {
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      setDialogMessage('Format foto harus JPG atau PNG.');
+  function readPhoto(file: File) {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setDialogMessage('Format foto harus JPG, PNG, atau WebP.');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setDialogMessage('Ukuran foto maksimal 5MB.');
+    if (file.size > 4 * 1024 * 1024) {
+      setDialogMessage('Ukuran foto maksimal 4 MB.');
       return;
     }
 
-    try {
-      setDialogMessage('');
-      setSelectedPhoto(await compressPhoto(file));
-    } catch (error) {
-      console.error('Tidak dapat memproses foto:', error);
-      setDialogMessage('Foto tidak dapat diproses. Silakan pilih file lain.');
-    }
+    setDialogMessage('');
+    setPhotoFile(file);
+    setPhotoRemoved(false);
+    setPhotoPreview(URL.createObjectURL(file));
   }
 
   function handleDrop(event: DragEvent<HTMLButtonElement>) {
     event.preventDefault();
     setDragging(false);
     const [file] = Array.from(event.dataTransfer.files);
-    if (file) void readPhoto(file);
+    if (file) readPhoto(file);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -220,14 +192,15 @@ export default function OwnerCatalogPage() {
       kategori: formCategory,
       estimasi: formEstimate.trim(),
       aktif: formActive === 'true',
-      foto: selectedPhoto || null,
+      ...(photoRemoved ? { foto: null } : {}),
     };
 
     try {
       if (editingId) {
         await updateLayanan(editingId, payload);
+        if (photoFile) await uploadLayananPhoto(editingId, photoFile);
       } else {
-        await createLayanan(payload);
+        await createLayanan(payload, photoFile);
       }
 
       closeServiceDialog();
@@ -652,10 +625,10 @@ export default function OwnerCatalogPage() {
               ref={photoInputRef}
               name="photo"
               type="file"
-              accept="image/jpeg,image/png"
+              accept="image/jpeg,image/png,image/webp"
               onChange={(event) => {
                 const [file] = Array.from(event.target.files ?? []);
-                if (file) void readPhoto(file);
+                if (file) readPhoto(file);
                 event.target.value = '';
               }}
             />
@@ -675,8 +648,8 @@ export default function OwnerCatalogPage() {
               }}
               onDrop={handleDrop}
             >
-              {selectedPhoto ? (
-                <img className="photo-preview" src={selectedPhoto} alt="Pratinjau foto layanan" />
+              {photoPreview ? (
+                <img className="photo-preview" src={photoPreview} alt="Pratinjau foto layanan" />
               ) : (
                 <span className="photo-placeholder">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -685,16 +658,18 @@ export default function OwnerCatalogPage() {
                     <path d="m20.5 15-5-5L5 20" />
                   </svg>
                   <span>Klik atau tarik file untuk unggah foto</span>
-                  <small id="photo-help">JPG, PNG up to 5MB</small>
+                  <small id="photo-help">JPG, PNG, WebP maksimal 4MB</small>
                 </span>
               )}
             </button>
-            {selectedPhoto && (
+            {photoPreview && (
               <button
                 className="remove-photo"
                 type="button"
                 onClick={() => {
-                  setSelectedPhoto('');
+                  setPhotoFile(null);
+                  setPhotoPreview('');
+                  setPhotoRemoved(true);
                   setDialogMessage('');
                 }}
               >

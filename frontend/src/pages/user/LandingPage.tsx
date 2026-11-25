@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import Brand from '../../components/shared/Brand';
+import ImageCarousel from '../../components/shared/ImageCarousel';
 import { ROLE_HOME } from '../../auth/roles';
+import { fetchMembershipPlans, type MembershipPlan } from '../../api/owner';
+import { formatCurrency } from '../../lib/checkout';
 import {
   LANDING_FAQS,
   LANDING_STEPS,
@@ -13,8 +16,27 @@ import '../../styles/landing.css';
 const NAV_LINKS = [
   { href: '#layanan', label: 'Layanan' },
   { href: '#cara-kerja', label: 'Cara Kerja' },
+  { href: '#member', label: 'Member' },
   { href: '#ulasan', label: 'Ulasan' },
   { href: '#faq', label: 'Pertanyaan' },
+];
+
+const HERO_IMAGES = [
+  {
+    src: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1100&q=90',
+    alt: 'Sepatu sneaker yang bersih dan terawat',
+    caption: 'Deep cleaning',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90',
+    alt: 'Sneaker putih setelah perawatan',
+    caption: 'Unyellowing',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90',
+    alt: 'Sepatu setelah hard cleaning',
+    caption: 'Hard cleaning',
+  },
 ];
 
 const WHATSAPP_URL =
@@ -24,6 +46,7 @@ export default function LandingPage() {
   const { session, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -35,6 +58,22 @@ export default function LandingPage() {
     const target = document.getElementById(location.hash.slice(1));
     target?.scrollIntoView({ behavior: 'smooth' });
   }, [location.hash]);
+
+  useEffect(() => {
+    let alive = true;
+
+    fetchMembershipPlans()
+      .then((list) => {
+        if (alive) setPlans(list.filter((plan) => plan.aktif));
+      })
+      .catch(() => {
+        /* Landing tetap tampil walau paket member belum tersedia. */
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -71,8 +110,14 @@ export default function LandingPage() {
         <div className="header-actions">
           {session ? (
             <>
+              {session.role === 'user' && (
+                <Link className="login-link" to="/pesanan-saya">
+                  Pesanan Saya
+                </Link>
+              )}
               <Link className="login-link" to={ROLE_HOME[session.role]}>
                 {session.name}
+                {session.isMember && <span className="member-chip">Member</span>}
               </Link>
               <Link className="button button--small" to="/login" onClick={logout}>
                 Keluar
@@ -109,10 +154,12 @@ export default function LandingPage() {
 
           <div className="hero-visual">
             <div className="hero-orbit" />
-            <img
-              className="hero-image"
-              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1100&q=90"
-              alt="Sepatu sneaker yang bersih dan terawat"
+            <ImageCarousel
+              images={HERO_IMAGES}
+              className="hero-carousel"
+              autoPlay
+              intervalMs={4000}
+              ariaLabel="Galeri layanan EaterSive"
             />
             <div className="trust-card">
               <span className="trust-icon" aria-hidden="true">
@@ -269,6 +316,45 @@ export default function LandingPage() {
               </Link>
             </div>
           </div>
+        </section>
+
+        <section className="member-section section-wrap" id="member">
+          <div className="section-heading">
+            <p className="eyebrow">Lebih hemat</p>
+            <h2>Paket Member EaterSive</h2>
+            <p>
+              Berlangganan paket perawatan dan dapatkan diskon otomatis di setiap checkout.
+              Aktivasi dilakukan oleh owner melalui dashboard member.
+            </p>
+          </div>
+          {plans.length > 0 ? (
+            <div className="member-grid">
+              {plans.map((plan) => (
+                <article className="member-card" key={plan.id}>
+                  <span className="member-card-tag">Subscription</span>
+                  <h3>{plan.nama}</h3>
+                  <p>{plan.deskripsi ?? 'Diskon otomatis untuk semua layanan.'}</p>
+                  <strong className="member-price">
+                    {formatCurrency(Number(plan.harga))}
+                    <small> / {plan.durasi_hari} hari</small>
+                  </strong>
+                  <span className="member-discount">Diskon {plan.diskon_persen}%</span>
+                  <a
+                    className="button"
+                    href={WHATSAPP_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Ajukan Membership
+                  </a>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="member-empty">
+              Paket member belum tersedia. Hubungi owner untuk informasi langganan.
+            </p>
+          )}
         </section>
 
         <section className="testimonials section-wrap" id="ulasan">
