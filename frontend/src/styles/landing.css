@@ -159,6 +159,10 @@
   display: none;
 }
 
+#page-landing .nav-account{
+  display: none;
+}
+
 #page-landing .hero{
   position: relative;
   display: grid;
@@ -1135,6 +1139,24 @@
 
   #page-landing .login-link{
     display: none;
+  }
+
+  #page-landing .nav-account{
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    border-top: 1px solid #dce1ea;
+  }
+
+  #page-landing .nav-account a{
+    padding: 12px 4px;
+    border-bottom: 1px solid #eceef2;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  #page-landing .nav-account a:last-child{
+    border-bottom: 0;
   }
 
   #page-landing .button--small{

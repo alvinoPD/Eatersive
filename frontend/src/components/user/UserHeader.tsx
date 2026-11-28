@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import { ROLE_HOME } from '../../auth/roles';
 import Brand from '../shared/Brand';
+import '../../styles/user-header.css';
 
 /**
  * Header bersama untuk halaman alur pemesanan (pilih layanan, pembayaran,
@@ -9,16 +11,77 @@ import Brand from '../shared/Brand';
  */
 export default function UserHeader() {
   const { session, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="site-header">
+    <header className="site-header user-header">
       <Brand label="EaterSive, beranda" />
 
-      <nav className="main-nav" aria-label="Navigasi utama">
-        <Link to="/layanan">Layanan</Link>
-        <Link to="/#cara-kerja">Cara Kerja</Link>
-        <Link to="/#ulasan">Ulasan</Link>
-        <Link to="/#faq">Pertanyaan</Link>
+      <button
+        className="menu-toggle"
+        type="button"
+        aria-expanded={menuOpen}
+        aria-controls="user-main-nav"
+        aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
+        onClick={() => setMenuOpen((isOpen) => !isOpen)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      <nav
+        className={`main-nav${menuOpen ? ' is-open' : ''}`}
+        id="user-main-nav"
+        aria-label="Navigasi utama"
+      >
+        <Link to="/layanan" onClick={closeMenu}>
+          Layanan
+        </Link>
+        <Link to="/#cara-kerja" onClick={closeMenu}>
+          Cara Kerja
+        </Link>
+        <Link to="/#ulasan" onClick={closeMenu}>
+          Ulasan
+        </Link>
+        <Link to="/#faq" onClick={closeMenu}>
+          Pertanyaan
+        </Link>
+
+        <div className="nav-account">
+          {session ? (
+            <>
+              {session.role === 'user' && (
+                <Link to="/pesanan-saya" onClick={closeMenu}>
+                  Pesanan Saya
+                </Link>
+              )}
+              <Link to={ROLE_HOME[session.role]} onClick={closeMenu}>
+                {session.name}
+              </Link>
+              <Link
+                to="/login"
+                onClick={() => {
+                  closeMenu();
+                  void logout();
+                }}
+              >
+                Keluar
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={closeMenu}>
+                Masuk
+              </Link>
+              <Link to="/login" onClick={closeMenu}>
+                Daftar
+              </Link>
+            </>
+          )}
+        </div>
       </nav>
 
       <div className="header-actions">

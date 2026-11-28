@@ -105,6 +105,39 @@ export default function LandingPage() {
               {link.label}
             </a>
           ))}
+
+          <div className="nav-account">
+            {session ? (
+              <>
+                {session.role === 'user' && (
+                  <Link to="/pesanan-saya" onClick={closeMenu}>
+                    Pesanan Saya
+                  </Link>
+                )}
+                <Link to={ROLE_HOME[session.role]} onClick={closeMenu}>
+                  {session.name}
+                </Link>
+                <Link
+                  to="/login"
+                  onClick={() => {
+                    closeMenu();
+                    void logout();
+                  }}
+                >
+                  Keluar
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={closeMenu}>
+                  Masuk
+                </Link>
+                <Link to="/register" onClick={closeMenu}>
+                  Daftar
+                </Link>
+              </>
+            )}
+          </div>
         </nav>
 
         <div className="header-actions">
