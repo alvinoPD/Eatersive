@@ -1,0 +1,173 @@
+/*
+ * Animasi global EaterSive.
+ * Dibuat halus dan singkat supaya UI terasa hidup tanpa mengganggu.
+ */
+
+@keyframes eater-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes eater-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes eater-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes eater-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Halaman masuk dengan lembut saat pindah route. */
+.site-header {
+  animation: eater-drop-in 0.35s ease-out both;
+}
+
+main,
+.auth-page {
+  animation: eater-rise-in 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Garis bawah nav yang tumbuh saat hover. */
+.main-nav a {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.main-nav a::after {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.22s ease;
+}
+
+.main-nav a:hover::after,
+.main-nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Di menu mobile, link bergeser sedikit saat disentuh. */
+@media (max-width: 760px) {
+  .main-nav a::after {
+    display: none;
+  }
+
+  .main-nav a {
+    transition: padding-left 0.18s ease, color 0.18s ease;
+  }
+
+  .main-nav a:hover,
+  .main-nav a:focus-visible {
+    padding-left: 6px !important;
+    color: #2862ed !important;
+  }
+}
+
+/* Tombol terasa bisa ditekan. */
+button,
+.button,
+.book-button,
+.save-button,
+.login-link {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease,
+    color 0.18s ease, border-color 0.18s ease;
+}
+
+button:not(:disabled):hover,
+a.button:hover,
+.book-button:not(:disabled):hover,
+.save-button:hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active,
+a.button:active,
+.book-button:not(:disabled):active,
+.save-button:active {
+  transform: translateY(0);
+}
+
+/* Menu sidebar owner bergeser halus saat hover. */
+.nav-link {
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.nav-link:hover {
+  transform: translateX(2px);
+}
+
+/* Kartu ringkasan terasa sedikit terangkat. */
+.summary-card,
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover,
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(21, 30, 49, 0.08);
+}
+
+/* Modal dan backdrop muncul dengan animasi. */
+.booking-modal-backdrop {
+  animation: eater-fade-in 0.2s ease-out both;
+}
+
+.booking-modal,
+dialog[open] {
+  animation: eater-pop-in 0.22s ease-out both;
+}
+
+dialog[open]::backdrop {
+  animation: eater-fade-in 0.22s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  main,
+  .auth-page,
+  .booking-modal,
+  dialog[open],
+  .summary-card,
+  .stat-card {
+    animation: none !important;
+  }
+
+  .main-nav a::after {
+    transition: none;
+  }
+}
