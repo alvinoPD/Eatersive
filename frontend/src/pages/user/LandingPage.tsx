@@ -5,11 +5,14 @@ import Brand from '../../components/shared/Brand';
 import ImageCarousel from '../../components/shared/ImageCarousel';
 import { ROLE_HOME } from '../../auth/roles';
 import { fetchMembershipPlans, type MembershipPlan } from '../../api/owner';
+import { fetchPublishedReviews } from '../../api/reviews';
 import { formatCurrency } from '../../lib/checkout';
+import { initialsAvatar } from '../../lib/avatar';
 import {
   LANDING_FAQS,
   LANDING_STEPS,
   LANDING_TESTIMONIALS,
+  type LandingTestimonial,
 } from '../../data/landingContent';
 import '../../styles/landing.css';
 
@@ -47,6 +50,7 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
+  const [testimonials, setTestimonials] = useState<LandingTestimonial[]>(LANDING_TESTIMONIALS);
   const location = useLocation();
 
   useEffect(() => {
@@ -100,6 +104,37 @@ export default function LandingPage() {
       })
       .catch(() => {
         /* Landing tetap tampil walau paket member belum tersedia. */
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  /* Testimoni diambil dari ulasan yang sudah dipublikasikan owner. */
+  useEffect(() => {
+    let alive = true;
+
+    fetchPublishedReviews()
+      .then((reviews) => {
+        if (!alive) return;
+
+        setTestimonials(
+          reviews.map((review) => {
+            const name = review.user?.name ?? 'Pelanggan';
+
+            return {
+              quote: review.isi_review,
+              name,
+              role: review.layanan?.nama ?? 'Pelanggan EaterSive',
+              avatar: initialsAvatar(name),
+              rating: review.rating,
+            };
+          }),
+        );
+      })
+      .catch(() => {
+        /* Landing tetap tampil walau testimoni belum tersedia. */
       });
 
     return () => {
@@ -427,12 +462,19 @@ export default function LandingPage() {
             <p className="eyebrow">Apa kata mereka?</p>
             <h2>Testimoni Pelanggan</h2>
           </div>
-          {LANDING_TESTIMONIALS.length > 0 ? (
+          {testimonials.length > 0 ? (
             <div className="testimonial-grid">
-              {LANDING_TESTIMONIALS.map((testimonial) => (
-                <article className="testimonial" key={testimonial.name}>
-                  <div className="stars" aria-label="5 dari 5 bintang">
-                    ★★★★★
+              {testimonials.map((testimonial, index) => (
+                <article className="testimonial" key={`${testimonial.name}-${index}`}>
+                  <div className="stars" aria-label={`${testimonial.rating} dari 5 bintang`}>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <span
+                        key={value}
+                        className={value <= testimonial.rating ? 'is-filled' : ''}
+                      >
+                        ★
+                      </span>
+                    ))}
                   </div>
                   <blockquote>{testimonial.quote}</blockquote>
                   <div className="customer">

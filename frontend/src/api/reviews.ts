@@ -27,6 +27,11 @@ export async function createReview(input: CreateReviewInput): Promise<Review> {
   return data.data;
 }
 
+export async function fetchPublishedReviews(): Promise<Review[]> {
+  const { data } = await apiClient.get<ApiResponse<Review[]>>('/reviews');
+  return data.data;
+}
+
 export async function fetchOwnerReviews(): Promise<Review[]> {
   const { data } = await apiClient.get<ApiResponse<Review[]>>('/owner/reviews');
   return data.data;

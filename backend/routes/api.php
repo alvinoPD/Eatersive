@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function (): void {
     });
 
     Route::prefix('reviews')->group(function (): void {
+        Route::get('/', [RiviewController::class, 'index'])->name('api.v1.reviews.index');
         Route::post('/', [RiviewController::class, 'store'])->middleware('auth:sanctum')->name('api.v1.reviews.store');
     });
 

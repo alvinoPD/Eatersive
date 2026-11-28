@@ -41,6 +41,7 @@ export interface LandingTestimonial {
   name: string;
   role: string;
   avatar: string;
+  rating: number;
 }
 
 /**

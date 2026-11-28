@@ -99,6 +99,39 @@ class RiviewTest extends TestCase
             ->assertJsonPath('data.owner_reply', 'Terima kasih sudah memesan.');
     }
 
+    public function test_public_testimonials_only_return_published_reviews(): void
+    {
+        $customer = User::factory()->create(['name' => 'Siti Aminah']);
+        $layanan = daftar_layanan::create([
+            'nama' => 'Unyellowing',
+            'deskripsi' => 'Memutihkan sepatu',
+            'harga' => 60000,
+        ]);
+
+        \App\Models\Riview::create([
+            'user_id' => $customer->id,
+            'layanan_id' => $layanan->id,
+            'isi_review' => 'Sepatu kembali putih',
+            'rating' => 5,
+            'status' => 'Dipublikasikan',
+        ]);
+
+        \App\Models\Riview::create([
+            'user_id' => $customer->id,
+            'layanan_id' => $layanan->id,
+            'isi_review' => 'Masih menunggu moderasi',
+            'rating' => 4,
+            'status' => 'Menunggu',
+        ]);
+
+        $this->getJson('/api/v1/reviews')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.isi_review', 'Sepatu kembali putih')
+            ->assertJsonPath('data.0.user.name', 'Siti Aminah')
+            ->assertJsonPath('data.0.rating', 5);
+    }
+
     public function test_store_review_requires_authentication(): void
     {
         $response = $this->postJson('/api/v1/reviews', [

@@ -724,6 +724,10 @@
   letter-spacing: 2px;
 }
 
+#page-landing .stars span.is-filled{
+  color: #f0a92a;
+}
+
 #page-landing .testimonial blockquote{
   min-height: 77px;
   margin: 0 0 18px;

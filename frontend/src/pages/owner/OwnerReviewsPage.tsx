@@ -7,6 +7,7 @@ import {
   type Review as ApiReview,
 } from '../../api/reviews';
 import { REVIEW_PAGE_SIZE } from '../../data/ownerReviews';
+import { initialsAvatar } from '../../lib/avatar';
 import type { OwnerReview, OwnerReviewStatus } from '../../types/eatersive';
 import '../../styles/owner-reviews.css';
 
@@ -35,14 +36,6 @@ function formatReviewDate(value: string) {
   }).format(new Date(value));
 }
 
-/** Avatar inisial supaya tabel tetap rapi tanpa file gambar tambahan. */
-function avatarFor(name: string): string {
-  const initial = (name.trim().charAt(0) || '?').replace(/[<>&"']/g, '').toUpperCase();
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="32" fill="#dbe7ff"/><text x="32" y="41" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#2862ed" text-anchor="middle">${initial}</text></svg>`;
-
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-}
-
 function toOwnerReview(review: ApiReview): OwnerReview {
   const name = review.user?.name ?? 'Pelanggan';
 
@@ -54,7 +47,7 @@ function toOwnerReview(review: ApiReview): OwnerReview {
     comment: review.isi_review,
     service: review.layanan?.nama ?? 'Layanan',
     status: review.status,
-    avatar: avatarFor(name),
+    avatar: initialsAvatar(name),
     postedAt: review.created_at ?? new Date().toISOString(),
     ownerReply: review.owner_reply ?? undefined,
   };

@@ -40,6 +40,26 @@ class RiviewController extends Controller
     }
 
     /**
+     * Ulasan yang sudah dipublikasikan, dipakai testimoni di landing page.
+     */
+    public function index(): JsonResponse
+    {
+        $reviews = Riview::query()
+            ->with(['user:id,name', 'layanan:id,nama'])
+            ->where('status', 'Dipublikasikan')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->limit(6)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Testimoni pelanggan berhasil diambil',
+            'data' => $reviews->map(fn (Riview $review) => $this->format($review))->all(),
+        ]);
+    }
+
+    /**
      * Seluruh ulasan untuk halaman moderasi owner.
      */
     public function ownerIndex(): JsonResponse
