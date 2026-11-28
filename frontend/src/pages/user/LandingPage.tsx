@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import Brand from '../../components/shared/Brand';
@@ -58,6 +58,38 @@ export default function LandingPage() {
     const target = document.getElementById(location.hash.slice(1));
     target?.scrollIntoView({ behavior: 'smooth' });
   }, [location.hash]);
+
+  /* Section muncul satu per satu saat masuk viewport, termasuk setelah klik nav. */
+  useLayoutEffect(() => {
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>('#page-landing main > section'),
+    );
+
+    if (sections.length === 0) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    sections.forEach((section) => section.classList.add('scroll-reveal'));
+
+    if (reduceMotion) {
+      sections.forEach((section) => section.classList.add('is-revealed'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let alive = true;

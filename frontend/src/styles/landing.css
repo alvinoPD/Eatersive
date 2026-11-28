@@ -857,16 +857,30 @@
   gap: 10px;
 }
 
+/* Izinkan tinggi konten FAQ dianimasikan antar nilai auto. */
+#page-landing{
+  interpolate-size: allow-keywords;
+}
+
 #page-landing .faq-item{
   overflow: hidden;
   border: 1px solid #e9ebf0;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.4);
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease,
+    background-color 200ms ease;
+}
+
+#page-landing .faq-item:hover{
+  transform: translateY(-1px);
+  border-color: #d8e0f3;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 6px 16px rgba(32, 49, 81, 0.08);
 }
 
 #page-landing .faq-item[open]{
   border-color: #d8e0f3;
+  background: #fff;
   box-shadow: 0 3px 8px rgba(32, 49, 81, 0.08);
 }
 
@@ -877,6 +891,12 @@
   font-size: 12px;
   font-weight: 600;
   list-style: none;
+  transition: color 180ms ease;
+}
+
+#page-landing .faq-item summary:hover,
+#page-landing .faq-item[open] summary{
+  color: var(--blue);
 }
 
 #page-landing .faq-item summary::-webkit-details-marker{
@@ -892,10 +912,31 @@
   font-size: 17px;
   font-weight: 400;
   transform: translateY(-50%);
+  transition: transform 220ms ease, color 180ms ease;
 }
 
+#page-landing .faq-item:hover summary::after,
 #page-landing .faq-item[open] summary::after{
-  content: "−";
+  color: var(--blue);
+}
+
+/* Plus berputar menjadi tanda silang kecil saat terbuka. */
+#page-landing .faq-item[open] summary::after{
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* Buka/tutup jawaban dengan tinggi yang dianimasikan (browser modern). */
+#page-landing .faq-item::details-content{
+  block-size: 0;
+  overflow: hidden;
+  content-visibility: hidden;
+  transition: block-size 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    content-visibility 280ms allow-discrete;
+}
+
+#page-landing .faq-item[open]::details-content{
+  block-size: auto;
+  content-visibility: visible;
 }
 
 #page-landing .faq-item p{
@@ -903,6 +944,14 @@
   color: var(--muted);
   font-size: 11px;
   line-height: 1.7;
+  transform: translateY(-4px);
+  opacity: 0.35;
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+#page-landing .faq-item[open] p{
+  transform: none;
+  opacity: 1;
 }
 
 #page-landing .site-footer{

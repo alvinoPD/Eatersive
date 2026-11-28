@@ -201,6 +201,18 @@ a.button:active,
   box-shadow: 0 10px 24px rgba(21, 30, 49, 0.08);
 }
 
+/* Section muncul dari bawah saat masuk viewport (dipakai landing page). */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.scroll-reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
 /* Modal dan backdrop muncul dengan animasi. */
 .booking-modal-backdrop {
   animation: eater-fade-in 0.2s ease-out both;
@@ -227,6 +239,12 @@ dialog[open]::backdrop {
   .header-actions > *,
   .main-nav.is-open {
     animation: none !important;
+  }
+
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   .main-nav a::after {
