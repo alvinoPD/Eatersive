@@ -110,19 +110,25 @@ export default function OwnerOrdersPage() {
           <article className="summary-card summary-card--total">
             <div>
               <p>Total Pesanan</p>
-              <strong>{loading ? '—' : totalOrders}</strong>
+              <strong>
+                {loading ? <span className="skeleton-line skeleton-line--stat" /> : totalOrders}
+              </strong>
             </div>
           </article>
           <article className="summary-card">
             <div>
               <p>Proses</p>
-              <strong>{loading ? '—' : processOrders}</strong>
+              <strong>
+                {loading ? <span className="skeleton-line skeleton-line--stat" /> : processOrders}
+              </strong>
             </div>
           </article>
           <article className="summary-card">
             <div>
               <p>Selesai</p>
-              <strong>{loading ? '—' : doneOrders}</strong>
+              <strong>
+                {loading ? <span className="skeleton-line skeleton-line--stat" /> : doneOrders}
+              </strong>
             </div>
           </article>
         </section>
@@ -196,7 +202,41 @@ export default function OwnerOrdersPage() {
                 </tr>
               </thead>
               <tbody>
-                {visibleOrders.map((order, index) => (
+                {loading ? (
+                  Array.from({ length: 6 }).map((_, index) => (
+                    <tr
+                      className="order-row is-skeleton"
+                      key={`skeleton-${index}`}
+                      aria-hidden="true"
+                    >
+                      <td className="number-cell row-number">
+                        <span className="skeleton-line skeleton-line--xs" />
+                      </td>
+                      <td>
+                        <span className="skeleton-line skeleton-line--md" />
+                        <span className="skeleton-line skeleton-line--sm" />
+                      </td>
+                      <td className="customer-name">
+                        <span className="skeleton-line skeleton-line--md" />
+                        <span className="skeleton-line skeleton-line--sm" />
+                      </td>
+                      <td>
+                        <span className="skeleton-line skeleton-line--md" />
+                      </td>
+                      <td>
+                        <span className="skeleton-line skeleton-line--md" />
+                      </td>
+                      <td>
+                        <span className="skeleton-line skeleton-line--md" />
+                        <span className="skeleton-line skeleton-line--sm" />
+                      </td>
+                      <td className="status-cell">
+                        <span className="skeleton-line skeleton-line--pill" />
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  visibleOrders.map((order, index) => (
                   <tr
                     className="order-row"
                     key={order.id}
@@ -257,24 +297,25 @@ export default function OwnerOrdersPage() {
                       </span>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
-            {visibleOrders.length === 0 && (
+            {!loading && visibleOrders.length === 0 && (
               <p className="empty-state">
-                {loading
-                  ? 'Memuat pesanan…'
-                  : orders.length === 0
-                    ? 'Belum ada pesanan. Pesanan pelanggan akan muncul di sini.'
-                    : 'Tidak ada pesanan yang cocok.'}
+                {orders.length === 0
+                  ? 'Belum ada pesanan. Pesanan pelanggan akan muncul di sini.'
+                  : 'Tidak ada pesanan yang cocok.'}
               </p>
             )}
           </div>
           <div className="table-footer">
             <p>
-              {visibleOrders.length === 0
-                ? 'Tidak ada pesanan yang ditampilkan'
-                : `Menampilkan ${visibleOrders.length} dari ${orders.length} pesanan`}
+              {loading
+                ? 'Memuat pesanan…'
+                : visibleOrders.length === 0
+                  ? 'Tidak ada pesanan yang ditampilkan'
+                  : `Menampilkan ${visibleOrders.length} dari ${orders.length} pesanan`}
             </p>
             <button
               className="reset-button"

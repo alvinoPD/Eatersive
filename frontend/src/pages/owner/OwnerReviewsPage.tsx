@@ -301,7 +301,13 @@ export default function OwnerReviewsPage() {
               </span>
               <div>
                 <p>Total Review</p>
-                <strong>{totalReviews.toLocaleString('id-ID')}</strong>
+                <strong>
+                  {loading ? (
+                    <span className="skeleton-line skeleton-line--stat" />
+                  ) : (
+                    totalReviews.toLocaleString('id-ID')
+                  )}
+                </strong>
               </div>
             </article>
             <article className="stat-card">
@@ -312,7 +318,15 @@ export default function OwnerReviewsPage() {
               </span>
               <div>
                 <p>Rating Rata-rata</p>
-                <strong>{averageRating === '—' ? '—' : `${averageRating}/5`}</strong>
+                <strong>
+                  {loading ? (
+                    <span className="skeleton-line skeleton-line--stat" />
+                  ) : averageRating === '—' ? (
+                    '—'
+                  ) : (
+                    `${averageRating}/5`
+                  )}
+                </strong>
               </div>
             </article>
             <article className="stat-card">
@@ -323,7 +337,9 @@ export default function OwnerReviewsPage() {
               </span>
               <div>
                 <p>Review Positif</p>
-                <strong>{positiveRate}</strong>
+                <strong>
+                  {loading ? <span className="skeleton-line skeleton-line--stat" /> : positiveRate}
+                </strong>
               </div>
             </article>
           </section>
@@ -451,7 +467,41 @@ export default function OwnerReviewsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pageReviews.map((review) => (
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={`skeleton-${index}`} className="is-skeleton" aria-hidden="true">
+                        <td className="check-cell">
+                          <span className="skeleton-line skeleton-line--xs" />
+                        </td>
+                        <td>
+                          <div className="customer-cell">
+                            <span className="skeleton-line skeleton-line--avatar" />
+                            <div className="customer-copy">
+                              <span className="skeleton-line skeleton-line--md" />
+                              <span className="skeleton-line skeleton-line--sm" />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="comment-cell">
+                          <span className="skeleton-line skeleton-line--md" />
+                          <span className="skeleton-line skeleton-line--lg" />
+                        </td>
+                        <td>
+                          <span className="skeleton-line skeleton-line--sm" />
+                        </td>
+                        <td className="date-cell">
+                          <span className="skeleton-line skeleton-line--md" />
+                        </td>
+                        <td>
+                          <span className="skeleton-line skeleton-line--pill" />
+                        </td>
+                        <td className="actions-cell">
+                          <span className="skeleton-line skeleton-line--xs" />
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    pageReviews.map((review) => (
                     <tr key={review.id} data-review-id={review.id}>
                       <td className="check-cell">
                         <input
@@ -580,25 +630,27 @@ export default function OwnerReviewsPage() {
                         </details>
                       </td>
                     </tr>
-                  ))}
+                    ))
+                  )}
                 </tbody>
               </table>
-              {filteredReviews.length === 0 && (
+              {!loading && filteredReviews.length === 0 && (
                 <p className="empty-state">
-                  {loading
-                    ? 'Memuat ulasan…'
-                    : totalReviews === 0
-                      ? 'Belum ada ulasan. Ulasan pelanggan akan muncul di sini setelah pesanan selesai.'
-                      : 'Tidak ada ulasan yang cocok dengan filter.'}
+                  {totalReviews === 0
+                    ? 'Belum ada ulasan. Ulasan pelanggan akan muncul di sini setelah pesanan selesai.'
+                    : 'Tidak ada ulasan yang cocok dengan filter.'}
                 </p>
               )}
             </div>
 
             <div className="table-footer">
               <p>
-                Menampilkan {filteredReviews.length === 0 ? 0 : startIndex + 1}–
-                {Math.min(startIndex + REVIEW_PAGE_SIZE, filteredReviews.length)} dari{' '}
-                {filteredReviews.length.toLocaleString('id-ID')} ulasan
+                {loading
+                  ? 'Memuat ulasan…'
+                  : `Menampilkan ${filteredReviews.length === 0 ? 0 : startIndex + 1}–${Math.min(
+                      startIndex + REVIEW_PAGE_SIZE,
+                      filteredReviews.length,
+                    )} dari ${filteredReviews.length.toLocaleString('id-ID')} ulasan`}
               </p>
               <nav className="pagination" aria-label="Navigasi halaman ulasan">
                 <button

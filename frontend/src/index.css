@@ -61,6 +61,74 @@ html {
   }
 }
 
+/* Skeleton shimmer untuk tabel yang sedang dimuat. */
+.skeleton-line {
+  display: block;
+  height: 10px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #edf0f5 25%, #f7f9fc 37%, #edf0f5 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.3s ease infinite;
+}
+
+.skeleton-line + .skeleton-line {
+  margin-top: 6px;
+}
+
+.skeleton-line--xs {
+  width: 20px;
+}
+
+.skeleton-line--sm {
+  width: 58px;
+}
+
+.skeleton-line--md {
+  width: 104px;
+}
+
+.skeleton-line--lg {
+  width: 170px;
+  max-width: 100%;
+}
+
+.skeleton-line--pill {
+  width: 82px;
+  height: 20px;
+  border-radius: 999px;
+}
+
+.skeleton-line--stat {
+  width: 52px;
+  height: 20px;
+}
+
+.skeleton-line--avatar {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.is-skeleton {
+  pointer-events: none;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line {
+    animation: none;
+  }
+}
+
 body {
   margin: 0;
   min-height: 100vh;
