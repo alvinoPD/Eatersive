@@ -938,6 +938,96 @@
   }
 }
 
+/* Modal konfirmasi booking, ditampilkan di dalam halaman (bukan dialog browser). */
+#page-pembayaran .booking-modal-backdrop{
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(21, 30, 49, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+#page-pembayaran .booking-modal{
+  width: min(420px, 100%);
+  padding: 24px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(21, 30, 49, 0.24);
+}
+
+#page-pembayaran .booking-modal h2{
+  margin: 0 0 8px;
+  font-family: Manrope, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+#page-pembayaran .booking-modal p{
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+#page-pembayaran .booking-modal p strong{
+  color: var(--ink);
+}
+
+#page-pembayaran .booking-modal-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+#page-pembayaran .booking-modal-cancel, #page-pembayaran .booking-modal-confirm{
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#page-pembayaran .booking-modal-cancel{
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+}
+
+#page-pembayaran .booking-modal-confirm{
+  border: 0;
+  background: var(--blue);
+  box-shadow: 0 6px 14px rgba(40, 98, 237, 0.24);
+  color: #fff;
+}
+
+#page-pembayaran .booking-modal-cancel:hover{
+  background: #f3f5f9;
+}
+
+#page-pembayaran .booking-modal-confirm:hover{
+  background: #1f55d8;
+}
+
+#page-pembayaran .booking-modal-cancel:disabled, #page-pembayaran .booking-modal-confirm:disabled{
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 520px){
+  #page-pembayaran .booking-modal-actions{
+    flex-direction: column-reverse;
+  }
+
+  #page-pembayaran .booking-modal-cancel, #page-pembayaran .booking-modal-confirm{
+    width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce){
   #page-pembayaran *, #page-pembayaran *::before, #page-pembayaran *::after{
     scroll-behavior: auto !important;

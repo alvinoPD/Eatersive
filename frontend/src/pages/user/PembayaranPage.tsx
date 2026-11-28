@@ -44,6 +44,7 @@ export default function PembayaranPage() {
   );
   const [bookingMessage, setBookingMessage] = useState('');
   const [pending, setPending] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [photos, setPhotos] = useState<Partial<Record<PhotoSide, File>>>({});
   const [previews, setPreviews] = useState<Partial<Record<PhotoSide, string>>>({});
 
@@ -78,6 +79,18 @@ export default function PembayaranPage() {
   useEffect(() => {
     document.title = 'Pembayaran — EaterSive';
   }, []);
+
+  useEffect(() => {
+    if (!confirmOpen) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape' && !pending) setConfirmOpen(false);
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [confirmOpen, pending]);
 
   useEffect(
     () => () => {
@@ -179,6 +192,14 @@ export default function PembayaranPage() {
       return;
     }
 
+    setBookingMessage('');
+    setConfirmOpen(true);
+  }
+
+  async function confirmBooking() {
+    if (pending) return;
+
+    setConfirmOpen(false);
     setPending(true);
     setBookingMessage('');
 
@@ -540,6 +561,49 @@ export default function PembayaranPage() {
           </div>
         </div>
       </main>
+
+      {confirmOpen && (
+        <div
+          className="booking-modal-backdrop"
+          role="presentation"
+          onClick={() => {
+            if (!pending) setConfirmOpen(false);
+          }}
+        >
+          <div
+            className="booking-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="booking-confirm-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="booking-confirm-title">Apakah Anda sudah yakin?</h2>
+            <p>
+              Pesanan akan dibuat dengan total <strong>{formatCurrency(total)}</strong>. Pastikan
+              layanan, alamat, dan metode pembayaran sudah benar.
+            </p>
+            <div className="booking-modal-actions">
+              <button
+                className="booking-modal-cancel"
+                type="button"
+                disabled={pending}
+                onClick={() => setConfirmOpen(false)}
+              >
+                Batal
+              </button>
+              <button
+                className="booking-modal-confirm"
+                type="button"
+                autoFocus
+                disabled={pending}
+                onClick={confirmBooking}
+              >
+                {pending ? 'Memproses Pesanan…' : 'Ya, Booking Sekarang'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
