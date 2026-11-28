@@ -35,6 +35,32 @@ html {
   scroll-padding-top: 80px;
 }
 
+/* Fallback saat chunk halaman sedang dimuat. */
+.route-loading {
+  display: grid;
+  min-height: 60vh;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.route-loading__spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #2862ed;
+  border-radius: 50%;
+  animation: route-spin 0.7s linear infinite;
+}
+
+@keyframes route-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 body {
   margin: 0;
   min-height: 100vh;

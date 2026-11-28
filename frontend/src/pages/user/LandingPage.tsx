@@ -317,7 +317,7 @@ export default function LandingPage() {
                 <img
                   src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=700&q=85"
                   alt="Sneaker putih setelah basic cleaning"
-                />
+                 loading="lazy" decoding="async" />
                 <span className="service-card-copy">
                   <strong>Basic Cleaning</strong>
                   <small>Untuk cuci luar dan dalam</small>
@@ -327,7 +327,7 @@ export default function LandingPage() {
                 <img
                   src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=700&q=85"
                   alt="Sepatu setelah hard cleaning"
-                />
+                 loading="lazy" decoding="async" />
                 <span className="service-card-copy">
                   <strong>Hard Cleaning</strong>
                   <small>Untuk sepatu yang sudah dibersihkan</small>
@@ -337,7 +337,7 @@ export default function LandingPage() {
                 <img
                   src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85"
                   alt="Perawatan khusus suede"
-                />
+                 loading="lazy" decoding="async" />
                 <span className="service-card-copy">
                   <strong>Suede Cleaning</strong>
                   <small>Treatment khusus sepatu kamu</small>
@@ -347,7 +347,7 @@ export default function LandingPage() {
                 <img
                   src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1200&q=85"
                   alt="Perawatan dan restorasi sneaker"
-                />
+                 loading="lazy" decoding="async" />
                 <span className="wide-overlay" />
                 <span className="wide-copy">
                   <small>Additional care</small>
@@ -379,7 +379,7 @@ export default function LandingPage() {
                 <img
                   src="https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=900&q=85"
                   alt="Sepatu sneaker untuk layanan repaint dan reglue"
-                />
+                 loading="lazy" decoding="async" />
               </Link>
               <Link className="promo-card promo-card--gear" to="/layanan">
                 <span className="promo-content">
@@ -398,7 +398,7 @@ export default function LandingPage() {
                 <img
                   src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=85"
                   alt="Tas dan perlengkapan yang dapat dirawat"
-                />
+                 loading="lazy" decoding="async" />
               </Link>
               <Link className="promo-card promo-card--delivery" to="/layanan">
                 <span className="promo-content">
@@ -478,7 +478,7 @@ export default function LandingPage() {
                   </div>
                   <blockquote>{testimonial.quote}</blockquote>
                   <div className="customer">
-                    <img src={testimonial.avatar} alt="" />
+                    <img src={testimonial.avatar} alt=""  loading="lazy" decoding="async" />
                     <span>
                       <strong>{testimonial.name}</strong>
                       <small>{testimonial.role}</small>

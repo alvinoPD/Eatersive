@@ -791,6 +791,12 @@
   min-width: 190px;
 }
 
+/* Browser hanya merender section yang mendekati viewport; sisanya dilewati. */
+#page-landing main > section{
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
 #page-landing .faq{
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
