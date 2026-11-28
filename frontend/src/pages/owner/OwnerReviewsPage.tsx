@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import OwnerShell from '../../components/owner/OwnerShell';
+import { getApiErrorMessage } from '../../api/client';
 import {
-  OWNER_REVIEWS_STORAGE_KEY,
-  REVIEW_PAGE_SIZE,
-  readOwnerReviews,
-} from '../../data/ownerReviews';
+  fetchOwnerReviews,
+  updateOwnerReview,
+  type Review as ApiReview,
+} from '../../api/reviews';
+import { REVIEW_PAGE_SIZE } from '../../data/ownerReviews';
 import type { OwnerReview, OwnerReviewStatus } from '../../types/eatersive';
 import '../../styles/owner-reviews.css';
 
@@ -33,8 +35,34 @@ function formatReviewDate(value: string) {
   }).format(new Date(value));
 }
 
+/** Avatar inisial supaya tabel tetap rapi tanpa file gambar tambahan. */
+function avatarFor(name: string): string {
+  const initial = (name.trim().charAt(0) || '?').replace(/[<>&"']/g, '').toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="32" fill="#dbe7ff"/><text x="32" y="41" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#2862ed" text-anchor="middle">${initial}</text></svg>`;
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function toOwnerReview(review: ApiReview): OwnerReview {
+  const name = review.user?.name ?? 'Pelanggan';
+
+  return {
+    id: String(review.id),
+    name,
+    orderId: review.kode_pesanan ?? `REV-${review.id}`,
+    rating: review.rating,
+    comment: review.isi_review,
+    service: review.layanan?.nama ?? 'Layanan',
+    status: review.status,
+    avatar: avatarFor(name),
+    postedAt: review.created_at ?? new Date().toISOString(),
+    ownerReply: review.owner_reply ?? undefined,
+  };
+}
+
 export default function OwnerReviewsPage() {
-  const [reviews, setReviews] = useState<OwnerReview[]>(readOwnerReviews);
+  const [reviews, setReviews] = useState<OwnerReview[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState<StatusFilter>('all');
   const [search, setSearch] = useState('');
   const [serviceFilter, setServiceFilter] = useState('all');
@@ -50,6 +78,27 @@ export default function OwnerReviewsPage() {
 
   useEffect(() => {
     document.title = 'Moderasi Review — EaterSive';
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+
+    fetchOwnerReviews()
+      .then((data) => {
+        if (!alive) return;
+        setReviews(data.map(toOwnerReview));
+      })
+      .catch((error) => {
+        if (!alive) return;
+        setPageMessage(getApiErrorMessage(error));
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -103,39 +152,29 @@ export default function OwnerReviewsPage() {
     ? reviews.find((review) => review.id === replyReviewId) ?? null
     : null;
 
-  function persist(nextReviews: OwnerReview[]): boolean {
-    try {
-      window.localStorage.setItem(
-        OWNER_REVIEWS_STORAGE_KEY,
-        JSON.stringify(nextReviews),
-      );
-      return true;
-    } catch (error) {
-      console.error('Tidak dapat menyimpan data ulasan:', error);
-      setPageMessage('Perubahan moderasi gagal disimpan di browser ini.');
-      return false;
-    }
-  }
-
   function resetSelection() {
     setSelectedIds(new Set());
     setCurrentPage(1);
   }
 
-  function changeStatus(reviewIds: string[], status: OwnerReviewStatus) {
-    const ids = new Set(reviewIds);
-    const nextReviews = reviews.map((review) =>
-      ids.has(review.id) ? { ...review, status } : review,
-    );
-    if (!persist(nextReviews)) return false;
+  async function changeStatus(reviewIds: string[], status: OwnerReviewStatus): Promise<boolean> {
+    try {
+      const updated = await Promise.all(
+        reviewIds.map((id) => updateOwnerReview(Number(id), { status })),
+      );
+      const byId = new Map(updated.map((review) => [String(review.id), toOwnerReview(review)]));
 
-    setReviews(nextReviews);
-    setSelectedIds((current) => {
-      const next = new Set(current);
-      ids.forEach((id) => next.delete(id));
-      return next;
-    });
-    return true;
+      setReviews((current) => current.map((review) => byId.get(review.id) ?? review));
+      setSelectedIds((current) => {
+        const next = new Set(current);
+        reviewIds.forEach((id) => next.delete(id));
+        return next;
+      });
+      return true;
+    } catch (error) {
+      setPageMessage(getApiErrorMessage(error));
+      return false;
+    }
   }
 
   function toggleSelection(reviewId: string) {
@@ -156,28 +195,32 @@ export default function OwnerReviewsPage() {
     setReplyReviewId(null);
   }
 
-  function handleReplySubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleReplySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!replyReview) return;
 
     const reply = replyText.trim();
     if (!reply) return;
 
-    const nextReviews = reviews.map((review) =>
-      review.id === replyReview.id ? { ...review, ownerReply: reply } : review,
-    );
-    if (!persist(nextReviews)) return;
+    try {
+      const updated = await updateOwnerReview(Number(replyReview.id), { owner_reply: reply });
+      const updatedReview = toOwnerReview(updated);
 
-    setReviews(nextReviews);
-    setPageMessage(`Balasan untuk ${replyReview.name} berhasil disimpan di perangkat ini.`);
-    setReplyReviewId(null);
+      setReviews((current) =>
+        current.map((review) => (review.id === replyReview.id ? updatedReview : review)),
+      );
+      setPageMessage(`Balasan untuk ${replyReview.name} berhasil disimpan.`);
+      setReplyReviewId(null);
 
-    const repliedId = replyReview.id;
-    requestAnimationFrame(() => {
-      document
-        .querySelector<HTMLButtonElement>(`[data-review-id="${repliedId}"] [data-action="reply"]`)
-        ?.focus();
-    });
+      const repliedId = replyReview.id;
+      requestAnimationFrame(() => {
+        document
+          .querySelector<HTMLButtonElement>(`[data-review-id="${repliedId}"] [data-action="reply"]`)
+          ?.focus();
+      });
+    } catch (error) {
+      setPageMessage(getApiErrorMessage(error));
+    }
   }
 
   function pageNumbers(): Array<number | 'ellipsis'> {
@@ -224,10 +267,10 @@ export default function OwnerReviewsPage() {
               className="publish-button"
               type="button"
               disabled={selectedIds.size === 0}
-              onClick={() => {
+              onClick={async () => {
                 const count = selectedIds.size;
                 if (count === 0) return;
-                if (changeStatus([...selectedIds], 'Dipublikasikan')) {
+                if (await changeStatus([...selectedIds], 'Dipublikasikan')) {
                   setPageMessage(`${count} ulasan berhasil dipublikasikan.`);
                 }
               }}
@@ -336,9 +379,13 @@ export default function OwnerReviewsPage() {
                     }}
                   >
                     <option value="all">Semua Layanan</option>
-                    <option value="Deep Cleaning">Deep Cleaning</option>
-                    <option value="Unyellowing">Unyellowing</option>
-                    <option value="Shoe Repair">Shoe Repair</option>
+                    {Array.from(new Set(reviews.map((review) => review.service)))
+                      .sort((first, second) => first.localeCompare(second, 'id'))
+                      .map((service) => (
+                        <option key={service} value={service}>
+                          {service}
+                        </option>
+                      ))}
                   </select>
                 </label>
                 <button
@@ -479,9 +526,9 @@ export default function OwnerReviewsPage() {
                               <button
                                 key={action.status}
                                 type="button"
-                                onClick={() => {
+                                onClick={async () => {
                                   setOpenMenuId(null);
-                                  if (changeStatus([review.id], action.status)) {
+                                  if (await changeStatus([review.id], action.status)) {
                                     setPageMessage(
                                       `Ulasan ${review.orderId} ditandai sebagai ${action.status.toLowerCase()}.`,
                                     );
@@ -500,9 +547,11 @@ export default function OwnerReviewsPage() {
               </table>
               {filteredReviews.length === 0 && (
                 <p className="empty-state">
-                  {totalReviews === 0
-                    ? 'Belum ada ulasan. Ulasan pelanggan akan muncul di sini setelah pesanan selesai.'
-                    : 'Tidak ada ulasan yang cocok dengan filter.'}
+                  {loading
+                    ? 'Memuat ulasan…'
+                    : totalReviews === 0
+                      ? 'Belum ada ulasan. Ulasan pelanggan akan muncul di sini setelah pesanan selesai.'
+                      : 'Tidak ada ulasan yang cocok dengan filter.'}
                 </p>
               )}
             </div>

@@ -74,6 +74,10 @@ Route::prefix('v1')->group(function (): void {
 
     Route::prefix('owner')->middleware(['auth:sanctum', 'admin'])->group(function (): void {
         Route::get('/orders', [PesananController::class, 'ownerIndex'])->name('api.v1.owner.orders');
+        Route::get('/reviews', [RiviewController::class, 'ownerIndex'])->name('api.v1.owner.reviews.index');
+        Route::patch('/reviews/{id}', [RiviewController::class, 'ownerUpdate'])
+            ->whereNumber('id')
+            ->name('api.v1.owner.reviews.update');
         Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('api.v1.owner.dashboard');
         Route::get('/members', [OwnerMemberController::class, 'index'])->name('api.v1.owner.members.index');
         Route::put('/members/{user}', [OwnerMemberController::class, 'update'])->name('api.v1.owner.members.update');

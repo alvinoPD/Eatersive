@@ -9,7 +9,15 @@ class Riview extends Model
 {
     protected $table = 'riviews';
 
-    protected $fillable = ['isi_review', 'user_id', 'layanan_id'];
+    protected $fillable = [
+        'isi_review',
+        'rating',
+        'status',
+        'owner_reply',
+        'kode_pesanan',
+        'user_id',
+        'layanan_id',
+    ];
 
     public function user(): BelongsTo
     {

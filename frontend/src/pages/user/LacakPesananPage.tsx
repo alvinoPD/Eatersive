@@ -13,10 +13,9 @@ import {
   type Order,
   type OrderStatus,
 } from '../../api/orders';
+import { createReview } from '../../api/reviews';
 import { formatCurrency } from '../../lib/checkout';
 import '../../styles/lacak-pesanan.css';
-
-const REVIEW_STORAGE_KEY = 'eatersive-order-review';
 
 const STATUS_MARKER: Record<OrderStatus, string> = {
   pending: '▣',
@@ -52,6 +51,7 @@ export default function LacakPesananPage() {
   const [message, setMessage] = useState('');
   const [messageIsError, setMessageIsError] = useState(false);
   const [reviewSaved, setReviewSaved] = useState(false);
+  const [reviewSaving, setReviewSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -140,13 +140,19 @@ export default function LacakPesananPage() {
     setUploadLabel(file.name);
   }
 
-  function handleReviewSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleReviewSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessageIsError(false);
 
     if (!order) {
       setMessageIsError(true);
       setMessage('Pesanan belum tersedia untuk diberi ulasan.');
+      return;
+    }
+
+    if (!order.layanan) {
+      setMessageIsError(true);
+      setMessage('Layanan pesanan tidak ditemukan, ulasan belum dapat dikirim.');
       return;
     }
 
@@ -159,22 +165,23 @@ export default function LacakPesananPage() {
     const trimmedReview = reviewText.trim();
     if (!trimmedReview) return;
 
+    setReviewSaving(true);
+
     try {
-      window.localStorage.setItem(
-        REVIEW_STORAGE_KEY,
-        JSON.stringify({
-          orderId: order.kode_pesanan ?? order.id,
-          rating,
-          text: trimmedReview,
-          createdAt: new Date().toISOString(),
-        }),
-      );
-      setMessage('Terima kasih! Ulasan Anda tersimpan di perangkat ini.');
+      await createReview({
+        layanan_id: order.layanan.id,
+        isi_review: trimmedReview,
+        rating,
+        kode_pesanan: order.kode_pesanan,
+      });
+      setMessage('Terima kasih! Ulasan Anda sudah dikirim ke owner.');
       setReviewSaved(true);
     } catch (reviewError) {
-      console.error('Tidak dapat menyimpan ulasan:', reviewError);
+      console.error('Tidak dapat mengirim ulasan:', reviewError);
       setMessageIsError(true);
-      setMessage('Ulasan siap, tetapi tidak dapat disimpan di perangkat ini.');
+      setMessage(getApiErrorMessage(reviewError));
+    } finally {
+      setReviewSaving(false);
     }
   }
 
@@ -454,8 +461,8 @@ export default function LacakPesananPage() {
               <p className={`review-message${messageIsError ? ' is-error' : ''}`} role="status">
                 {message}
               </p>
-              <button className="submit-review" type="submit" disabled={reviewSaved}>
-                Kirim Ulasan
+              <button className="submit-review" type="submit" disabled={reviewSaved || reviewSaving}>
+                {reviewSaving ? 'Mengirim…' : 'Kirim Ulasan'}
               </button>
             </form>
           )}
