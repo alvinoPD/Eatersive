@@ -69,6 +69,7 @@ export default function OwnerReviewsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
   const [pageMessage, setPageMessage] = useState('');
   const [replyReviewId, setReplyReviewId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
@@ -100,6 +101,21 @@ export default function OwnerReviewsPage() {
       alive = false;
     };
   }, []);
+
+  /* Menu aksi memakai position: fixed, jadi tutup saat halaman digulir. */
+  useEffect(() => {
+    if (!openMenuId) return;
+
+    const closeMenu = () => setOpenMenuId(null);
+
+    window.addEventListener('scroll', closeMenu, true);
+    window.addEventListener('resize', closeMenu);
+
+    return () => {
+      window.removeEventListener('scroll', closeMenu, true);
+      window.removeEventListener('resize', closeMenu);
+    };
+  }, [openMenuId]);
 
   useEffect(() => {
     const dialog = replyDialogRef.current;
@@ -503,15 +519,44 @@ export default function OwnerReviewsPage() {
                           className="action-menu"
                           open={openMenuId === review.id}
                           onToggle={(event) => {
-                            if (event.currentTarget.open) setOpenMenuId(review.id);
-                            else
+                            if (event.currentTarget.open) {
+                              /* Tempatkan menu di viewport agar tidak terpotong table-scroll. */
+                              const rect = event.currentTarget.getBoundingClientRect();
+                              const menuWidth = 150;
+                              const menuHeight = 168;
+                              const left = Math.min(
+                                Math.max(8, rect.right - menuWidth),
+                                window.innerWidth - menuWidth - 8,
+                              );
+                              const top =
+                                window.innerHeight - rect.bottom >= menuHeight
+                                  ? rect.bottom + 4
+                                  : Math.max(8, rect.top - menuHeight - 4);
+
+                              setMenuPosition({ top, left });
+                              setOpenMenuId(review.id);
+                            } else {
                               setOpenMenuId((current) =>
                                 current === review.id ? null : current,
                               );
+                            }
                           }}
                         >
                           <summary aria-label={`Aksi untuk ulasan ${review.name}`}>⋮</summary>
-                          <div className="action-options">
+                          <div
+                            className="action-options"
+                            style={
+                              openMenuId === review.id && menuPosition
+                                ? {
+                                    position: 'fixed',
+                                    top: menuPosition.top,
+                                    left: menuPosition.left,
+                                    right: 'auto',
+                                    zIndex: 80,
+                                  }
+                                : undefined
+                            }
+                          >
                             <button
                               type="button"
                               data-action="reply"
