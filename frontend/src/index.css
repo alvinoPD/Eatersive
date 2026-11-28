@@ -57,6 +57,14 @@ a {
   color: var(--accent);
 }
 
+/* Logo gambar di dalam badge brand; ukurannya mengikuti wadah .brand-mark. */
+.brand-mark img {
+  display: block;
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+}
+
 ul {
   margin: 0;
   padding-left: 1.1rem;

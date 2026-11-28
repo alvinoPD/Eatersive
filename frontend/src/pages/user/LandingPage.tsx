@@ -477,7 +477,7 @@ export default function LandingPage() {
       <footer className="site-footer" id="footer">
         <div className="footer-main section-wrap">
           <div className="footer-about">
-            <Brand label="EaterSive, ke beranda" variant="spark" />
+            <Brand label="EaterSive, ke beranda" />
             <p>
               Platform layanan cuci sepatu profesional terpercaya di Surabaya. Kami hadir untuk
               menjaga koleksi sepatu Anda tetap terlihat seperti baru.
